@@ -1,0 +1,269 @@
+<!DOCTYPE html><html><head><title>Burst Balloons</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c6c7fd1aae28585752e7" data-set="true" class="title">Burst Balloons</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+    Given <code>n</code> balloons, indexed from <code>0</code> to <code>n-1</code>. Each balloon is painted with a
+    number on it represented by array <code>nums</code>.
+
+    You are asked to burst all the balloons. If the you burst
+    balloon <code>i</code> you will get <code>nums[left] * nums[i] * nums[right]</code> coins. Here <code>left</code>
+    and <code>right</code> are adjacent indices of <code>i</code>. After the burst, the <code>left</code> and <code>right</code>
+    then becomes adjacent.
+</p>
+<p>
+    Find the maximum coins you can collect by bursting the balloons wisely.
+</p>
+<p>
+    <b>Note:</b> <br>
+    (1) You may imagine <code>nums[-1] = nums[n] = 1</code>. They are not real therefore you can not burst them.<br>
+    (2) 0 &#8804; <code>n</code> &#8804; 500, 0 &#8804; <code>nums[i]</code> &#8804; 100
+</p>
+
+
+<p>
+    <b>Example:</b>
+</p>
+<p>
+    Given <code>[3, 1, 5, 8]</code>
+</p>
+<p>
+    Return <code>167</code>
+</p>
+<pre>
+    nums = [3,1,5,8] --&gt; [3,5,8] --&gt;   [3,8]   --&gt;  [8]  --&gt; []
+   coins =  3*1*5      +  3*5*8    +  1*3*8      + 1*8*1   = 167
+</pre>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/dietpepsi">@dietpepsi</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/divide-and-conquer/">Divide and Conquer</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p><strong>See <a rel="nofollow" href="http://algobox.org/burst-balloons/">here for a better view</a></strong></p>
+
+<p><strong>Be Naive First</strong></p>
+
+<p>When I first get this problem, it is far from dynamic programming to me. I started with the most naive idea the backtracking.</p>
+
+<p>We have n balloons to burst, which mean we have n steps in the game. In the i th step we have n-i balloons to burst, i = 0~n-1. Therefore we are looking at an algorithm of O(n!). Well, it is slow, probably works for n &lt; 12 only.</p>
+
+<p>Of course this is not the point to implement it. We need to identify the redundant works we did in it and try to optimize.</p>
+
+<p>Well, we can find that for any balloons left the maxCoins does not depends on the balloons already bursted. This indicate that we can use memorization (top down) or dynamic programming (bottom up) for all the cases from small numbers of balloon until n balloons. How many cases are there?  For k balloons there are C(n, k) cases and for each case it need to scan the k balloons to compare. The sum is quite big still. It is better than O(n!) but worse than O(2^n).</p>
+
+<p><strong>Better idea</strong></p>
+
+<p>We then think can we apply the divide and conquer technique? After all there seems to be many self similar sub problems from the previous analysis.</p>
+
+<p>Well,  the nature way to divide the problem is burst one balloon and separate the balloons into 2 sub sections one on the left and one one the right. However, in this problem the left and right become adjacent and have effects on the maxCoins in the future.</p>
+
+<p>Then another interesting idea come up. Which is quite often seen in dp problem analysis. That is reverse thinking. Like I said the coins you get for a balloon does not depend on the balloons already burst. Therefore
+instead of divide the problem by the first balloon to burst, we divide the problem by the last balloon to burst. </p>
+
+<p>Why is that? Because only the first and last balloons we are sure of their adjacent balloons before hand!</p>
+
+<p>For the first we have <code>nums[i-1]*nums[i]*nums[i+1]</code> for the last we have <code>nums[-1]*nums[i]*nums[n]</code>.</p>
+
+<p>OK. Think about n balloons if i is the last one to burst, what now?</p>
+
+<p>We can see that the balloons is again separated into 2 sections. But this time since the balloon i is the last balloon of all to burst, the left and right section now has well defined boundary and do not affect each other! Therefore we can do either recursive method with memoization or dp.</p>
+
+<p><strong>Final</strong></p>
+
+<p>Here comes the final solutions. Note that we put 2 balloons with 1 as boundaries and also burst all the zero balloons in the first round since they won't give any coins.
+The algorithm runs in O(n^3) which can be easily seen from the 3 loops in dp solution.</p>
+
+<p><strong>Java D&amp;C with Memoization</strong></p>
+
+<pre><code>public int maxCoins(int[] iNums) {
+    int[] nums = new int[iNums.length + 2];
+    int n = 1;
+    for (int x : iNums) if (x &gt; 0) nums[n++] = x;
+    nums[0] = nums[n++] = 1;
+
+
+    int[][] memo = new int[n][n];
+    return burst(memo, nums, 0, n - 1);
+}
+
+public int burst(int[][] memo, int[] nums, int left, int right) {
+    if (left + 1 == right) return 0;
+    if (memo[left][right] &gt; 0) return memo[left][right];
+    int ans = 0;
+    for (int i = left + 1; i &lt; right; ++i)
+        ans = Math.max(ans, nums[left] * nums[i] * nums[right] 
+        + burst(memo, nums, left, i) + burst(memo, nums, i, right));
+    memo[left][right] = ans;
+    return ans;
+}
+// 12 ms
+</code></pre>
+
+<p><strong>Java DP</strong></p>
+
+<pre><code>public int maxCoins(int[] iNums) {
+    int[] nums = new int[iNums.length + 2];
+    int n = 1;
+    for (int x : iNums) if (x &gt; 0) nums[n++] = x;
+    nums[0] = nums[n++] = 1;
+
+
+    int[][] dp = new int[n][n];
+    for (int k = 2; k &lt; n; ++k)
+        for (int left = 0; left &lt; n - k; ++left) {
+            int right = left + k;
+            for (int i = left + 1; i &lt; right; ++i)
+                dp[left][right] = Math.max(dp[left][right], 
+                nums[left] * nums[i] * nums[right] + dp[left][i] + dp[i][right]);
+        }
+
+    return dp[0][n - 1];
+}
+// 17 ms
+</code></pre>
+
+<p><strong>C++ DP</strong></p>
+
+<pre><code>int maxCoinsDP(vector&lt;int&gt; &amp;iNums) {
+    int nums[iNums.size() + 2];
+    int n = 1;
+    for (int x : iNums) if (x &gt; 0) nums[n++] = x;
+    nums[0] = nums[n++] = 1;
+
+
+    int dp[n][n] = {};
+    for (int k = 2; k &lt; n; ++k) {
+        for (int left = 0; left &lt; n - k; ++left)
+            int right = left + k;
+            for (int i = left + 1; i &lt; right; ++i)
+                dp[left][right] = max(dp[left][right],
+                     nums[left] * nums[i] * nums[right] + dp[left][i] + dp[i][right]);
+        }
+
+    return dp[0][n - 1];
+}
+// 16 ms
+</code></pre>
+
+<p><strong>Python DP</strong></p>
+
+<pre><code>def maxCoins(self, iNums):
+    nums = [1] + [i for i in iNums if i &gt; 0] + [1]
+    n = len(nums)
+    dp = [[0]*n for _ in xrange(n)]
+
+    for k in xrange(2, n):
+        for left in xrange(0, n - k):
+            right = left + k
+            for i in xrange(left + 1,right):
+                dp[left][right] = max(dp[left][right],
+                       nums[left] * nums[i] * nums[right] + dp[left][i] + dp[i][right])
+    return dp[0][n - 1]
+
+# 528ms
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dietpepsi">dietpepsi</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/72216/share-some-analysis-and-explanations">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>int maxCoins(vector&lt;int&gt;&amp; nums) {
+    int N = nums.size();
+    nums.insert(nums.begin(), 1);
+    nums.insert(nums.end(), 1);
+
+    // rangeValues[i][j] is the maximum # of coins that can be obtained
+    // by popping balloons only in the range [i,j]
+    vector&lt;vector&lt;int&gt;&gt; rangeValues(nums.size(), vector&lt;int&gt;(nums.size(), 0));
+
+    // build up from shorter ranges to longer ranges
+    for (int len = 1; len &lt;= N; ++len) {
+        for (int start = 1; start &lt;= N - len + 1; ++start) {
+            int end = start + len - 1;
+            // calculate the max # of coins that can be obtained by
+            // popping balloons only in the range [start,end].
+            // consider all possible choices of final balloon to pop
+            int bestCoins = 0;
+            for (int final = start; final &lt;= end; ++final) {
+                int coins = rangeValues[start][final-1] + rangeValues[final+1][end]; // coins from popping subranges
+                coins += nums[start-1] * nums[final] * nums[end+1]; // coins from final pop
+                if (coins &gt; bestCoins) bestCoins = coins;
+            }
+            rangeValues[start][end] = bestCoins;
+        }
+    }
+    return rangeValues[1][N];
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/The_Duck">The_Duck</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/72186/c-dynamic-programming-o-n-3-32-ms-with-comments">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>This solution is inspired by The_Duck with his C++ solution</p>
+
+<p>https://leetcode.com/discuss/72186/c-dynamic-programming-o-n-3-1100-ms-with-comments</p>
+
+<p>However, I would give an explanation based on my own understanding. </p>
+
+<p>The basic idea is that we can find the maximal coins of a subrange by trying every possible final burst within that range. Final burst means that we should burst balloon i as the very last one and burst all the other balloons in whatever order. dp[i][j] means the maximal coins for range [i...j]. In this case, our final answer is dp[0][nums.length - 1]. </p>
+
+<p>When finding the maximal coins within a range [start...end], since balloon i is the last one to burst, we know that in previous steps we have already got maximal coins of range[start .. i - 1] and range[i + 1 .. start], and the last step is to burst ballon i and get the product of balloon to the left of i, balloon i, and ballon to the right of i. In this case, balloon to the left/right of i is balloon start - 1 and balloon end + 1. Why? Why not choosing other balloon in range [0...start - 1] and [end + 1...length] because the maximal coins may need other balloon as final burst?</p>
+
+<p>In my opinion, it's because this subrange will only be used by a larger range when it's trying for every possible final burst. It will be like [larger start.....start - 1, [start .. end] end + 1/ larger end], when final burst is at index start - 1, the result of this sub range will be used, and at this moment, start - 1 will be there because it's the final burst and end + 1 will also be there because is out of range. Then we can guarantee start - 1 and end + 1 will be there as adjacent balloons of balloon i for coins. That's the answer for the question in previous paragraph.</p>
+
+<pre><code>public class Solution {
+public int maxCoins(int[] nums) {
+    if (nums == null || nums.length == 0) return 0;
+
+    int[][] dp = new int[nums.length][nums.length];
+    for (int len = 1; len &lt;= nums.length; len++) {
+        for (int start = 0; start &lt;= nums.length - len; start++) {
+            int end = start + len - 1;
+            for (int i = start; i &lt;= end; i++) {
+                int coins = nums[i] * getValue(nums, start - 1) * getValue(nums, end + 1);
+                coins += i != start ? dp[start][i - 1] : 0; // If not first one, we can add subrange on its left.
+                coins += i != end ? dp[i + 1][end] : 0; // If not last one, we can add subrange on its right
+                dp[start][end] = Math.max(dp[start][end], coins);
+            }
+        }
+    }
+    return dp[0][nums.length - 1];
+}
+
+private int getValue(int[] nums, int i) { // Deal with num[-1] and num[num.length]
+    if (i &lt; 0 || i &gt;= nums.length) {
+        return 1;
+    }
+    return nums[i];
+}
+</code></pre>
+
+<p>}</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Alexpanda">Alexpanda</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/72215/java-dp-solution-with-detailed-explanation-o-n-3">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

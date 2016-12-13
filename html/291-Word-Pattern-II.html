@@ -1,0 +1,209 @@
+<!DOCTYPE html><html><head><title>Word Pattern II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c755fd1aae28585752fc" data-set="true" class="title">Word Pattern II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a <code>pattern</code> and a string <code>str</code>, find if <code>str</code> follows the same pattern.</p>
+<p> Here <b>follow</b> means a full match, such that there is a bijection between a letter in <code>pattern</code> and a <b>non-empty</b> substring in <code>str</code>.</p>
+<p>
+<b>Examples:</b><br>
+</p><ol>
+<li>pattern = <code>"abab"</code>, str = <code>"redblueredblue"</code> should return true.</li>
+<li>pattern = <code>"aaaa"</code>, str = <code>"asdasdasdasd"</code> should return true.</li>
+<li>pattern = <code>"aabb"</code>, str = <code>"xyzabcxzyabc"</code> should return false.</li>
+</ol>
+
+
+<p>
+<b>Notes:</b><br>
+You may assume both <code>pattern</code> and <code>str</code> contains only lowercase letters.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/dropbox/">Dropbox</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#word-pattern"> (E) Word Pattern</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>We can solve this problem using backtracking, we just have to keep trying to use a character in the pattern to match different length of substrings in the input string, keep trying till we go through the input string and the pattern.</p>
+
+<p>For example, input string is <code>"redblueredblue"</code>, and the pattern is <code>"abab"</code>, first let's use <code>'a'</code> to match <code>"r"</code>, <code>'b'</code> to match <code>"e"</code>, then we find that <code>'a'</code> does not match <code>"d"</code>, so we do backtracking, use <code>'b'</code> to match <code>"ed"</code>, so on and so forth ...</p>
+
+<p>When we do the recursion, if the pattern character exists in the hash map already, we just have to see if we can use it to match the same length of the string. For example, let's say we have the following map:</p>
+
+<p><code>'a': "red"</code></p>
+
+<p><code>'b': "blue"</code></p>
+
+<p>now when we see <code>'a'</code> again, we know that it should match <code>"red"</code>, the length is <code>3</code>, then let's see if <code>str[i ... i+3]</code> matches <code>'a'</code>, where <code>i</code> is the current index of the input string. Thanks to <a rel="nofollow" href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a>'s suggestion, in Java we can elegantly use <code>str.startsWith(s, i)</code> to do the check.</p>
+
+<p>Also thanks to <a rel="nofollow" href="https://leetcode.com/discuss/user/i-tikhonov">i-tikhonov</a>'s suggestion, we can use a hash set to avoid duplicate matches, if character <code>a</code> matches string <code>"red"</code>, then character <code>b</code> cannot be used to match <code>"red"</code>. In my opinion though, we can say apple (pattern <code>'a'</code>) is "fruit", orange (pattern <code>'o'</code>) is "fruit", so they can match the same string, anyhow, I guess it really depends on how the problem states.</p>
+
+<p>The following code should pass OJ now, if we don't need to worry about the duplicate matches, just remove the code that associates with the hash set.</p>
+
+<pre><code>public class Solution {
+
+  public boolean wordPatternMatch(String pattern, String str) {
+    Map&lt;Character, String&gt; map = new HashMap&lt;&gt;();
+    Set&lt;String&gt; set = new HashSet&lt;&gt;();
+
+    return isMatch(str, 0, pattern, 0, map, set);
+  }
+
+  boolean isMatch(String str, int i, String pat, int j, Map&lt;Character, String&gt; map, Set&lt;String&gt; set) {
+    // base case
+    if (i == str.length() &amp;&amp; j == pat.length()) return true;
+    if (i == str.length() || j == pat.length()) return false;
+
+    // get current pattern character
+    char c = pat.charAt(j);
+
+    // if the pattern character exists
+    if (map.containsKey(c)) {
+      String s = map.get(c);
+
+      // then check if we can use it to match str[i...i+s.length()]
+      if (!str.startsWith(s, i)) {
+        return false;
+      }
+
+      // if it can match, great, continue to match the rest
+      return isMatch(str, i + s.length(), pat, j + 1, map, set);
+    }
+
+    // pattern character does not exist in the map
+    for (int k = i; k &lt; str.length(); k++) {
+      String p = str.substring(i, k + 1);
+
+      if (set.contains(p)) {
+        continue;
+      }
+
+      // create or update it
+      map.put(c, p);
+      set.add(p);
+
+      // continue to match the rest
+      if (isMatch(str, k + 1, pat, j + 1, map, set)) {
+        return true;
+      }
+
+      // backtracking
+      map.remove(c);
+      set.remove(p);
+    }
+
+    // we've tried our best but still no luck
+    return false;
+  }
+
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jeantimex">jeantimex</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/63252/share-my-java-backtracking-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+Map&lt;Character,String&gt; map =new HashMap();
+Set&lt;String&gt; set =new HashSet();
+public boolean wordPatternMatch(String pattern, String str) {
+    if(pattern.isEmpty()) return str.isEmpty();
+    if(map.containsKey(pattern.charAt(0))){
+        String value= map.get(pattern.charAt(0));
+        if(str.length()&lt;value.length() || !str.substring(0,value.length()).equals(value)) return false;
+        if(wordPatternMatch(pattern.substring(1),str.substring(value.length()))) return true;
+    }else{
+        for(int i=1;i&lt;=str.length();i++){
+            if(set.contains(str.substring(0,i))) continue;
+            map.put(pattern.charAt(0),str.substring(0,i));
+            set.add(str.substring(0,i));
+            if(wordPatternMatch(pattern.substring(1),str.substring(i))) return true;
+            set.remove(str.substring(0,i));
+            map.remove(pattern.charAt(0));
+        }
+    }
+    return false;
+}
+</code></pre>
+
+<p>}</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/DREAM123">DREAM123</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/63393/20-lines-java-clean-solution-easy-to-understand">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    unordered_map&lt;char, string&gt; pDict;
+    unordered_map&lt;string, char&gt; sDict;
+    bool wordPatternMatch(string pattern, string str) {
+        return match(pattern, 0, str, 0);
+    }
+
+    bool match(string &amp;pattern, int i, string &amp;str, int j) {
+        int m = pattern.size();
+        int n = str.size();
+        if (i == m || j == n) {
+            if (i == m &amp;&amp; j == n)
+                return true;
+            return false;
+        }
+        bool ins = false;
+        for (int k = j; k &lt; n; k++) {
+            string s = str.substr(j, k - j + 1);
+            if (pDict.find(pattern[i]) != pDict.end()) {
+                if (pDict[pattern[i]] != s)
+                    continue;
+            } else if (sDict.find(s) != sDict.end()) {
+                if (sDict[s] != pattern[i])
+                    continue;
+            } else {
+                pDict[pattern[i]] = s;
+                sDict[s] = pattern[i];
+                ins = true;
+            }
+            if (match(pattern, i + 1, str, k + 1))
+                return true;
+            if (ins) {
+                pDict.erase(pattern[i]);
+                sDict.erase(s);
+            }
+        }
+        return false;
+    }
+};
+</code></pre>
+
+<p>C++ backtracking. ins indicates whether current round has inserted new mapping pair.
+edited with two maps to ensure on-to-one mapping.
+. </p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/lightmark">lightmark</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/63263/share-my-c-backtracking-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

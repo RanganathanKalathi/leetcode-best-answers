@@ -1,0 +1,259 @@
+<!DOCTYPE html><html><head><title>Remove Invalid Parentheses</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c70dfd1aae28585752f2" data-set="true" class="title">Remove Invalid Parentheses</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.</p>
+
+<p>Note: The input string may contain letters other than the parentheses <code>(</code> and <code>)</code>. 
+</p>
+
+<p>
+<b>Examples:</b><br>
+</p><pre>
+"()())()" -&gt; ["()()()", "(())()"]
+"(a)())()" -&gt; ["(a)()()", "(a())()"]
+")(" -&gt; [""]
+</pre>
+
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/hpplayer">@hpplayer</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/facebook/">Facebook</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/depth-first-search/">Depth-first Search</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/breadth-first-search/">Breadth-first Search</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#valid-parentheses"> (E) Valid Parentheses</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The idea is straightforward, with the input string <code>s</code>, we generate all possible states by removing one <code>(</code> or <code>)</code>, check if they are valid, if found valid ones on the current level, put them to the final result list and we are done, otherwise, add them to a queue and carry on to the next level. </p>
+
+<p>The good thing of using BFS is that we can guarantee the number of parentheses that need to be removed is minimal, also no recursion call is needed in BFS.</p>
+
+<p>Thanks to <a rel="nofollow" href="https://leetcode.com/discuss/user/peisi">@peisi</a>, we don't need stack to check valid parentheses.</p>
+
+<p>Time complexity: </p>
+
+<p>In BFS we handle the states level by level, in the worst case, we need to handle all the levels, we can analyze the time complexity level by level and add them up to get the final complexity. </p>
+
+<p>On the first level, there's only one string which is the input string <code>s</code>, let's say the length of it is <code>n</code>, to check whether it's valid, we need <code>O(n)</code> time. On the second level, we remove one <code>(</code> or <code>)</code> from the first level, so there are <code>C(n, n-1)</code> new strings, each of them has <code>n-1</code> characters, and for each string, we need to check whether it's valid or not, thus the total time complexity on this level is <code>(n-1)</code> x <code>C(n, n-1)</code>. Come to the third level, total time complexity is <code>(n-2)</code> x <code>C(n, n-2)</code>, so on and so forth...</p>
+
+<p>Finally we have this formula: </p>
+
+<p><code>T(n)</code> = <code>n</code> x <code>C(n, n)</code> + <code>(n-1)</code> x <code>C(n, n-1)</code> + ... + <code>1</code> x <code>C(n, 1)</code> = <code>n</code> x <code>2^(n-1)</code>.</p>
+
+<p>Following is the Java solution:</p>
+
+<pre><code>public class Solution {
+    public List&lt;String&gt; removeInvalidParentheses(String s) {
+      List&lt;String&gt; res = new ArrayList&lt;&gt;();
+
+      // sanity check
+      if (s == null) return res;
+
+      Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+      Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+
+      // initialize
+      queue.add(s);
+      visited.add(s);
+
+      boolean found = false;
+
+      while (!queue.isEmpty()) {
+        s = queue.poll();
+
+        if (isValid(s)) {
+          // found an answer, add to the result
+          res.add(s);
+          found = true;
+        }
+
+        if (found) continue;
+
+        // generate all possible states
+        for (int i = 0; i &lt; s.length(); i++) {
+          // we only try to remove left or right paren
+          if (s.charAt(i) != '(' &amp;&amp; s.charAt(i) != ')') continue;
+
+          String t = s.substring(0, i) + s.substring(i + 1);
+
+          if (!visited.contains(t)) {
+            // for each state, if it's not visited, add it to the queue
+            queue.add(t);
+            visited.add(t);
+          }
+        }
+      }
+
+      return res;
+    }
+
+    // helper function checks if string s contains valid parantheses
+    boolean isValid(String s) {
+      int count = 0;
+
+      for (int i = 0; i &lt; s.length(); i++) {
+        char c = s.charAt(i);
+        if (c == '(') count++;
+        if (c == ')' &amp;&amp; count-- == 0) return false;
+      }
+
+      return count == 0;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jeantimex">jeantimex</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/67842/share-my-java-bfs-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Here I share my <code>DFS</code> or <code>backtracking</code> solution. It's <code>10X</code> faster than optimized <code>BFS</code>.</p>
+
+<ol>
+<li>Limit max removal  <code>rmL</code> and  <code>rmR</code> for backtracking boundary. Otherwise it will exhaust all possible valid substrings, not shortest ones.</li>
+<li>Scan from left to right, avoiding invalid strs (on the fly) by checking num of <code>open</code> parens.</li>
+<li>If it's <code>'('</code>, either use it, or remove it.</li>
+<li>If it's <code>'('</code>, either use it, or remove it.</li>
+<li>Otherwise just append it.</li>
+<li>Lastly set <code>StringBuilder</code> to the last decision point.</li>
+</ol>
+
+<p>In each step, make sure:</p>
+
+<ol>
+<li><code>i</code> does not exceed <code>s.length()</code>.</li>
+<li>Max removal <code>rmL</code> <code>rmR</code> and num of <code>open</code> parens are non negative.</li>
+<li>De-duplicate by adding to a <code>HashSet</code>.</li>
+</ol>
+
+<p>Compared to <code>106 ms</code> <code>BFS (Queue &amp; Set)</code>, it's faster and easier. Hope it helps! Thanks.
+</p><hr>
+
+<pre><code>public List&lt;String&gt; removeInvalidParentheses(String s) {
+    Set&lt;String&gt; res = new HashSet&lt;&gt;();
+    int rmL = 0, rmR = 0;
+    for(int i = 0; i &lt; s.length(); i++) {
+        if(s.charAt(i) == '(') rmL++;
+        if(s.charAt(i) == ')') {
+            if(rmL != 0) rmL--;
+            else rmR++;
+        }
+    }
+    DFS(res, s, 0, rmL, rmR, 0, new StringBuilder());
+    return new ArrayList&lt;String&gt;(res);  
+}
+
+public void DFS(Set&lt;String&gt; res, String s, int i, int rmL, int rmR, int open, StringBuilder sb) {
+    if(i == s.length() &amp;&amp; rmL == 0 &amp;&amp; rmR == 0 &amp;&amp; open == 0) {
+        res.add(sb.toString());
+        return;
+    }
+    if(i == s.length() || rmL &lt; 0 || rmR &lt; 0 || open &lt; 0) return;
+
+    char c = s.charAt(i);
+    int len = sb.length();
+
+    if(c == '(') {
+        DFS(res, s, i + 1, rmL - 1, rmR, open, sb);
+        DFS(res, s, i + 1, rmL, rmR, open + 1, sb.append(c)); 
+
+    } else if(c == ')') {
+        DFS(res, s, i + 1, rmL, rmR - 1, open, sb);
+        DFS(res, s, i + 1, rmL, rmR, open - 1, sb.append(c));
+
+    } else {
+        DFS(res, s, i + 1, rmL, rmR, open, sb.append(c)); 
+    }
+
+    sb.setLength(len);
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yavinci">yavinci</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/72208/easiest-9ms-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    vector&lt;string&gt; removeInvalidParentheses(string s) {
+        unordered_set&lt;string&gt; result;
+        int left_removed = 0;
+        int right_removed = 0;
+        for(auto c : s) {
+            if(c == '(') {
+                ++left_removed;
+            }
+            if(c == ')') {
+                if(left_removed != 0) {
+                    --left_removed;
+                }
+                else {
+                    ++right_removed;
+                }
+            }
+        }
+        helper(s, 0, left_removed, right_removed, 0, "", result);
+        return vector&lt;string&gt;(result.begin(), result.end());
+    }
+private:
+    void helper(string s, int index, int left_removed, int right_removed, int pair, string path, unordered_set&lt;string&gt;&amp; result) {
+        if(index == s.size()) {
+            if(left_removed == 0 &amp;&amp; right_removed == 0 &amp;&amp; pair == 0) {
+                result.insert(path);
+            }
+            return;
+        }
+        if(s[index] != '(' &amp;&amp; s[index] != ')') {
+            helper(s, index + 1, left_removed, right_removed, pair, path + s[index], result);
+        }
+        else {
+            if(s[index] == '(') {
+                if(left_removed &gt; 0) {
+                    helper(s, index + 1, left_removed - 1, right_removed, pair, path, result);
+                }
+                helper(s, index + 1, left_removed, right_removed, pair + 1, path + s[index], result);
+            }
+            if(s[index] == ')') {
+                if(right_removed &gt; 0) {
+                    helper(s, index + 1, left_removed, right_removed - 1, pair, path, result);
+                }
+                if(pair &gt; 0) {
+                    helper(s, index + 1, left_removed, right_removed, pair - 1, path + s[index], result);
+                }
+            }
+        }
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/ethan_noc">ethan_noc</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/67853/my-c-dfs-solution-16ms">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

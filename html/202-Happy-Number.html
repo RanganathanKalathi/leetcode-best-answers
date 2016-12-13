@@ -1,0 +1,140 @@
+<!DOCTYPE html><html><head><title>Happy Number</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2ca03fd1aae2858575354" data-set="true" class="title">Happy Number</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Write an algorithm to determine if a number is "happy".</p>
+
+<p>A happy number is a number defined by the following process: Starting with any positive integer, replace the number by the sum of the squares of its digits, and repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1. Those numbers for which this process ends in 1 are happy numbers.</p>
+
+<p><b>Example:&#160;</b>19 is a happy number</p>
+
+<ul style="list-style: none;">
+<li>1<sup>2</sup> + 9<sup>2</sup> = 82</li>
+<li>8<sup>2</sup> + 2<sup>2</sup> = 68</li>
+<li>6<sup>2</sup> + 8<sup>2</sup> = 100</li>
+<li>1<sup>2</sup> + 0<sup>2</sup> + 0<sup>2</sup> = 1</li>
+</ul>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/mithmatt">@mithmatt</a> and <a href="https://leetcode.com/discuss/user/ts">@ts</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#add-digits"> (E) Add Digits</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#ugly-number"> (E) Ugly Number</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>I see the majority of those posts use hashset to record values. Actually, we can simply adapt the Floyd Cycle detection algorithm. I believe that many people have seen this in the Linked List Cycle detection problem. The following is my code:</p>
+
+<pre><code>int digitSquareSum(int n) {
+    int sum = 0, tmp;
+    while (n) {
+        tmp = n % 10;
+        sum += tmp * tmp;
+        n /= 10;
+    }
+    return sum;
+}
+
+bool isHappy(int n) {
+    int slow, fast;
+    slow = fast = n;
+    do {
+        slow = digitSquareSum(slow);
+        fast = digitSquareSum(fast);
+        fast = digitSquareSum(fast);
+    } while(slow != fast);
+    if (slow == 1) return 1;
+    else return 0;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Freezen">Freezen</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/33055/my-solution-in-c-o-1-space-and-no-magic-math-property-involved">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public boolean isHappy(int n) {
+        int x = n;
+        int y = n;
+        while(x&gt;1){
+            x = cal(x) ;
+            if(x==1) return true ;
+            y = cal(cal(y));
+            if(y==1) return true ;
+
+            if(x==y) return false;
+        }
+        return true ;
+    }
+    public int cal(int n){
+        int x = n;
+        int s = 0;
+        while(x&gt;0){
+            s = s+(x%10)*(x%10);
+            x = x/10;
+        }
+        return s ;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/ibmtp380">ibmtp380</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/33349/o-1-space-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>The idea is to use one hash set to record sum of every digit square of every number occurred. Once the current sum cannot be added to set, return false; once the current sum equals 1, return true;</p>
+
+<pre><code>public boolean isHappy(int n) {
+    Set&lt;Integer&gt; inLoop = new HashSet&lt;Integer&gt;();
+    int squareSum,remain;
+    while (inLoop.add(n)) {
+        squareSum = 0;
+        while (n &gt; 0) {
+            remain = n%10;
+            squareSum += remain*remain;
+            n /= 10;
+        }
+        if (squareSum == 1)
+            return true;
+        else
+            n = squareSum;
+
+    }
+    return false;
+
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/mo10">mo10</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/59684/beat-easy-understand-java-solution-with-brief-explanation">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

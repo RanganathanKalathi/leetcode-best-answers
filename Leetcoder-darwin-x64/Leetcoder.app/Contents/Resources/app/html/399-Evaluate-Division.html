@@ -1,0 +1,208 @@
+<!DOCTYPE html><html><head><title>Evaluate Division  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57de394d9cbe5e5c585a7c14" data-set="true" class="title">Evaluate Division  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Equations are given in the format <code>A / B = k</code>, where  <code>A</code> and <code>B</code> are variables represented as strings, and <code>k</code> is a real number (floating point number). Given some queries, return the answers. If the answer does not exist, return <code>-1.0</code>.
+</p>
+<p><b>Example:</b><br>
+Given <code> a / b = 2.0, b / c = 3.0.</code> <br>queries are: <code> a / c = ?,  b / a = ?, a / e = ?,  a / a = ?, x / x = ? .</code> <br>return <code> [6.0, 0.5, -1.0, 1.0, -1.0 ].</code>
+</p>
+<p>
+The input is: <code> vector&lt;pair&lt;string, string&gt;&gt; equations, vector&lt;double&gt;&amp; values, vector&lt;pair&lt;string, string&gt;&gt; queries </code>, where <code>equations.size() == values.size()</code>, and the values are positive. This represents the equations. Return <code> vector&lt;double&gt;</code>.
+</p>
+
+<p>According to the example above:
+</p><pre>equations = [ ["a", "b"], ["b", "c"] ],
+values = [2.0, 3.0],
+queries = [ ["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"] ]. </pre>
+
+
+<p>
+The input is always valid. You may assume that evaluating the queries will result in no division by zero and there is no contradiction.
+</p>
+              
+                <div>
+                  <p><a href="/subscribe/">Subscribe</a> to see which companies asked this question</p>
+                </div>
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/graph/">Graph</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Image a/b = k as a link between node a and c, the weight from a to c is k, the reverse link  is 1/k. Query is to find a path between two node.</p>
+<pre><code>    public double[] calcEquation(String[][] equations, double[] values, String[][] queries) {
+        HashMap&lt;String, ArrayList&lt;String&gt;&gt; pairs = new HashMap&lt;String, ArrayList&lt;String&gt;&gt;();
+        HashMap&lt;String, ArrayList&lt;Double&gt;&gt; valuesPair = new HashMap&lt;String, ArrayList&lt;Double&gt;&gt;();
+        for (int i = 0; i &lt; equations.length; i++) {
+            String[] equation = equations[i];
+            if (!pairs.containsKey(equation[0])) {
+                pairs.put(equation[0], new ArrayList&lt;String&gt;());
+                valuesPair.put(equation[0], new ArrayList&lt;Double&gt;());
+            }
+            if (!pairs.containsKey(equation[1])) {
+                pairs.put(equation[1], new ArrayList&lt;String&gt;());
+                valuesPair.put(equation[1], new ArrayList&lt;Double&gt;());
+            }
+            pairs.get(equation[0]).add(equation[1]);
+            pairs.get(equation[1]).add(equation[0]);
+            valuesPair.get(equation[0]).add(values[i]);
+            valuesPair.get(equation[1]).add(1/values[i]);
+        }
+        
+        double[] result = new double[queries.length];
+        for (int i = 0; i &lt; queries.length; i++) {
+            String[] query = queries[i];
+            result[i] = dfs(query[0], query[1], pairs, valuesPair, new HashSet&lt;String&gt;(), 1.0);
+            if (result[i] == 0.0) result[i] = -1.0;
+        }
+        return result;
+    }
+    
+    private double dfs(String start, String end, HashMap&lt;String, ArrayList&lt;String&gt;&gt; pairs, HashMap&lt;String, ArrayList&lt;Double&gt;&gt; values, HashSet&lt;String&gt; set, double value) {
+        if (set.contains(start)) return 0.0;
+        if (!pairs.containsKey(start)) return 0.0;
+        if (start.equals(end)) return value;
+        set.add(start);
+        
+        ArrayList&lt;String&gt; strList = pairs.get(start);
+        ArrayList&lt;Double&gt; valueList = values.get(start);
+        double tmp = 0.0;
+        for (int i = 0; i &lt; strList.size(); i++) {
+            tmp = dfs(strList.get(i), end, pairs, values, set, value*valueList.get(i));
+            if (tmp != 0.0) {
+                break;
+            }
+        }
+        set.remove(start);
+        return tmp;
+    }</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/helloc93">helloc93</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/59146/java-ac-solution-using-graph">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>A variation of <a href="https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm" rel="nofollow"><strong>Floyd&#8211;Warshall</strong></a>, computing quotients instead of shortest paths. An equation <code>A/B=k</code> is like a graph edge <code>A-&gt;B</code>, and <code>(A/B)*(B/C)*(C/D)</code> is like the path <code>A-&gt;B-&gt;C-&gt;D</code>. Submitted once, accepted in 35 ms.</p>
+<pre><code>def calcEquation(self, equations, values, queries):
+    quot = collections.defaultdict(dict)
+    for (num, den), val in zip(equations, values):
+        quot[num][num] = quot[den][den] = 1.0
+        quot[num][den] = val
+        quot[den][num] = 1 / val
+    for k, i, j in itertools.permutations(quot, 3):
+        if k in quot[i] and j in quot[k]:
+            quot[i][j] = quot[i][k] * quot[k][j]
+    return [quot[num].get(den, -1.0) for num, den in queries]
+</code></pre>
+<p><br/>
+</p><p>Variation without the <code>if</code> (submitted twice, accepted in 68 and 39 ms):</p>
+<pre><code>def calcEquation(self, equations, values, queries):
+    quot = collections.defaultdict(dict)
+    for (num, den), val in zip(equations, values):
+        quot[num][num] = quot[den][den] = 1.0
+        quot[num][den] = val
+        quot[den][num] = 1 / val
+    for k in quot:
+        for i in quot[k]:
+            for j in quot[k]:
+                quot[i][j] = quot[i][k] * quot[k][j]
+    return [quot[num].get(den, -1.0) for num, den in queries]
+</code></pre>
+<p>Could save a line with <code>for i, j in itertools.permutations(quot[k], 2)</code> but it's longer and I don't like it as much here.</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/58482/9-lines-floyd-warshall-in-python">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>class Solution 
+{
+    // date: 2016-09-12     location: Santa Clara City Library
+public:
+    vector&lt;double&gt; calcEquation(vector&lt;pair&lt;string, string&gt;&gt; equations, vector&lt;double&gt;&amp; values, vector&lt;pair&lt;string, string&gt;&gt; queries) 
+    {
+        unordered_map&lt;string, Node*&gt; map;
+        vector&lt;double&gt; res;
+        for (int i = 0; i &lt; equations.size(); i ++)
+        {
+            string s1 = equations[i].first, s2 = equations[i].second;
+            if (map.count(s1) == 0 &amp;&amp; map.count(s2) == 0)
+            {
+                map[s1] = new Node();
+                map[s2] = new Node();
+                map[s1] -&gt; value = values[i];
+                map[s2] -&gt; value = 1;
+                map[s1] -&gt; parent = map[s2];
+            }
+            else if (map.count(s1) == 0)
+            {
+                map[s1] = new Node();
+                map[s1] -&gt; value = map[s2] -&gt; value * values[i];
+                map[s1] -&gt; parent = map[s2];
+            }
+            else if (map.count(s2) == 0)
+            {
+                map[s2] = new Node();
+                map[s2] -&gt; value = map[s1] -&gt; value / values[i];
+                map[s2] -&gt; parent = map[s1];
+            }
+            else
+                unionNodes(map[s1], map[s2], values[i], map);
+        }
+
+        for (auto query : queries)
+        {
+            if (map.count(query.first) == 0 || map.count(query.second) == 0 || findParent(map[query.first]) != findParent(map[query.second]))
+                res.push_back(-1);
+            else
+                res.push_back(map[query.first] -&gt; value / map[query.second] -&gt; value);
+        }
+        return res;
+    }
+    
+private:
+    struct Node
+    {
+        Node* parent;
+        double value = 0.0;
+        Node()  {parent = this;}
+    };
+    
+    void unionNodes(Node* node1, Node* node2, double num, unordered_map&lt;string, Node*&gt;&amp; map)
+    {
+        Node* parent1 = findParent(node1), *parent2 = findParent(node2);
+        double ratio = node2 -&gt; value * num / node1 -&gt; value;
+        for (auto it = map.begin(); it != map.end(); it ++)
+            if (findParent(it -&gt; second) == parent1)
+                it -&gt; second -&gt; value *= ratio;
+        parent1 -&gt; parent = parent2;
+    }
+    
+    Node* findParent(Node* node)
+    {
+        if (node -&gt; parent == node)
+            return node;
+        node -&gt; parent = findParent(node -&gt; parent);
+        return node -&gt; parent;
+    }
+};
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/mad_air">Mad_air</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/58577/0ms-c-union-find-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><title>Longest Substring Without Repeating Characters</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2d098fd1aae285857540b" data-set="true" class="title">Longest Substring Without Repeating Characters</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a string, find the length of the longest substring without repeating characters. For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3. For "bbbbb" the longest substring is "b", with the length of 1.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/bloomberg/">Bloomberg</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/two-pointers/">Two Pointers</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#longest-substring-with-at-most-two-distinct-characters"> (H) Longest Substring with At Most Two Distinct Characters</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>the basic idea is, keep a hashmap which stores the characters in string as keys and their positions as values, and keep two pointers which define the max substring. move the right pointer to scan through the string , and meanwhile update the hashmap. If the character is already in the hashmap, then move the left pointer to the right of the same character last found. Note that the two pointers can only move forward. </p>
+
+<pre><code>   public int lengthOfLongestSubstring(String s) {
+        if (s.length()==0) return 0;
+        HashMap&lt;Character, Integer&gt; map = new HashMap&lt;Character, Integer&gt;();
+        int max=0;
+        for (int i=0, j=0; i&lt;s.length(); ++i){
+            if (map.containsKey(s.charAt(i))){
+                j = Math.max(j,map.get(s.charAt(i))+1);
+            }
+            map.put(s.charAt(i),i);
+            max = Math.max(max,i-j+1);
+        }
+        return max;
+    }
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/cbmbbz">cbmbbz</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/23883/11-line-simple-java-solution-o-n-with-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>/**
+ * Solution (DP, O(n)):
+ * 
+ * Assume L[i] = s[m...i], denotes the longest substring without repeating
+ * characters that ends up at s[i], and we keep a hashmap for every
+ * characters between m ... i, while storing &lt;character, index&gt; in the
+ * hashmap.
+ * We know that each character will appear only once.
+ * Then to find s[i+1]:
+ * 1) if s[i+1] does not appear in hashmap
+ *    we can just add s[i+1] to hash map. and L[i+1] = s[m...i+1]
+ * 2) if s[i+1] exists in hashmap, and the hashmap value (the index) is k
+ *    let m = max(m, k), then L[i+1] = s[m...i+1], we also need to update
+ *    entry in hashmap to mark the latest occurency of s[i+1].
+ * 
+ * Since we scan the string for only once, and the 'm' will also move from
+ * beginning to end for at most once. Overall complexity is O(n).
+ *
+ * If characters are all in ASCII, we could use array to mimic hashmap.
+ */
+
+int lengthOfLongestSubstring(string s) {
+    // for ASCII char sequence, use this as a hashmap
+    vector&lt;int&gt; charIndex(256, -1);
+    int longest = 0, m = 0;
+
+    for (int i = 0; i &lt; s.length(); i++) {
+        m = max(charIndex[s[i]] + 1, m);    // automatically takes care of -1 case
+        charIndex[s[i]] = i;
+        longest = max(longest, i - m + 1);
+    }
+
+    return longest;
+}
+</code></pre>
+
+<p>Hope you like it :)</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dragonmigo">dragonmigo</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/13336/shortest-o-n-dp-solution-with-explanations">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>int lengthOfLongestSubstring(string s) {
+        vector&lt;int&gt; dict(256, -1);
+        int maxLen = 0, start = -1;
+        for (int i = 0; i != s.length(); i++) {
+            if (dict[s[i]] &gt; start)
+                start = dict[s[i]];
+            dict[s[i]] = i;
+            maxLen = max(maxLen, i - start);
+        }
+        return maxLen;
+    }
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/lightmark">lightmark</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/59051/c-code-in-9-lines">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

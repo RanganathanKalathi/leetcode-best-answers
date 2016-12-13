@@ -1,0 +1,145 @@
+<!DOCTYPE html><html><head><title>Reverse Vowels of a String</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="571b9c0f9cbe5e6715f841b2" data-set="true" class="title">Reverse Vowels of a String</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Write a function that takes a string as input and reverse only the vowels of a string.</p>
+
+<p>
+<b>Example 1:</b><br>
+Given s = "hello", return "holle".
+</p>
+
+<p>
+<b>Example 2:</b><br>
+Given s = "leetcode", return "leotcede".
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/two-pointers/">Two Pointers</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#reverse-string"> (E) Reverse String</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>In the inner while loop, don't forget the condition "start less than end" while incrementing start  and decrementing end. This is my friend's google phone interview question. Cheers!
+// update! May use a HashSet to reduce the look up time to O(1)</p>
+
+<pre><code>public class Solution {
+public String reverseVowels(String s) {
+    if(s == null || s.length()==0) return s;
+    String vowels = "aeiouAEIOU";
+    char[] chars = s.toCharArray();
+    int start = 0;
+    int end = s.length()-1;
+    while(start&lt;end){
+
+        while(start&lt;end &amp;&amp; !vowels.contains(chars[start]+"")){
+            start++;
+        }
+
+        while(start&lt;end &amp;&amp; !vowels.contains(chars[end]+"")){
+            end--;
+        }
+
+        char temp = chars[start];
+        chars[start] = chars[end];
+        chars[end] = temp;
+
+        start++;
+        end--;
+    }
+    return new String(chars);
+}
+</code></pre>
+
+<p>}</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/ninacc">ninacc</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/98987/java-standard-two-pointer-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p><strong>Ruby</strong></p>
+
+<pre><code>def reverse_vowels(s)
+  vowels = s.scan(/[aeiou]/i)
+  s.gsub(/[aeiou]/i) { vowels.pop }
+end
+</code></pre>
+
+<hr>
+
+<p><strong>Python</strong></p>
+
+<pre><code>def reverseVowels(self, s):
+    vowels = re.findall('(?i)[aeiou]', s)
+    return re.sub('(?i)[aeiou]', lambda m: vowels.pop(), s)
+</code></pre>
+
+<hr>
+
+<p>It's possible in one line, but I don't really like it:</p>
+
+<pre><code>def reverseVowels(self, s):
+    return re.sub('(?i)[aeiou]', lambda m, v=re.findall('(?i)[aeiou]', s): v.pop(), s)
+</code></pre>
+
+<hr>
+
+<p>Another version, finding replacement vowels on the fly instead of collecting all in advance:</p>
+
+<pre><code>def reverseVowels(self, s):
+    vowels = (c for c in reversed(s) if c in 'aeiouAEIOU')
+    return re.sub('(?i)[aeiou]', lambda m: next(vowels), s)
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/99073/1-2-lines-python-ruby">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    string reverseVowels(string s) {
+        auto p1 = s.begin(), p2 = s.end() - 1;
+        string vowels = "aeiouAEIOU";
+        while(p1 &lt; p2) {
+            while((vowels.find(*p1) == string::npos) &amp;&amp; (p1 &lt; p2)) p1++;
+            while((vowels.find(*p2) == string::npos) &amp;&amp; (p1 &lt; p2)) p2--;
+            if(p1 &lt; p2) swap(*p1, *p2);
+            p1++;
+            p2--;
+        }
+        return s;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/linjian2015">linjian2015</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/99351/c-12ms-two-pointers-easy-to-understand">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

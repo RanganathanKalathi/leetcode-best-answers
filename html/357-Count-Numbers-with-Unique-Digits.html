@@ -1,0 +1,199 @@
+<!DOCTYPE html><html><head><title>Count Numbers with Unique Digits</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="575e2fc69cbe5e7d99e4f9e4" data-set="true" class="title">Count Numbers with Unique Digits</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a <b>non-negative</b> integer n, count all numbers with unique digits, x, where 0 &#8804; x &lt; 10<sup>n</sup>.</p>
+
+<p>
+    <b>Example:</b><br>
+Given n = 2, return 91. (The answer should be the total numbers in the range of 0 &#8804; x &lt; 100, excluding <code>[11,22,33,44,55,66,77,88,99]</code>)
+</p>
+
+<ol id="hints">
+  <li class="hint">A direct way is to use the backtracking approach.</li>
+  <li class="hint">Backtracking should contains three states which are (the current number, number of steps to get that number and a bitmask which represent which number is marked as visited so far in the current number). Start with state (0,0,0) and count all valid number till we reach number of steps equals to 10<sup>n</sup>.</li>
+  <li class="hint">This problem can also be solved using a dynamic programming approach and some knowledge of combinatorics.</li>
+  <li class="hint">Let f(k) = count of numbers with unique digits with length equals k.</li>
+  <li class="hint">f(1) = 10, ..., f(k) = 9 * 9 * 8 * ... (9 - k + 2) [The first factor is 9 because a number cannot start with 0].</li>
+</ol>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://discuss.leetcode.com/user/memoryless">@memoryless</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Following the hint. Let f(n) = count of number with unique digits of length n.</p>
+
+<p>f(1) = 10.  (0, 1, 2, 3, ...., 9)</p>
+
+<p>f(2) = 9 * 9. Because for each number i from 1, ..., 9, we can pick j to form a 2-digit number ij and there are 9 numbers that are different from i for j to choose from.  </p>
+
+<p>f(3) = f(2) * 8 = 9 * 9 * 8. Because for each number with unique digits of length 2, say ij, we can pick k to form a 3 digit number ijk and there are 8 numbers that are different from i and j  for k to choose from.</p>
+
+<p>Similarly f(4) = f(3) * 7 = 9 * 9 * 8 * 7....</p>
+
+<p>...</p>
+
+<p>f(10) = 9 * 9 * 8 * 7 * 6 * ... * 1</p>
+
+<p>f(11) = 0 = f(12) = f(13)....</p>
+
+<p>any number with length &gt; 10  couldn't be unique digits number.</p>
+
+<p>The problem is asking for numbers from 0 to 10^n. Hence return f(1) + f(2) + .. + f(n)</p>
+
+<p>As @4acreg suggests,  There are only 11 different ans. You can create a lookup table for it. This problem is O(1) in essence.</p>
+
+<pre><code>  public int countNumbersWithUniqueDigits(int n) {
+        if (n == 0)     return 1;
+
+        int res = 10;
+        int uniqueDigits = 9;
+        int availableNumber = 9;
+        while (n-- &gt; 1 &amp;&amp; availableNumber &gt; 0) {
+            uniqueDigits = uniqueDigits * availableNumber;
+            res += uniqueDigits;
+            availableNumber--;
+        }
+        return res;
+    }
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/stupidbird911">stupidbird911</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/107945/java-dp-o-1-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The idea is to append one digit at a time recursively (only append digits that has not been appended before). Number zero is a special case, because we don't want to deal with the leading zero, so it is counted separately at the beginning of the program. The running time for this program is O(10!) worst case, or O(n!) if n &lt; 10.</p>
+
+<p>The OJ gives wrong answer when n = 0 and n = 1. The correct answer should be:</p>
+
+<blockquote>
+  <p>0, 1 </p>
+  
+  <p>1, 10</p>
+  
+  <p>2, 91</p>
+  
+  <p>3, 739</p>
+  
+  <p>4, 5275</p>
+  
+  <p>5, 32491</p>
+  
+  <p>6, 168571</p>
+  
+  <p>7, 712891</p>
+  
+  <p>8, 2345851</p>
+  
+  <p>9, 5611771</p>
+  
+  <p>10 and beyond, 8877691</p>
+</blockquote>
+
+<hr>
+
+<pre><code>public class Solution {
+    public static int countNumbersWithUniqueDigits(int n) {
+        if (n &gt; 10) {
+            return countNumbersWithUniqueDigits(10);
+        }
+        int count = 1; // x == 0
+        long max = (long) Math.pow(10, n);
+
+        boolean[] used = new boolean[10];
+
+        for (int i = 1; i &lt; 10; i++) {
+            used[i] = true;
+            count += search(i, max, used);
+            used[i] = false;
+        }
+
+        return count;
+    }
+
+    private static int search(long prev, long max, boolean[] used) {
+        int count = 0;
+        if (prev &lt; max) {
+            count += 1;
+        } else {
+            return count;
+        }
+
+        for (int i = 0; i &lt; 10; i++) {
+            if (!used[i]) {
+                used[i] = true;
+                long cur = 10 * prev + i;
+                count += search(cur, max, used);
+                used[i] = false;
+            }
+        }
+
+        return count;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/lzb700m">lzb700m</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/107981/backtracking-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>test case is wrong when n==1, it should be 11 instead of 10, from 0 to 10 inclusively </p>
+
+<p>n=2  10+9 * 9</p>
+
+<p>n=3  10+9 * 9+9 * 9 * 8 </p>
+
+<p>n=4  10+9 * 9+9 * 9 * 8+9 * 9 * 8 * 7</p>
+
+<p>...</p>
+
+<p>when n &gt; 10, the total number won't increase any more, so we set n=10 in that case </p>
+
+<pre><code>public class Solution {
+    public int countNumbersWithUniqueDigits(int n) {
+        if (n == 0) {
+            return 2;
+        }
+        if (n == 1) {
+            return 10; // should be 11
+        }
+        n = Math.min(n, 10);
+        int sum = 10;
+        int tmp = 9;
+        for (int i = 1; i &lt; n; i++) {
+            tmp *= 10 - i;
+            sum += tmp;
+        }
+        return sum;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/xuyirui">xuyirui</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/107960/java-simple-code-o-space-time-with-combinatorics-knowledge">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

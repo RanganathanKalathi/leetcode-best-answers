@@ -1,0 +1,163 @@
+<!DOCTYPE html><html><head><title>Palindrome Permutation</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c80efd1aae2858575315" data-set="true" class="title">Palindrome Permutation</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a string, determine if a permutation of the string could form a palindrome.</p>
+
+<p>For example,<br>
+<code>"code"</code> -&gt; False, <code>"aab"</code> -&gt; True, <code>"carerac"</code> -&gt; True.
+</p>
+
+<ol id="hints">
+  <li class="hint">Consider the palindromes of odd vs even length. What difference do you notice?</li>
+  <li class="hint">Count the frequency of each character.</li>
+  <li class="hint">If each character occurs even number of times, then it must be a palindrome. How about character which occurs odd number of times?</li>
+</ol>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#longest-palindromic-substring"> (M) Longest Palindromic Substring</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#valid-anagram"> (E) Valid Anagram</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#palindrome-permutation-ii"> (M) Palindrome Permutation II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The idea is to iterate over string, adding current character to <code>set</code> if <code>set</code> doesn't contain that character, or removing current character from <code>set</code> if <code>set</code> contains it.
+When the iteration is finished, just return <code>set.size()==0 || set.size()==1</code>.</p>
+
+<p><code>set.size()==0</code> corresponds to the situation when there are even number of any character in the string, and
+<code>set.size()==1</code> corresponsds to the fact that there are even number of any character except one.</p>
+
+<pre><code>public class Solution {
+    public boolean canPermutePalindrome(String s) {
+        Set&lt;Character&gt; set=new HashSet&lt;Character&gt;();
+        for(int i=0; i&lt;s.length(); ++i){
+            if (!set.contains(s.charAt(i)))
+                set.add(s.charAt(i));
+            else 
+                set.remove(s.charAt(i));
+        }
+        return set.size()==0 || set.size()==1;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/ammv">ammv</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/53295/java-solution-w-set-one-pass-without-counters">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Just check that no more than one character appears an odd number of times. Because if there is one, then it must be in the middle of the palindrome. So we can't have two of them.</p>
+
+<p><strong>Python</strong></p>
+
+<p>First count all characters in a <code>Counter</code>, then count the odd ones.</p>
+
+<pre><code>def canPermutePalindrome(self, s):
+    return sum(v % 2 for v in collections.Counter(s).values()) &lt; 2
+</code></pre>
+
+<p><strong>Ruby</strong></p>
+
+<p>Using an integer as a bitset (Ruby has arbitrarily large integers).</p>
+
+<pre><code>def can_permute_palindrome(s)
+  x = s.chars.map { |c| 1 &lt;&lt; c.ord }.reduce(0, :^)
+  x &amp; x-1 == 0
+end
+</code></pre>
+
+<p><strong>C++</strong></p>
+
+<p>Using a bitset.</p>
+
+<pre><code>bool canPermutePalindrome(string s) {
+    bitset&lt;256&gt; b;
+    for (char c : s)
+        b.flip(c);
+    return b.count() &lt; 2;
+}
+</code></pre>
+
+<p><strong>C</strong></p>
+
+<p>Tricky one. Increase <code>odds</code> when the increased counter is odd, decrease it otherwise.</p>
+
+<pre><code>bool canPermutePalindrome(char* s) {
+    int ctr[256] = {}, odds = 0;
+    while (*s)
+        odds += ++ctr[*s++] &amp; 1 ? 1 : -1;
+    return odds &lt; 2;
+}
+</code></pre>
+
+<p>Thanks to jianchao.li.fighter for pointing out a nicer way in the comments to which I switched now because it's clearer and faster. Some speed test results (see comments for details):</p>
+
+<pre><code>        odds += ++ctr[*s++] % 2 * 2 - 1;       // 1499 ms mean-of-five (my original)
+        odds += (ctr[*s++] ^= 1) * 2 - 1;      // 1196 ms mean-of-five
+        odds += ++ctr[*s++] % 2 ? 1 : -1;      // 1108 ms mean-of-five
+        odds += ((++ctr[*s++] &amp; 1) &lt;&lt; 1) - 1;  // 1217 ms mean-of-five
+        odds += ++ctr[*s++] &amp; 1 ? 1 : -1;      // 1132 ms mean-of-five
+</code></pre>
+
+<p><strong>Java</strong></p>
+
+<p>Using a BitSet.</p>
+
+<pre><code>public boolean canPermutePalindrome(String s) {
+    BitSet bs = new BitSet();
+    for (byte b : s.getBytes())
+        bs.flip(b);
+    return bs.cardinality() &lt; 2;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/53180/1-4-lines-python-ruby-c-c-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p><strong>Explanation</strong></p>
+
+<p>The basic idea is using HashSet to find the number of single characters, which should be at most 1.</p>
+
+<pre><code>public boolean canPermutePalindrome(String s) {
+    Set&lt;Character&gt;set = new HashSet&lt;Character&gt;();
+    for (char c : s.toCharArray())  
+        if (set.contains(c)) set.remove(c);// If char already exists in set, then remove it from set
+        else set.add(c);// If char doesn't exists in set, then add it to set
+    return set.size() &lt;= 1;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Pixel_">Pixel_</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/71076/5-lines-simple-java-solution-with-explanation">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

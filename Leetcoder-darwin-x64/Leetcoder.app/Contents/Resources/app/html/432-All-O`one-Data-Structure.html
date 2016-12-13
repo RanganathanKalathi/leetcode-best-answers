@@ -1,0 +1,363 @@
+<!DOCTYPE html><html><head><title>All O`one Data Structure  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="582cf0fc9cbe5e72ab71369c" data-set="true" class="title">All O`one Data Structure  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Implement a data structure supporting the following operations:</p>
+
+<p>
+</p><ol>
+<li>Inc(Key) - Inserts a new key <key> with value 1. Or increments an existing key by 1. Key is guaranteed to be a <b>non-empty</b> string.</key></li>
+<li>Dec(Key) - If Key's value is 1, remove it from the data structure. Otherwise decrements an existing key by 1. If the key does not exist, this function does nothing. Key is guaranteed to be a <b>non-empty</b> string.</li>
+<li>GetMaxKey() - Returns one of the keys with maximal value. If no element exists, return an empty string <code>""</code>.</li>
+<li>GetMinKey() - Returns one of the keys with minimal value. If no element exists, return an empty string <code>""</code>.</li>
+</ol>
+
+
+<p>
+Challenge: Perform all these in O(1) time complexity.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>The main idea is to maintain an ordered two-dimensional doubly-linked list (let's call it matrix for convenience), of which each row is corresponding to a value and all of the keys in the same row have the same value.</p>
+<p>Suppose we get the following key-value pairs after some increment operations. ("A": 4 means "A" is increased four times so its value is 4, and so on.)</p>
+<pre><code>"A": 4, "B": 4, "C": 2, "D": 1
+</code></pre>
+<p>Then one possible matrix may look like this:</p>
+<pre><code>row0: val = 4, strs = {"A", "B"}
+row1: val = 2, strs = {"C"}
+row2: val = 1, strs = {"D"}
+</code></pre>
+<p>If we can guarantee the rows are in descending order in terms of value, then GetMaxKey()/GetMinKey() will be easy to implement in O(1) time complexity. Because the first key in the first row will always has the maximal value, and the first key in the last row will always has the minimal value.</p>
+<p>Once a key is increased, we move the key from current row to last row if last_row.val = current_row.val + 1. Otherwise, we insert a new row before current row with vallue current_row.val + 1, and move the key to to the new row. The logic of decrement operation is similar. Obviously, by doing this, the rows will keep its descending order.</p>
+<p>For example, after Inc("D"), the matrix will become</p>
+<pre><code>row0: val = 4, strs = {"A", "B"}
+row1: val = 2, strs = {"C", "D"}
+</code></pre>
+<p>Inc("D") again</p>
+<pre><code>row0: val = 4, strs = {"A", "B"}
+row1: val = 3, strs = {"D"}
+row2: val = 2, strs = {"C"}
+</code></pre>
+<p>Now the key problem is how to maintain the matrix in O(1) runtime when increase/decrease a key by 1.</p>
+<p>The answer is hash map. By using a hash map to track the position of a key in the matrix, we can access  a key in the matrix in O(1). And since we use linked list to store the matrix, thus insert/move operations will all be O(1).</p>
+<p>The psudocode of Inc() is as follows(Dec() is similar).</p>
+<pre><code>if the key isn't in the matrix:
+    if the matrix is empty or the value of the last row isn't 1:
+        insert a new row with value 1 to the end of the matrix, and put the key in the new row;
+    else:
+        put the key in the last row of the matrix;
+else:
+    if the key is at the first row or last_row.value != current_row.value + 1:
+        insert a new row before current row, with value current_row.value + 1, and move the key to the new row;
+    else:
+        move the key from current row to last row;
+</code></pre>
+<p>Here is the code.</p>
+<pre><code>class AllOne {
+public:
+    struct Row {
+        list&lt;string&gt; strs;
+        int val;
+        Row(const string &amp;s, int x) : strs({s}), val(x) {}
+    };
+
+    unordered_map&lt;string, pair&lt;list&lt;Row&gt;::iterator, list&lt;string&gt;::iterator&gt;&gt; strmap;
+    list&lt;Row&gt; matrix;
+
+    /** Initialize your data structure here. */
+    AllOne() {
+        
+    }
+    
+    /** Inserts a new key &lt;Key&gt; with value 1. Or increments an existing key by 1. */
+    void inc(string key) {
+        if (strmap.find(key) == strmap.end()) {
+            if (matrix.empty() || matrix.back().val != 1) {
+                auto newrow = matrix.emplace(matrix.end(), key, 1);
+                strmap[key] = make_pair(newrow, newrow-&gt;strs.begin());
+            }
+            else {
+                auto newrow = --matrix.end();
+                newrow-&gt;strs.push_front(key);
+                strmap[key] = make_pair(newrow, newrow-&gt;strs.begin());
+            }
+        }
+        else {
+            auto row = strmap[key].first;
+            auto col = strmap[key].second;
+            auto lastrow = row;
+            --lastrow;
+            if (lastrow == matrix.end() || lastrow-&gt;val != row-&gt;val + 1) {
+                auto newrow = matrix.emplace(row, key, row-&gt;val + 1);
+                strmap[key] = make_pair(newrow, newrow-&gt;strs.begin());
+            }
+            else {
+                auto newrow = lastrow;
+                newrow-&gt;strs.push_front(key);
+                strmap[key] = make_pair(newrow, newrow-&gt;strs.begin());
+            }
+            row-&gt;strs.erase(col);
+            if (row-&gt;strs.empty()) matrix.erase(row);
+        }
+    }
+    
+    /** Decrements an existing key by 1. If Key's value is 1, remove it from the data structure. */
+    void dec(string key) {
+        if (strmap.find(key) == strmap.end()) {
+            return;
+        }
+        else {
+            auto row = strmap[key].first;
+            auto col = strmap[key].second;
+            if (row-&gt;val == 1) {
+                row-&gt;strs.erase(col);
+                if (row-&gt;strs.empty()) matrix.erase(row);
+                strmap.erase(key);
+                return;
+            }
+            auto nextrow = row;
+            ++nextrow;
+            if (nextrow == matrix.end() || nextrow-&gt;val != row-&gt;val - 1) {
+                auto newrow = matrix.emplace(nextrow, key, row-&gt;val - 1);
+                strmap[key] = make_pair(newrow, newrow-&gt;strs.begin());
+            }
+            else {
+                auto newrow = nextrow;
+                newrow-&gt;strs.push_front(key);
+                strmap[key] = make_pair(newrow, newrow-&gt;strs.begin());
+            }
+            row-&gt;strs.erase(col);
+            if (row-&gt;strs.empty()) matrix.erase(row);
+        }
+    }
+    
+    /** Returns one of the keys with maximal value. */
+    string getMaxKey() {
+        return matrix.empty() ?  "" : matrix.front().strs.front();
+    }
+    
+    /** Returns one of the keys with Minimal value. */
+    string getMinKey() {
+        return matrix.empty() ?  "" : matrix.back().strs.front();
+    }
+};
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/ivancjw">ivancjw</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/63683/0ms-all-in-o-1-with-detailed-explantation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>For each value, I have a bucket with all keys which have that value. The buckets are in a list, sorted by value. That allows constant time insertion/erasure and iteration to the next higher/lower value bucket. A bucket stores its keys in a hash set for easy constant time insertion/erasure/check (see <a href="https://discuss.leetcode.com/topic/53193/are-hash-tables-ok-here-they-re-not-really-o-1-are-they">first two posts here</a> if you're worried). I also have one hash map to look up which bucket a given key is in.</p>
+<p>Based on a previously flawed Python attempt (I just couldn't find a good way to get an arbitrary element from a set) but also influenced by an earlier version of <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/1023">@Ren.W</a>'s <a href="https://discuss.leetcode.com/topic/63741/c-o-1-0ms-ac-solution%5D">solution</a>. We ended up with quite similiar code, I guess there's not much room for creativity once you decide on the data types to hold the data.</p>
+<pre><code>class AllOne {
+public:
+
+    void inc(string key) {
+        
+        // If the key doesn't exist, insert it with value 0.
+        if (!bucketOfKey.count(key))
+            bucketOfKey[key] = buckets.insert(buckets.begin(), {0, {key}});
+            
+        // Insert the key in next bucket and update the lookup.
+        auto next = bucketOfKey[key], bucket = next++;
+        if (next == buckets.end() || next-&gt;value &gt; bucket-&gt;value + 1)
+            next = buckets.insert(next, {bucket-&gt;value + 1, {}});
+        next-&gt;keys.insert(key);
+        bucketOfKey[key] = next;
+        
+        // Remove the key from its old bucket.
+        bucket-&gt;keys.erase(key);
+        if (bucket-&gt;keys.empty())
+            buckets.erase(bucket);
+    }
+
+    void dec(string key) {
+
+        // If the key doesn't exist, just leave.
+        if (!bucketOfKey.count(key))
+            return;
+
+        // Maybe insert the key in previous bucket and update the lookup.
+        auto prev = bucketOfKey[key], bucket = prev--;
+        bucketOfKey.erase(key);
+        if (bucket-&gt;value &gt; 1) {
+            if (bucket == buckets.begin() || prev-&gt;value &lt; bucket-&gt;value - 1)
+                prev = buckets.insert(bucket, {bucket-&gt;value - 1, {}});
+            prev-&gt;keys.insert(key);
+            bucketOfKey[key] = prev;
+        }
+        
+        // Remove the key from its old bucket.
+        bucket-&gt;keys.erase(key);
+        if (bucket-&gt;keys.empty())
+            buckets.erase(bucket);
+    }
+
+    string getMaxKey() {
+        return buckets.empty() ? "" : *(buckets.rbegin()-&gt;keys.begin());
+    }
+    
+    string getMinKey() {
+        return buckets.empty() ? "" : *(buckets.begin()-&gt;keys.begin());
+    }
+
+private:
+    struct Bucket { int value; unordered_set&lt;string&gt; keys; };
+    list&lt;Bucket&gt; buckets;
+    unordered_map&lt;string, list&lt;Bucket&gt;::iterator&gt; bucketOfKey;
+};
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/63827/c-solution-with-comments">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Main idea is to maintain a list of Bucket's, each Bucket contains all keys with the same count.</p>
+<ol>
+<li><code>head</code> and <code>tail</code> can ensure both <code>getMaxKey()</code> and <code>getMaxKey()</code> be done in O(1).</li>
+<li><code>keyCountMap</code> maintains the count of keys, <code>countBucketMap</code> provides O(1) access to a specific Bucket with given count. Deleting and adding a Bucket in the Bucket list cost O(1), so both <code>inc()</code> and <code>dec()</code> take strict O(1) time.</li>
+</ol>
+<pre><code>public class AllOne {
+    // maintain a doubly linked list of Buckets
+    private Bucket head;
+    private Bucket tail;
+    // for accessing a specific Bucket among the Bucket list in O(1) time
+    private Map&lt;Integer, Bucket&gt; countBucketMap;
+    // keep track of count of keys
+    private Map&lt;String, Integer&gt; keyCountMap;
+
+    // each Bucket contains all the keys with the same count
+    private class Bucket {
+        int count;
+        Set&lt;String&gt; keySet;
+        Bucket next;
+        Bucket pre;
+        public Bucket(int cnt) {
+            count = cnt;
+            keySet = new HashSet&lt;&gt;();
+        }
+    }
+
+    /** Initialize your data structure here. */
+    public AllOne() {
+        head = new Bucket(Integer.MIN_VALUE);
+        tail = new Bucket(Integer.MAX_VALUE);
+        head.next = tail;
+        tail.pre = head;
+        countBucketMap = new HashMap&lt;&gt;();
+        keyCountMap = new HashMap&lt;&gt;();
+    }
+    
+    /** Inserts a new key &lt;Key&gt; with value 1. Or increments an existing key by 1. */
+    public void inc(String key) {
+        if (keyCountMap.containsKey(key)) {
+            changeKey(key, 1);
+        } else {
+            keyCountMap.put(key, 1);
+            if (head.next.count != 1) 
+                addBucketAfter(new Bucket(1), head);
+            head.next.keySet.add(key);
+            countBucketMap.put(1, head.next);
+        }
+    }
+    
+    /** Decrements an existing key by 1. If Key's value is 1, remove it from the data structure. */
+    public void dec(String key) {
+        if (keyCountMap.containsKey(key)) {
+            int count = keyCountMap.get(key);
+            if (count == 1) {
+                keyCountMap.remove(key);
+                removeKeyFromBucket(countBucketMap.get(count), key);
+            } else {
+                changeKey(key, -1);
+            }
+        }
+    }
+    
+    /** Returns one of the keys with maximal value. */
+    public String getMaxKey() {
+        return tail.pre == head ? "" : (String) tail.pre.keySet.iterator().next();
+    }
+    
+    /** Returns one of the keys with Minimal value. */
+    public String getMinKey() {
+        return head.next == tail ? "" : (String) head.next.keySet.iterator().next();        
+    }
+    
+    // helper function to make change on given key according to offset
+    private void changeKey(String key, int offset) {
+        int count = keyCountMap.get(key);
+        keyCountMap.put(key, count + offset);
+        Bucket curBucket = countBucketMap.get(count);
+        Bucket newBucket;
+        if (countBucketMap.containsKey(count + offset)) {
+            // target Bucket already exists
+            newBucket = countBucketMap.get(count + offset);
+        } else {
+            // add new Bucket
+            newBucket = new Bucket(count + offset);
+            countBucketMap.put(count + offset, newBucket);
+            addBucketAfter(newBucket, offset == 1 ? curBucket : curBucket.pre);
+        }
+        newBucket.keySet.add(key);
+        removeKeyFromBucket(curBucket, key);
+    }
+    
+    private void removeKeyFromBucket(Bucket bucket, String key) {
+        bucket.keySet.remove(key);
+        if (bucket.keySet.size() == 0) {
+            removeBucketFromList(bucket);
+            countBucketMap.remove(bucket.count);
+        }
+    }
+    
+    private void removeBucketFromList(Bucket bucket) {
+        bucket.pre.next = bucket.next;
+        bucket.next.pre = bucket.pre;
+        bucket.next = null;
+        bucket.pre = null;
+    }
+    
+    // add newBucket after preBucket
+    private void addBucketAfter(Bucket newBucket, Bucket preBucket) {
+        newBucket.pre = preBucket;
+        newBucket.next = preBucket.next;
+        preBucket.next.pre = newBucket;
+        preBucket.next = newBucket;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/aaronlin1992">AaronLin1992</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/65634/java-ac-all-strict-o-1-not-average-o-1-easy-to-read">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

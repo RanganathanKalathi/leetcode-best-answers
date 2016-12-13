@@ -1,0 +1,145 @@
+<!DOCTYPE html><html><head><title>Validate Binary Search Tree</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cd2dfd1aae28585753ac" data-set="true" class="title">Validate Binary Search Tree</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a binary tree, determine if it is a valid binary search tree (BST).
+</p>
+
+<p>
+Assume a BST is defined as follows:
+</p><ul>
+<li>The left subtree of a node contains only nodes with keys <b>less than</b> the node's key.</li>
+<li>The right subtree of a node contains only nodes with keys <b>greater than</b> the node's key.</li>
+<li>Both the left and right subtrees must also be binary search trees.</li>
+</ul>
+
+
+<p class="showspoilers">confused what <code>"{1,#,2,3}"</code> means? <a href="#" onclick="showSpoilers(this); return false;">&gt; read more on how binary tree is serialized on OJ.</a></p>
+
+<div class="spoilers"><br><b>OJ's Binary Tree Serialization:</b>
+<p>
+The serialization of a binary tree follows a level order traversal, where '#' signifies a path terminator where no node exists below.
+</p>
+<p>
+Here's an example:<br>
+</p><pre>
+   1
+  / \
+ 2   3
+    /
+   4
+    \
+     5
+</pre>
+The above binary tree is serialized as <code>"{1,2,3,#,#,4,#,#,5}"</code>. 
+
+</div>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/amazon/">Amazon</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/bloomberg/">Bloomberg</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/tree/">Tree</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/depth-first-search/">Depth-first Search</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-tree-inorder-traversal"> (M) Binary Tree Inorder Traversal</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    bool isValidBST(TreeNode* root) {
+        TreeNode* prev = NULL;
+        return validate(root, prev);
+    }
+    bool validate(TreeNode* node, TreeNode* &amp;prev) {
+        if (node == NULL) return true;
+        if (!validate(node-&gt;left, prev)) return false;
+        if (prev != NULL &amp;&amp; prev-&gt;val &gt;= node-&gt;val) return false;
+        prev = node;
+        return validate(node-&gt;right, prev);
+    }
+};
+</code></pre>
+
+<blockquote>
+  <p>Update:</p>
+  
+  <p>If we use in-order traversal to serialize a binary search tree, we can
+  get a list of values in ascending order. It can be proved with the
+  definition of BST. And here I use the reference of TreeNode
+  pointer <code>prev</code> as a global variable to mark the address of previous node in the
+  list.</p>
+  
+  <p>&#8220;In-order Traversal&#8221;:
+  <a rel="nofollow" href="">https://en.wikipedia.org/wiki/Tree_traversal#In-order</a></p>
+</blockquote>
+
+<p>If you know what <code>INT_MAX</code> or <code>INT_MIN</code> is, then it is no excuse for your carelessness.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jakwings">jakwings</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/14886/order-traversal-please-rely-buggy-int_max-int_min-solutions">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+
+    public boolean isValidBST(TreeNode root, long minVal, long maxVal) {
+        if (root == null) return true;
+        if (root.val &gt;= maxVal || root.val &lt;= minVal) return false;
+        return isValidBST(root.left, minVal, root.val) &amp;&amp; isValidBST(root.right, root.val, maxVal);
+    }
+}
+</code></pre>
+
+<p>Basically what I am doing is recursively iterating over the tree while defining interval <code>&lt;minVal, maxVal&gt;</code> for each node which value must fit in.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/sruzic">sruzic</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/21411/my-simple-java-solution-in-3-lines">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>bool isValidBST(TreeNode* root) {
+    return isValidBST(root, NULL, NULL);
+}
+
+bool isValidBST(TreeNode* root, TreeNode* minNode, TreeNode* maxNode) {
+    if(!root) return true;
+    if(minNode &amp;&amp; root-&gt;val &lt;= minNode-&gt;val || maxNode &amp;&amp; root-&gt;val &gt;= maxNode-&gt;val)
+        return false;
+    return isValidBST(root-&gt;left, minNode, root) &amp;&amp; isValidBST(root-&gt;right, root, maxNode);
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jaewoo">jaewoo</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/45425/c-simple-recursive-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html><html><head><title>Intersection of Two Arrays II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="573fdd479cbe5e4ccc248a81" data-set="true" class="title">Intersection of Two Arrays II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given two arrays, write a function to compute their intersection.
+</p>
+
+<p><b>Example:</b><br>
+Given <i>nums1</i> = <code>[1, 2, 2, 1]</code>, <i>nums2</i> = <code>[2, 2]</code>, return <code>[2, 2]</code>.
+</p>
+
+<p><b>Note:</b><br>
+</p><ul>
+<li>Each element in the result should appear as many times as it shows in both arrays.</li>
+<li>The result can be in any order.</li>
+</ul>
+
+
+<p><b>Follow up:</b><br>
+</p><ul>
+<li>What if the given array is already sorted? How would you optimize your algorithm?</li>
+<li>What if <i>nums1</i>'s size is small compared to <i>num2</i>'s size? Which algorithm is better?</li>
+<li>What if elements of <i>nums2</i> are stored on disk, and the memory is limited such that you cannot load all elements into the memory at once?</li>
+</ul>
+
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/binary-search/">Binary Search</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/two-pointers/">Two Pointers</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/sort/">Sort</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#intersection-of-two-arrays"> (E) Intersection of Two Arrays</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>m: nums1.size     n: nums2.size</p>
+
+<p>Hash table solution: 
+Time: O(m + n)   Space: O(m + n)</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; intersect(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) {
+        unordered_map&lt;int, int&gt; dict;
+        vector&lt;int&gt; res;
+        for(int i = 0; i &lt; (int)nums1.size(); i++) dict[nums1[i]]++;
+        for(int i = 0; i &lt; (int)nums2.size(); i++)
+            if(--dict[nums2[i]] &gt;= 0) res.push_back(nums2[i]);
+        return res;
+    }
+};
+</code></pre>
+
+<p>Hash table solution2:
+Time: O(m + n)    Space: O(m)</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; intersect(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) {
+        unordered_map&lt;int, int&gt; dict;
+        vector&lt;int&gt; res;
+        for(int i = 0; i &lt; (int)nums1.size(); i++) dict[nums1[i]]++;
+        for(int i = 0; i &lt; (int)nums2.size(); i++)
+            if(dict.find(nums2[i]) != dict.end() &amp;&amp; --dict[nums2[i]] &gt;= 0) res.push_back(nums2[i]);
+        return res;
+    }
+};
+</code></pre>
+
+<p>Sort and two pointers Solution:
+Time: O(max(m, n) log(max(m, n)))   Space: O(m + n)</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; intersect(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2) {
+        sort(nums1.begin(), nums1.end());
+        sort(nums2.begin(), nums2.end());
+        int n1 = (int)nums1.size(), n2 = (int)nums2.size();
+        int i1 = 0, i2 = 0;
+        vector&lt;int&gt; res;
+        while(i1 &lt; n1 &amp;&amp; i2 &lt; n2){
+            if(nums1[i1] == nums2[i2]) {
+                res.push_back(nums1[i1]);
+                i1++;
+                i2++;
+            }
+            else if(nums1[i1] &gt; nums2[i2]){
+                i2++;
+            }
+            else{
+                i1++;
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/sxycwzwzq">sxycwzwzq</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/103787/table-solution-pointers-solution-with-time-space-complexity">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        HashMap&lt;Integer, Integer&gt; map = new HashMap&lt;Integer, Integer&gt;();
+        ArrayList&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;();
+        for(int i = 0; i &lt; nums1.length; i++)
+        {
+            if(map.containsKey(nums1[i])) map.put(nums1[i], map.get(nums1[i])+1);
+            else map.put(nums1[i], 1);
+        }
+
+        for(int i = 0; i &lt; nums2.length; i++)
+        {
+            if(map.containsKey(nums2[i]) &amp;&amp; map.get(nums2[i]) &gt; 0)
+            {
+                result.add(nums2[i]);
+                map.put(nums2[i], map.get(nums2[i])-1);
+            }
+        }
+
+       int[] r = new int[result.size()];
+       for(int i = 0; i &lt; result.size(); i++)
+       {
+           r[i] = result.get(i);
+       }
+
+       return r;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/VanillaCoke">VanillaCoke</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/103835/ac-solution-using-java-hashmap">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><blockquote>
+  <p>What if elements of nums2 are stored on disk, and the memory is
+  limited such that you cannot load all elements into the memory at
+  once?</p>
+</blockquote>
+
+<ul>
+<li><p>If only nums2 cannot fit in memory, put all elements of nums1 into a HashMap, read chunks of array that fit into the memory, and record the intersections.</p></li>
+<li><p>If both nums1 and nums2 are so huge that neither fit into the memory, sort them individually (external sort), then read 2 elements from each array at a time in memory, record intersections.</p></li>
+</ul>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/vishalhemnani">vishalhemnani</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/103969/solution-to-3rd-follow-up-question">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

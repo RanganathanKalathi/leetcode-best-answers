@@ -1,0 +1,143 @@
+<!DOCTYPE html><html><head><title>Top K Frequent Elements</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="5726d0ca9cbe5e077d6213db" data-set="true" class="title">Top K Frequent Elements</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a non-empty array of integers, return the <b><i>k</i></b> most frequent elements.</p>
+
+<p>For example,<br>
+Given <code>[1,1,1,2,2,3]</code> and k = 2, return <code>[1,2]</code>.
+</p>
+
+<p><b>Note: </b><br>
+</p><ul>
+<li>You may assume <i>k</i> is always valid, 1 &#8804; <i>k</i> &#8804; number of unique elements.</li>
+<li>Your algorithm's time complexity <b>must be</b> better than O(<i>n</i> log <i>n</i>), where <i>n</i> is the array's size.</li>
+</ul>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/pocket-gems/">Pocket Gems</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/yelp/">Yelp</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/heap/">Heap</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#word-frequency"> (M) Word Frequency</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#kth-largest-element-in-an-array"> (M) Kth Largest Element in an Array</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Idea is simple. Build a array of list to be buckets with length 1 to sort.</p>
+
+<pre><code>public List&lt;Integer&gt; topKFrequent(int[] nums, int k) {
+
+    List&lt;Integer&gt;[] bucket = new List[nums.length + 1];
+    Map&lt;Integer, Integer&gt; frequencyMap = new HashMap&lt;Integer, Integer&gt;();
+
+    for (int n : nums) {
+        frequencyMap.put(n, frequencyMap.getOrDefault(n, 0) + 1);
+    }
+
+    for (int key : frequencyMap.keySet()) {
+        int frequency = frequencyMap.get(key);
+        if (bucket[frequency] == null) {
+            bucket[frequency] = new ArrayList&lt;&gt;();
+        }
+        bucket[frequency].add(key);
+    }
+
+    List&lt;Integer&gt; res = new ArrayList&lt;&gt;();
+
+    for (int pos = bucket.length - 1; pos &gt;= 0 &amp;&amp; res.size() &lt; k; pos--) {
+        if (bucket[pos] != null) {
+            res.addAll(bucket[pos]);
+        }
+    }
+    return res;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/mo10">mo10</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/100581/java-o-n-solution-bucket-sort">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    vector&lt;int&gt; topKFrequent(vector&lt;int&gt;&amp; nums, int k) {
+        unordered_map&lt;int,int&gt; map;
+        for(int num : nums){
+            map[num]++;
+        }
+
+        vector&lt;int&gt; res;
+        // pair&lt;first, second&gt;: first is frequency,  second is number
+        priority_queue&lt;pair&lt;int,int&gt;&gt; pq; 
+        for(auto it = map.begin(); it != map.end(); it++){
+            pq.push(make_pair(it-&gt;second, it-&gt;first));
+            if(pq.size() &gt; (int)map.size() - k){
+                res.push_back(pq.top().second);
+                pq.pop();
+            }
+        }
+        return res;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/sxycwzwzq">sxycwzwzq</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/100562/o-log-k-unordered_map-and-priority_queue-maxheap-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    vector&lt;int&gt; topKFrequent(vector&lt;int&gt;&amp; nums, int k) {
+        unordered_map&lt;int, int&gt; m;
+        for (int num : nums)
+            ++m[num];
+
+        vector&lt;vector&lt;int&gt;&gt; buckets(nums.size() + 1); 
+        for (auto p : m)
+            buckets[p.second].push_back(p.first);
+
+        vector&lt;int&gt; ans;
+        for (int i = buckets.size() - 1; i &gt;= 0 &amp;&amp; ans.size() &lt; k; --i) {
+            for (int num : buckets[i]) {
+                ans.push_back(num);
+                if (ans.size() == k)
+                    break;
+            }
+        }
+        return ans;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Aeonaxx">Aeonaxx</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/100769/simple-c-solution-using-hash-table-and-bucket-sort">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

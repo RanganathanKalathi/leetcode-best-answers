@@ -1,0 +1,175 @@
+<!DOCTYPE html><html><head><title>Queue Reconstruction by Height  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57e7f4b69cbe5e482edf5307" data-set="true" class="title">Queue Reconstruction by Height  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Suppose you have a random list of people standing in a queue. Each person is described by a pair of integers <code>(h, k)</code>, where <code>h</code> is the height of the person and <code>k</code> is the number of people in front of this person who have a height greater than or equal to <code>h</code>. Write an algorithm to reconstruct the queue.
+</p>
+
+<p><b>Note:</b><br>
+The number of people is less than 1,100.
+</p>
+
+<p><b>Example</b>
+</p><pre>
+Input:
+[[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+
+Output:
+[[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]
+</pre>
+
+              
+                <div>
+                  <p><a href="/subscribe/">Subscribe</a> to see which companies asked this question</p>
+                </div>
+              
+
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<ol>
+<li><strong>Pick out tallest group of people and sort them</strong> in a subarray (S). Since there's no other groups of people taller than them, therefore <strong>each guy's index will be just as same as his k value</strong>.</li>
+<li>For 2nd tallest group (and the rest), insert each one of them into (S) by k value. So on and so forth.</li>
+</ol>
+<p>E.g.<br/>
+input: [[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]<br/>
+subarray after step 1: [<strong>[7,0], [7,1]</strong>]<br/>
+subarray after step 2: [[7,0], <strong>[6,1]</strong>, [7,1]]<br/>
+...</p>
+<p>It's not the most concise code, but I think it well explained the concept.</p>
+<pre><code>class Solution(object):
+    def reconstructQueue(self, people):
+        if not people: return []
+
+        # obtain everyone's info
+        # key=height, value=k-value, index in original array
+        peopledct, height, res = {}, [], []
+        
+        for i in xrange(len(people)):
+            p = people[i]
+            if p[0] in peopledct:
+                peopledct[p[0]] += (p[1], i),
+            else:
+                peopledct[p[0]] = [(p[1], i)]
+                height += p[0],
+
+        height.sort()      # here are different heights we have
+
+        # sort from the tallest group
+        for h in height[::-1]:
+            peopledct[h].sort()
+            for p in peopledct[h]:
+                res.insert(p[0], people[p[1]])
+
+        return res
+
+</code></pre>
+<p><strong>EDIT:</strong><br/>
+Please also check:<br/>
+<a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/45325">@tlhuang</a> 's concise Python code.<br/>
+<a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/35488">@tonygogogo</a> 's 8 lines C++ solution.<br/>
+<a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/17065">@zeller2</a> 's Java version.</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/yjl1228">YJL1228</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/60394/easy-concept-with-python-c-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>vector&lt;pair&lt;int, int&gt;&gt; reconstructQueue(vector&lt;pair&lt;int, int&gt;&gt;&amp; people) {
+    auto comp = [](const pair&lt;int, int&gt;&amp; p1, const pair&lt;int, int&gt;&amp; p2)
+                    { return p1.first &gt; p2.first || (p1.first == p2.first &amp;&amp; p1.second &lt; p2.second); };
+    sort(people.begin(), people.end(), comp);
+    vector&lt;pair&lt;int, int&gt;&gt; res;
+    for (auto&amp; p : people) 
+        res.insert(res.begin() + p.second, p);
+    return res;
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/zyoppy008">zyoppy008</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/60470/6-lines-concise-c">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Based on this solution which I first saw brought up by <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/32742">@bigoffer4all</a> <a href="https://discuss.leetcode.com/topic/24320/line-reconstruction-by-height/8"><strong>here</strong></a> (and which I <a href="https://discuss.leetcode.com/topic/60981/explanation-of-the-neat-sort-insert-solution"><strong>explained here</strong></a>):</p>
+<pre><code>def reconstructQueue(self, people):
+    queue = []
+    for p in sorted(people, key=lambda (h, t): (-h, t)):
+        queue.insert(p[1], p)
+    return queue
+</code></pre>
+<p>That takes O(n^2) because each <code>insert</code> into the list takes O(n).</p>
+<p>Instead of just one long list of all people, I break the queue into O(sqrt(n)) blocks of size up to sqrt(n). Then to insert at the desired index, I find the appropriate block, insert the person into that block, and potentially have to break the block into two. Each of those things takes O(sqrt(n)) time.</p>
+<pre><code>def reconstructQueue(self, people):
+    blocks = [[]]
+    for p in sorted(people, key=lambda (h, t): (-h, t)):
+        index = p[1]
+
+        for i, block in enumerate(blocks):
+            m = len(block)
+            if index &lt;= m:
+                break
+            index -= m
+        block.insert(index, p)
+        if m * m &gt; len(people):
+            blocks.insert(i + 1, block[m/2:])
+            del block[m/2:]
+
+    return [p for block in blocks for p in block]
+</code></pre>
+<p>"Unfortunately", Python's <code>list.insert</code> is really fast compared to doing things in Python myself, and with the inputs allowed here (less than 1100 people), the O(n^2) solution wins. Locally I tested with larger inputs, and around 200000 people the two solutions were about equally fast. With 300000 people, the O(n sqrt(n)) solution was about factor 1.25 faster, and with a million people, the O(n sqrt(n)) solution was about factor 2.2 faster</p>
+<p>The testing code:</p>
+<pre><code># The original O(n^2) solution.
+class Solution(object):
+    def reconstructQueue(self, people):
+        queue = []
+        for p in sorted(people, key=lambda (h, t): (-h, t)):
+            queue.insert(p[1], p)
+        return queue
+nsquared = Solution().reconstructQueue
+
+# The O(n sqrt(n)) solution.
+class Solution(object):
+    def reconstructQueue(self, people):
+        blocks = [[]]
+        for p in sorted(people, key=lambda (h, t): (-h, t)):
+            index = p[1]
+
+            for i, block in enumerate(blocks):
+                m = len(block)
+                if index &lt;= m:
+                    break
+                index -= m
+            block.insert(index, p)
+            if m * m &gt; len(people):
+                blocks.insert(i + 1, block[m/2:])
+                del block[m/2:]
+
+        return [p for block in blocks for p in block]
+nsqrtn = Solution().reconstructQueue
+
+# Generate a large test case and time it.
+from bisect import bisect
+from random import randint, shuffle
+from timeit import timeit
+n = 300000
+heights = [randint(1, n) for _ in range(n)]
+standing = []
+people = []
+for h in heights:
+    i = bisect(standing, -h)
+    standing.insert(i, -h)
+    people.append([h, i])
+shuffle(people)
+for solution in nsquared, nsqrtn, nsquared, nsqrtn:
+    print timeit(lambda: solution(people), number=1)
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/60550/o-n-sqrt-n-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

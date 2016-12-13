@@ -1,0 +1,143 @@
+<!DOCTYPE html><html><head><title>Reverse Words in a String</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cb33fd1aae2858575377" data-set="true" class="title">Reverse Words in a String</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given an input string, reverse the string word by word.
+</p>
+
+<p>
+For example,<br>
+Given s = "<code>the sky is blue</code>",<br>
+return "<code>blue is sky the</code>".
+</p>
+
+<p>
+<b><font color="red">Update (2015-02-12):</font></b><br>
+For C programmers: Try to solve it <i>in-place</i> in <i>O</i>(1) space.
+</p>
+
+<p class="showspoilers"><a href="#" onclick="showSpoilers(this); return false;">click to show clarification.</a></p>
+
+<div class="spoilers"><b>Clarification:</b>
+
+<p>
+</p><ul>
+<li>What constitutes a word?<br>
+A sequence of non-space characters constitutes a word.</li>
+<li>Could the input string contain leading or trailing spaces?<br>
+Yes. However, your reversed string should not contain leading or trailing spaces.</li>
+<li>How about multiple spaces between two words?<br>
+Reduce them to a single space in the reversed string.</li>
+</ul>
+
+</div>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/bloomberg/">Bloomberg</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#reverse-words-in-a-string-ii"> (M) Reverse Words in a String II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    void reverseWords(string &amp;s) {
+        string result;
+        int pos = 0;
+        for (int i = 0; i &lt; s.size(); i ++){
+            if (s[i] == ' '){
+                if (i &gt; pos )
+                    result = s.substr(pos,i-pos)+ " " + result ;
+                pos = i + 1;
+            }
+            else if (i == s.size()-1)
+                result = s.substr(pos,s.size()-pos)+" "+result;
+        }
+        s = result.substr(0,result.size()-1) ;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/exodia">exodia</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/10268/accepted-simple-cpp-code-in-just-a-few-lines">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>First, reverse the whole string, then reverse each word.</p>
+
+<pre><code>void reverseWords(string &amp;s) {
+    reverse(s.begin(), s.end());
+    int storeIndex = 0;
+    for (int i = 0; i &lt; s.size(); i++) {
+        if (s[i] != ' ') {
+            if (storeIndex != 0) s[storeIndex++] = ' ';
+            int j = i;
+            while (j &lt; s.size() &amp;&amp; s[j] != ' ') { s[storeIndex++] = s[j++]; }
+            reverse(s.begin() + storeIndex - (j - i), s.begin() + storeIndex);
+            i = j;
+        }
+    }
+    s.erase(s.begin() + storeIndex, s.end());
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yuruofeifei">yuruofeifei</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/10967/in-place-simple-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>String[] parts = s.trim().split("\\s+");
+String out = "";
+if (parts.length &gt; 0) {
+    for (int i = parts.length - 1; i &gt; 0; i--) {
+        out += parts[i] + " ";
+    }
+    out += parts[0];
+}
+return out;
+</code></pre>
+
+<p>I'm splitting on the regex for one-or-more whitespace, this takes care of multiple spaces/tabs/newlines/etc in the input. Since the input could have leading/trailing whitespace, which would result in empty matches, I first trim the input string.</p>
+
+<p>Now there could be three possibilities:
+1. The input is empty, return an empty string directly.
+2. The input contains only one part, return that part.
+3. The input contains multiple parts, reverse the order, making sure we don't end with a trailing space.</p>
+
+<p>Obviously this is not the fastest or most memory efficient way to solve the problem, but optimizations should <em>only</em> be done when they are needed. Readable code is usually more important than efficient code.</p>
+
+<p>How to make it efficient?</p>
+
+<ol>
+<li>Use a StringBuilder to concatenate the string parts, instead of concatenating strings directly. This will (I assume) build something like a linked-list of string parts, and only allocate the new string when you need it, instead of on each concatenation.</li>
+<li>Iterate over the string, instead of using trim/split. Store the index of the last character in the word, when you find the first character, copy the substring to the output string.</li>
+<li>Instead of using substring, insert the word-characters directly in the StringBuilder. Assuming they're using a linked-list or tree, this could be a whole last faster.</li>
+</ol>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/daniel12">daniel12</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/9142/my-accepted-java-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

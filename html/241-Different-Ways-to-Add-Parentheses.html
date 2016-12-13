@@ -1,0 +1,265 @@
+<!DOCTYPE html><html><head><title>Different Ways to Add Parentheses</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c8abfd1aae285857532d" data-set="true" class="title">Different Ways to Add Parentheses</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a string of numbers and operators, return all possible results from computing all the different possible ways to group numbers and operators. The valid operators are <code>+</code>, <code>-</code> and <code>*</code>.</p>
+<br>
+<b>Example 1</b>
+<p>Input: <code>"2-1-1"</code>.</p> 
+<pre>((2-1)-1) = 0
+(2-(1-1)) = 2</pre>
+<p>Output: <code>[0, 2]</code></p>
+<br>
+<b>Example 2</b>
+<p>Input: <code>"2*3-4*5"</code></p> 
+<pre>(2*(3-(4*5))) = -34
+((2*3)-(4*5)) = -14
+((2*(3-4))*5) = -10
+(2*((3-4)*5)) = -10
+(((2*3)-4)*5) = 10</pre>
+<p>Output: <code>[-34, -14, -10, -10, 10]</code></p> 
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/mithmatt">@mithmatt</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/cryptic-studios/">Cryptic Studios</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/divide-and-conquer/">Divide and Conquer</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#unique-binary-search-trees-ii"> (M) Unique Binary Search Trees II</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#basic-calculator"> (M) Basic Calculator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#expression-add-operators"> (H) Expression Add Operators</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public List&lt;Integer&gt; diffWaysToCompute(String input) {
+        List&lt;Integer&gt; ret = new LinkedList&lt;Integer&gt;();
+        for (int i=0; i&lt;input.length(); i++) {
+            if (input.charAt(i) == '-' ||
+                input.charAt(i) == '*' ||
+                input.charAt(i) == '+' ) {
+                String part1 = input.substring(0, i);
+                String part2 = input.substring(i+1);
+                List&lt;Integer&gt; part1Ret = diffWaysToCompute(part1);
+                List&lt;Integer&gt; part2Ret = diffWaysToCompute(part2);
+                for (Integer p1 :   part1Ret) {
+                    for (Integer p2 :   part2Ret) {
+                        int c = 0;
+                        switch (input.charAt(i)) {
+                            case '+': c = p1+p2;
+                                break;
+                            case '-': c = p1-p2;
+                                break;
+                            case '*': c = p1*p2;
+                                break;
+                        }
+                        ret.add(c);
+                    }
+                }
+            }
+        }
+        if (ret.size() == 0) {
+            ret.add(Integer.valueOf(input));
+        }
+        return ret;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/2guotou">2guotou</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/48477/a-recursive-java-solution-284-ms">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Here is the basic recursive solution</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; diffWaysToCompute(string input) {
+        vector&lt;int&gt; result;
+        int size = input.size();
+        for (int i = 0; i &lt; size; i++) {
+            char cur = input[i];
+            if (cur == '+' || cur == '-' || cur == '*') {
+                // Split input string into two parts and solve them recursively
+                vector&lt;int&gt; result1 = diffWaysToCompute(input.substr(0, i));
+                vector&lt;int&gt; result2 = diffWaysToCompute(input.substr(i+1));
+                for (auto n1 : result1) {
+                    for (auto n2 : result2) {
+                        if (cur == '+')
+                            result.push_back(n1 + n2);
+                        else if (cur == '-')
+                            result.push_back(n1 - n2);
+                        else
+                            result.push_back(n1 * n2);    
+                    }
+                }
+            }
+        }
+        // if the input string contains only number
+        if (result.empty())
+            result.push_back(atoi(input.c_str()));
+        return result;
+    }
+};
+</code></pre>
+
+<p>There are many repeating subquestions in this recursive method, therefore, we could use dynamic programming to avoid this situation by saving the results for subquestions. Here is the DP solution.</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; diffWaysToCompute(string input) {
+        unordered_map&lt;string, vector&lt;int&gt;&gt; dpMap;
+        return computeWithDP(input, dpMap);
+    }
+
+    vector&lt;int&gt; computeWithDP(string input, unordered_map&lt;string, vector&lt;int&gt;&gt; &amp;dpMap) {
+        vector&lt;int&gt; result;
+        int size = input.size();
+        for (int i = 0; i &lt; size; i++) {
+            char cur = input[i];
+            if (cur == '+' || cur == '-' || cur == '*') {
+                // Split input string into two parts and solve them recursively
+                vector&lt;int&gt; result1, result2;
+                string substr = input.substr(0, i);
+                // check if dpMap has the result for substr
+                if (dpMap.find(substr) != dpMap.end())
+                    result1 = dpMap[substr];
+                else
+                    result1 = computeWithDP(substr, dpMap);
+
+                substr = input.substr(i + 1);
+                if (dpMap.find(substr) != dpMap.end())
+                    result2 = dpMap[substr];
+                else
+                    result2 = computeWithDP(substr, dpMap);
+
+                for (auto n1 : result1) {
+                    for (auto n2 : result2) {
+                        if (cur == '+')
+                            result.push_back(n1 + n2);
+                        else if (cur == '-')
+                            result.push_back(n1 - n2);
+                        else
+                            result.push_back(n1 * n2);
+                    }
+                }
+            }
+        }
+        // if the input string contains only number
+        if (result.empty())
+            result.push_back(atoi(input.c_str()));
+        // save to dpMap
+        dpMap[input] = result;
+        return result;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Gcdofree">Gcdofree</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/48488/c-4ms-recursive-%26-dp-solution-with-brief-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Just doing it...</p>
+
+<hr>
+
+<p><strong>Solution 1</strong> ... 48 ms</p>
+
+<pre><code>def diffWaysToCompute(self, input):
+   tokens = re.split('(\D)', input)
+   nums = map(int, tokens[::2])
+   ops = map({'+': operator.add, '-': operator.sub, '*': operator.mul}.get, tokens[1::2])
+   def build(lo, hi):
+       if lo == hi:
+           return [nums[lo]]
+       return [ops[i](a, b)
+               for i in xrange(lo, hi)
+               for a in build(lo, i)
+               for b in build(i + 1, hi)]
+   return build(0, len(nums) - 1)
+</code></pre>
+
+<hr>
+
+<p><strong>Solution 2</strong> ... 168 ms</p>
+
+<p>One-liner inspired by <a rel="nofollow" href="https://leetcode.com/discuss/48410/python-solution-52ms-with-simple-interpretation?show=48432#a48432">Soba</a>.</p>
+
+<pre><code>def diffWaysToCompute(self, input):
+    return [eval(`a`+c+`b`)
+            for i, c in enumerate(input) if c in '+-*'
+            for a in self.diffWaysToCompute(input[:i])
+            for b in self.diffWaysToCompute(input[i+1:])] or [int(input)]
+</code></pre>
+
+<hr>
+
+<p><strong>Solution 3</strong> ... 64 ms</p>
+
+<p>Faster version of solution 2.</p>
+
+<pre><code>def diffWaysToCompute(self, input):
+    return [a+b if c == '+' else a-b if c == '-' else a*b
+            for i, c in enumerate(input) if c in '+-*'
+            for a in self.diffWaysToCompute(input[:i])
+            for b in self.diffWaysToCompute(input[i+1:])] or [int(input)]
+</code></pre>
+
+<hr>
+
+<p><strong>Solution 4</strong> ... 188 ms</p>
+
+<p>A code golf version of solution 2.</p>
+
+<pre><code>diffWaysToCompute=d=lambda s,t:[eval(`a`+c+`b`)for i,c in enumerate(t)if
+c&lt;'0'for a in s.d(t[:i])for b in s.d(t[i+1:])]or[int(t)]
+</code></pre>
+
+<hr>
+
+<p><strong>C++</strong> ... 8 ms</p>
+
+<p>C++ version of solution 3.</p>
+
+<pre><code>vector&lt;int&gt; diffWaysToCompute(string input) {
+    vector&lt;int&gt; output;
+    for (int i=0; i&lt;input.size(); i++) {
+        char c = input[i];
+        if (ispunct(c))
+            for (int a : diffWaysToCompute(input.substr(0, i)))
+                for (int b : diffWaysToCompute(input.substr(i+1)))
+                    output.push_back(c=='+' ? a+b : c=='-' ? a-b : a*b);
+    }
+    return output.size() ? output : vector&lt;int&gt;{stoi(input)};
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/48468/1-11-lines-python-9-lines-c">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

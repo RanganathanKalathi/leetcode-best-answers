@@ -1,0 +1,206 @@
+<!DOCTYPE html><html><head><title>Binary Tree Vertical Order Traversal</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c6bbfd1aae28585752e5" data-set="true" class="title">Binary Tree Vertical Order Traversal</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a binary tree, return the <i>vertical order</i> traversal of its nodes' values. (ie, from top to bottom, column by column).</p>
+<p>If two nodes are in the same row and column, the order should be from <b>left to right</b>.</p>
+<p>
+<b>Examples:</b><br>
+Given binary tree <code>[3,9,20,null,null,15,7]</code>,<br>
+</p><pre>
+    3
+   / \
+  9  20
+    /  \
+   15   7
+</pre>
+
+<p>
+return its vertical order traversal as:<br>
+</p><pre>
+[
+  [9],
+  [3,15],
+  [20],
+  [7]
+]
+</pre>
+
+
+<p>
+Given binary tree <code>[3,9,20,4,5,2,7]</code>,<br>
+</p><pre>
+    _3_
+   /   \
+  9    20
+ / \   / \
+4   5 2   7
+</pre>
+
+<p>
+return its vertical order traversal as:<br>
+</p><pre>
+[
+  [4],
+  [9],
+  [3,5,2],
+  [20],
+  [7]
+]
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/facebook/">Facebook</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-tree-level-order-traversal"> (E) Binary Tree Level Order Traversal</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The following solution takes <code>5ms</code>. </p>
+
+<ul>
+<li>BFS, put <code>node</code>, <code>col</code> into queue at the same time</li>
+<li>Every left child access <code>col - 1</code> while right child  <code>col + 1</code></li>
+<li>This maps <code>node</code> into different <code>col</code> buckets</li>
+<li>Get <code>col</code> boundary <code>min</code> and <code>max</code> on the fly</li>
+<li>Retrieve <code>result</code> from <code>cols</code></li>
+</ul>
+
+<p>Note that <code>TreeMap</code> version takes <code>9ms</code>.</p>
+
+<hr>
+
+<p>Here is an example of <code>[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]</code>. Notice that every child access changes one column bucket id. So <code>12</code> actually goes ahead of <code>11</code>.</p>
+
+<div class="pixels-photo">
+  <p>
+    <img src="https://drscdn.500px.org/photo/135826875/m%3D900/7e1d9c2bdc47791e3b54f25bf50b6370" alt="vertical by yavinci on 500px.com">
+  </p>
+  <a rel="nofollow" href="https://500px.com/photo/135826875/vertical-by-yavinci"></a>
+</div>
+
+<p></p>
+
+<hr>
+
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; verticalOrder(TreeNode root) {
+    List&lt;List&lt;Integer&gt;&gt; res = new ArrayList&lt;&gt;();
+    if(root == null) return res;
+
+    Map&lt;Integer, ArrayList&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();
+    Queue&lt;TreeNode&gt; q = new LinkedList&lt;&gt;();
+    Queue&lt;Integer&gt; cols = new LinkedList&lt;&gt;();
+
+    q.add(root); 
+    cols.add(0);
+
+    int min = 0, max = 0;
+    while(!q.isEmpty()) {
+        TreeNode node = q.poll();
+        int col = cols.poll();
+        if(!map.containsKey(col)) map.put(col, new ArrayList&lt;Integer&gt;());
+        map.get(col).add(node.val);
+
+        if(node.left != null) {
+            q.add(node.left); 
+            cols.add(col - 1);
+            if(col &lt;= min) min = col - 1;
+        }
+        if(node.right != null) {
+            q.add(node.right);
+            cols.add(col + 1);
+            if(col &gt;= max) max = col + 1;
+        }
+    }
+
+    for(int i = min; i &lt;= max; i++) {
+        res.add(map.get(i));
+    }
+
+    return res;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yavinci">yavinci</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/75054/5ms-java-clean-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>def verticalOrder(self, root):
+    cols = collections.defaultdict(list)
+    queue = [(root, 0)]
+    for node, i in queue:
+        if node:
+            cols[i].append(node.val)
+            queue += (node.left, i - 1), (node.right, i + 1)
+    return [cols[i] for i in sorted(cols)]
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/73127/python-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>private int min = 0, max = 0;
+public List&lt;List&lt;Integer&gt;&gt; verticalOrder(TreeNode root) {
+    List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;&gt;();
+    if(root == null)    return list;
+    computeRange(root, 0);
+    for(int i = min; i &lt;= max; i++) list.add(new ArrayList&lt;&gt;());
+    Queue&lt;TreeNode&gt; q = new LinkedList&lt;&gt;();
+    Queue&lt;Integer&gt; idx = new LinkedList&lt;&gt;();
+    idx.add(-min);
+    q.add(root);
+    while(!q.isEmpty()){
+        TreeNode node = q.poll();
+        int i = idx.poll();
+        list.get(i).add(node.val);
+        if(node.left != null){
+            q.add(node.left);
+            idx.add(i - 1);
+        }
+        if(node.right != null){
+            q.add(node.right);
+            idx.add(i + 1);
+        }
+    }
+    return list;
+}
+private void computeRange(TreeNode root, int idx){
+    if(root == null)    return;
+    min = Math.min(min, idx);
+    max = Math.max(max, idx);
+    computeRange(root.left, idx - 1);
+    computeRange(root.right, idx + 1);
+}
+</code></pre>
+
+<p>There is no difference when using HashMap.  Since by using HashMap it need keep track of min and max as well, I'd rather directly insert into list by computing min and max in advance.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Jinx_boom">Jinx_boom</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/78228/3ms-java-solution-beats-100%25">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

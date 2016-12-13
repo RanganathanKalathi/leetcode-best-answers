@@ -1,0 +1,123 @@
+<!DOCTYPE html><html><head><title>Meeting Rooms</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c86afd1aae2858575322" data-set="true" class="title">Meeting Rooms</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given an array of meeting time intervals consisting of start and end times <code>[[s1,e1],[s2,e2],...]</code> (s<sub>i</sub> i), determine if a person could attend all meetings.</p>
+
+<p>
+For example,<br>
+Given <code>[[0, 30],[5, 10],[15, 20]]</code>,<br>
+return <code>false</code>.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/facebook/">Facebook</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/sort/">Sort</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#merge-intervals"> (H) Merge Intervals</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#meeting-rooms-ii"> (M) Meeting Rooms II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>public boolean canAttendMeetings(Interval[] intervals) {
+  if (intervals == null)
+    return false;
+
+  // Sort the intervals by start time
+  Arrays.sort(intervals, new Comparator&lt;Interval&gt;() {
+    public int compare(Interval a, Interval b) { return a.start - b.start; }
+  });
+
+  for (int i = 1; i &lt; intervals.length; i++)
+    if (intervals[i].start &lt; intervals[i - 1].end)
+      return false;
+
+  return true;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jeantimex">jeantimex</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/50912/ac-clean-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The idea is pretty simple: first we sort the <code>intervals</code> in the ascending order of <code>start</code>; then we check for the overlapping of each pair of neighboring intervals. If they do, then return <code>false</code>; after we finish all the checks and have not returned <code>false</code>, just return <code>true</code>. </p>
+
+<p>Sorting takes <code>O(nlogn)</code> time and the overlapping checks take <code>O(n)</code> time, so this idea is <code>O(nlogn)</code> time in total.</p>
+
+<p>The code is as follows.</p>
+
+<pre><code>class Solution {
+public:
+    bool canAttendMeetings(vector&lt;Interval&gt;&amp; intervals) {
+        sort(intervals.begin(), intervals.end(), compare);
+        int n = intervals.size();
+        for (int i = 0; i &lt; n - 1; i++)
+            if (overlap(intervals[i], intervals[i + 1]))
+                return false;
+        return true;
+    }
+private:
+    static bool compare(Interval&amp; interval1, Interval&amp; interval2) {
+        return interval1.start &lt; interval2.start;
+    }
+    bool overlap(Interval&amp; interval1, Interval&amp; interval2) {
+        return interval1.end &gt; interval2.start;
+    } 
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jianchao.li.fighter">jianchao.li.fighter</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/50842/easy-c-solution-with-explanations">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>public boolean canAttendMeetings(Interval[] intervals) {
+        int len=intervals.length;
+        if(len==0){
+            return true;
+        }
+        int[]begin=new int[len];
+        int[]stop=new int[len];
+        for(int i=0;i&lt;len;i++){
+            begin[i]=intervals[i].start;
+            stop[i]=intervals[i].end;
+        }
+        Arrays.sort(begin);
+        Arrays.sort(stop);
+        int endT=0;
+        for(int i=1;i&lt;len;i++){
+            if(begin[i]&lt;stop[i-1]){
+                return false;
+            }
+        }
+        return true;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/printf_ll_">printf_ll_</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/73547/easy-java-solution-beat-98%25">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

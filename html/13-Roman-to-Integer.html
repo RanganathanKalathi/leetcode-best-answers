@@ -1,0 +1,147 @@
+<!DOCTYPE html><html><head><title>Roman to Integer</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2d03cfd1aae2858575401" data-set="true" class="title">Roman to Integer</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a roman numeral, convert it to an integer.</p>
+
+<p>Input is guaranteed to be within the range from 1 to 3999.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/bloomberg/">Bloomberg</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#integer-to-roman"> (M) Integer to Roman</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public int romanToInt(String s) {
+        //&#65306;&#8544;&#65288;1&#65289;&#8548;&#65288;5&#65289;&#8553;&#65288;10&#65289;L&#65288;50&#65289;C&#65288;100&#65289;D&#65288;500&#65289;M&#65288;1000&#65289; 
+        // rules:&#20301;&#20110;&#22823;&#25968;&#30340;&#21518;&#38754;&#26102;&#23601;&#20316;&#20026;&#21152;&#25968;&#65307;&#20301;&#20110;&#22823;&#25968;&#30340;&#21069;&#38754;&#23601;&#20316;&#20026;&#20943;&#25968;
+        //eg&#65306;&#8546;=3,&#8547;=4,&#8549;=6,&#8553;&#8552;=19,&#8553;&#8553;=20,&#8553;L&#8548;=45,MCM&#8553;&#8553;C=1980
+        //"DCXXI"
+
+        if(s == null || s.length() == 0) return 0;
+        int len = s.length();
+        HashMap&lt;Character,Integer&gt; map = new HashMap&lt;Character,Integer&gt;();
+        map.put('I',1);
+        map.put('V',5);
+        map.put('X',10);
+        map.put('L',50);
+        map.put('C',100);
+        map.put('D',500);
+        map.put('M',1000);
+        int result = map.get(s.charAt(len -1));
+        int pivot = result;
+        for(int i = len -2; i&gt;= 0;i--){
+            int curr = map.get(s.charAt(i));
+            if(curr &gt;=  pivot){
+                result += curr;
+            }else{
+                result -= curr;
+            }
+            pivot = curr;
+        }
+        return result;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yidi">yidi</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/42582/my-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>count every Symbol and add its value to the sum, and minus the extra part of special cases. </p>
+
+<pre><code>public int romanToInt(String s) {
+     int sum=0;
+    if(s.indexOf("IV")!=-1){sum-=2;}
+    if(s.indexOf("IX")!=-1){sum-=2;}
+    if(s.indexOf("XL")!=-1){sum-=20;}
+    if(s.indexOf("XC")!=-1){sum-=20;}
+    if(s.indexOf("CD")!=-1){sum-=200;}
+    if(s.indexOf("CM")!=-1){sum-=200;}
+
+    char c[]=s.toCharArray();
+    int count=0;
+
+   for(;count&lt;=s.length()-1;count++){
+       if(c[count]=='M') sum+=1000;
+       if(c[count]=='D') sum+=500;
+       if(c[count]=='C') sum+=100;
+       if(c[count]=='L') sum+=50;
+       if(c[count]=='X') sum+=10;
+       if(c[count]=='V') sum+=5;
+       if(c[count]=='I') sum+=1;
+
+   }
+
+   return sum;
+
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/hongbin2">hongbin2</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/2369/solution-for-this-question-but-dont-know-there-any-easier-way">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Problem is simpler to solve by working the string from back to front and using a map.  Runtime speed is 88 ms.</p>
+
+<pre><code>int romanToInt(string s) 
+{
+    unordered_map&lt;char, int&gt; T = { { 'I' , 1 },
+                                   { 'V' , 5 },
+                                   { 'X' , 10 },
+                                   { 'L' , 50 },
+                                   { 'C' , 100 },
+                                   { 'D' , 500 },
+                                   { 'M' , 1000 } };
+
+   int sum = T[s.back()];
+   for (int i = s.length() - 2; i &gt;= 0; --i) 
+   {
+       if (T[s[i]] &lt; T[s[i + 1]])
+       {
+           sum -= T[s[i]];
+       }
+       else
+       {
+           sum += T[s[i]];
+       }
+   }
+
+   return sum;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/wsugrad77">wsugrad77</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/22867/clean-o-n-c-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

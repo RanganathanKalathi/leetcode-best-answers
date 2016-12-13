@@ -1,0 +1,163 @@
+<!DOCTYPE html><html><head><title>Best Meeting Point</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c735fd1aae28585752f7" data-set="true" class="title">Best Meeting Point</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>A group of two or more people wants to meet and minimize the total travel distance. You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in the group. The distance is calculated using <a href="http://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">Manhattan Distance</a>, where distance(p1, p2) = <code>|p2.x - p1.x| + |p2.y - p1.y|</code>.</p>
+
+<p>For example, given three people living at <code>(0,0)</code>, <code>(0,4)</code>, and <code>(2,2)</code>:</p>
+
+<pre>1 - 0 - 0 - 0 - 1
+|   |   |   |   |
+0 - 0 - 0 - 0 - 0
+|   |   |   |   |
+0 - 0 - 1 - 0 - 0</pre>
+
+<p>The point <code>(0,2)</code> is an ideal meeting point, as the total travel distance of 2+2+2=6 is minimal. So return 6.</p>
+
+<ol id="hints">
+  <li class="hint">Try to solve it in one dimension first. How can this solution apply to the two dimension case?</li>
+</ol>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/sort/">Sort</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#shortest-distance-from-all-buildings"> (H) Shortest Distance from All Buildings</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>public int minTotalDistance(int[][] grid) {
+    int m = grid.length;
+    int n = grid[0].length;
+
+    List&lt;Integer&gt; I = new ArrayList&lt;&gt;(m);
+    List&lt;Integer&gt; J = new ArrayList&lt;&gt;(n);
+
+    for(int i = 0; i &lt; m; i++){
+        for(int j = 0; j &lt; n; j++){
+            if(grid[i][j] == 1){
+                I.add(i);
+                J.add(j);
+            }
+        }
+    }
+
+    return getMin(I) + getMin(J);
+}
+
+private int getMin(List&lt;Integer&gt; list){
+    int ret = 0;
+
+    Collections.sort(list);
+
+    int i = 0;
+    int j = list.size() - 1;
+    while(i &lt; j){
+        ret += list.get(j--) - list.get(i++);
+    }
+
+    return ret;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/larrywang2014">larrywang2014</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/65336/14ms-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>As long as you have different numbers of people on your left and on your right, moving a little to the side with more people decreases the sum of distances. So to minimize it, you must have equally many people on your left and on your right. Same with above/below.</p>
+
+<hr>
+
+<p>Two O(mn) solutions, both take 2ms.</p>
+
+<p>The neat <code>total += Z[hi--] - Z[lo++]</code>-style summing is from <a rel="nofollow" href="https://leetcode.com/discuss/65336/14ms-java-solution">larrywang2014's solution</a>.<br>
+Originally I used <code>total += abs(Z[i] - median)</code>-style.</p>
+
+<hr>
+
+<p><strong>Solution 1</strong></p>
+
+<p>No need to sort the coordinates if we <strong>collect</strong> them in sorted order.</p>
+
+<pre><code>public int minTotalDistance(int[][] grid) {
+    int m = grid.length, n = grid[0].length;
+    int total = 0, Z[] = new int[m*n];
+    for (int dim=0; dim&lt;2; ++dim) {
+        int i = 0, j = 0;
+        if (dim == 0) {
+            for (int x=0; x&lt;n; ++x)
+                for (int y=0; y&lt;m; ++y)
+                    if (grid[y][x] == 1)
+                        Z[j++] = x;
+        } else {
+            for (int y=0; y&lt;m; ++y)
+                for (int g : grid[y])
+                    if (g == 1)
+                        Z[j++] = y;
+        }
+        while (i &lt; --j)
+            total += Z[j] - Z[i++];
+    }
+    return total;
+}
+</code></pre>
+
+<hr>
+
+<p><strong>Solution 2</strong></p>
+
+<p>BucketSort-ish. Count how many people live in each row and each column. Only O(m+n) space.</p>
+
+<pre><code>public int minTotalDistance(int[][] grid) {
+    int m = grid.length, n = grid[0].length;
+    int[] I = new int[m], J = new int[n];
+    for (int i=0; i&lt;m; ++i)
+        for (int j=0; j&lt;n; ++j)
+            if (grid[i][j] == 1) {
+                ++I[i];
+                ++J[j];
+            }
+    int total = 0;
+    for (int[] K : new int[][]{ I, J }) {
+        int i = 0, j = K.length - 1;
+        while (i &lt; j) {
+            int k = Math.min(K[i], K[j]);
+            total += k * (j - i);
+            if ((K[i] -= k) == 0) ++i;
+            if ((K[j] -= k) == 0) --j;
+        }
+    }
+    return total;
+}
+</code></pre>
+
+<p>Not sure Larry's way is actually better here. I'll have to try the other style as well...</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/65366/o-mn-java-2ms">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>When I first saw this question, intuitively I know shortest meeting point should be found in two separate dimension, however, even if on 1-D, how could I find the shortest meeting point? Then I clicked discuss and found out everybody's solution was using median to get shortest meeting point? WHY?</p>
+
+<p>Actually, there is a famous conclusion in statistics that <a rel="nofollow" href="http://math.stackexchange.com/questions/113270/the-median-minimizes-the-sum-of-absolute-deviations">the median minimizes the sum of absolute deviations</a>.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/TonyLic">TonyLic</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/66401/the-only-person-dont-know-median-could-give-shortest-distance">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

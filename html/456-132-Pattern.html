@@ -1,0 +1,222 @@
+<!DOCTYPE html><html><head><title>132 Pattern  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="582cf0e59cbe5e72ab713697" data-set="true" class="title">132 Pattern  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a sequence of n integers a<sub>1</sub>, a<sub>2</sub>, ..., a<sub>n</sub>, a 132 pattern is a subsequence a<sub><b>i</b></sub>, a<sub><b>j</b></sub>, a<sub><b>k</b></sub> such
+that <b>i</b> j k and a<sub><b>i</b></sub> <b>k</b> <b>j</b>. Design an algorithm that takes a list of n numbers as input and checks whether there is a 132 pattern in the list.</p>
+
+<p><b>Note:</b> n will be less than 15,000.</p>
+
+<p><b>Example 1:</b><br>
+</p><pre>
+<b>Input:</b> [1, 2, 3, 4]
+
+<b>Output:</b> False
+
+<b>Explanation:</b> There is no 132 pattern in the sequence.
+</pre>
+
+
+<p><b>Example 2:</b><br>
+</p><pre>
+<b>Input:</b> [3, 1, 4, 2]
+
+<b>Output:</b> True
+
+<b>Explanation:</b> There is a 132 pattern in the sequence: [1, 4, 2].
+</pre>
+
+
+<p><b>Example 3:</b><br>
+</p><pre>
+<b>Input:</b> [-1, 3, 2, 0]
+
+<b>Output:</b> True
+
+<b>Explanation:</b> There are three 132 patterns in the sequence: [-1, 3, 2], [-1, 3, 0] and [-1, 2, 0].
+</pre>
+
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/stack/">Stack</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>We want to search for a subsequence (<code>s1,s2,s3</code>)</p>
+<p>INTUITION: The problem would be simpler if we want to find sequence with <code>s1 &gt; s2 &gt; s3</code>, we just need to find <code>s1</code>, followed by <code>s2</code> and <code>s3</code>. Now if we want to find a 132 sequence, we need to switch up the order of searching. we want to first find <code>s2</code>, followed by <code>s3</code>, then <code>s1</code>.</p>
+<p>IDEA: We can start from either side but I think starting from the end allow us to finish in a single pass. The idea is to start from end and search for a candidate for <code>s2</code> and <code>s3</code>. A number becomes a candidate for <code>s3</code> if there is any number on the left of <code>s2</code> that is bigger than it.</p>
+<p>DETECTION: Keep track of the largest candidate of <code>s3</code> and once we encounter any number smaller than <code>s3</code>, we know we found a valid sequence since <code>s1 &lt; s3</code> implies <code>s1 &lt; s2</code>.</p>
+<p>IMPLEMENTATION:</p>
+<ol>
+<li>Have a <code>stack</code>, each time we store a new number, we first <code>pop</code> out all numbers that are smaller than that number. The numbers that are <code>popped</code> out becomes candidate for <code>s3</code>.</li>
+<li>We keep track of the <code>maximum</code> of such <code>s3</code> (which is always the most recently <code>popped</code> number from the <code>stack</code>).</li>
+<li>Once we encounter any number smaller than <code>s3</code>, we know we found a valid sequence since <code>s1 &lt; s3</code> implies <code>s1 &lt; s2</code>.</li>
+</ol>
+<p>RUNTIME: Each item is <code>pushed</code> and <code>popped</code> once at most, the time complexity is therefore O(n).</p>
+<p>EXAMPLE:<br/>
+<code>i = 6</code>, <strong>nums</strong> =  [ 9, 11, 8, 9, 10, 7, <code>9</code> ], <strong>S1 candidate</strong> = <code>9</code>, <strong>S3 candidate</strong> = <code>None</code>, <strong>Stack</strong> = <code>Empty</code><br/>
+<code>i = 5</code>, <strong>nums</strong> =  [ 9, 11, 8, 9, 10, <code>7</code>, 9 ], <strong>S1 candidate</strong> = <code>7</code>, <strong>S3 candidate</strong> = <code>None</code>, <strong>Stack</strong> = <code>[9]</code><br/>
+<code>i = 4</code>, <strong>nums</strong> =  [ 9, 11, 8, 9, <code>10</code>, 7, 9 ], <strong>S1 candidate</strong> = <code>10</code>, <strong>S3 candidate</strong> = <code>None</code>, <strong>Stack</strong> = <code>[9,7]</code><br/>
+<code>i = 3</code>, <strong>nums</strong> =  [ 9, 11, 8, <code>9</code>, 10, 7, 9 ], <strong>S1 candidate</strong> = <code>9</code>, <strong>S3 candidate</strong> = <code>9</code>, <strong>Stack</strong> = <code>[10]</code><br/>
+<code>i = 2</code>, <strong>nums</strong> =  [ 9, 11, <code>8</code>, 9, 10, 7, 9 ], <strong>S1 candidate</strong> = <code>8</code>, <strong>S3 candidate</strong> = <code>9</code>, <strong>Stack</strong> = <code>[10,9]</code> <strong>We have <code>8&lt;9</code>, sequence found!</strong></p>
+<p>EDIT: Thanks <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/35983">@Pumpkin78</a> and <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/61499">@dalwise</a> for pointing out that the maximum candidate for s3 is always the recently popped number from the stack, because if we encounter any entry smaller than the current candidate, the function would already have returned.</p>
+<pre><code>    bool find132pattern(vector&lt;int&gt;&amp; nums) {
+        int s3 = INT_MIN;
+        stack&lt;int&gt; st;
+        for( int i = nums.size()-1; i &gt;= 0; i -- ){
+            if( nums[i] &lt; s3 ) return true;
+            else while( !st.empty() &amp;&amp; nums[i] &gt; st.top() ){ 
+              s3 = st.top(); st.pop(); 
+            }
+            st.push(nums[i]);
+        }
+        return false;
+    }
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/jade86">jade86</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/67881/single-pass-c-o-n-space-and-time-solution-8-lines-with-detailed-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>The idea is that we can use a stack to keep track of previous min-max intervals.</p>
+<p>Here is the principle to maintain the stack:</p>
+<p>For each number <code>num</code> in the array</p>
+<p>If stack is empty:</p>
+<ul>
+<li>push a new Pair of <code>num</code> into stack</li>
+</ul>
+<p>If stack is not empty:</p>
+<ul>
+<li>
+<p>if <code>num</code> &lt; <code>stack.peek().min</code>,  push a new Pair of <code>num</code> into stack</p>
+</li>
+<li>
+<p>if <code>num</code>  &gt;= <code>stack.peek().min</code>, we first pop() out the peek element, denoted as <code>last</code></p>
+<ul>
+<li>
+<p>if  <code>num</code>  &lt; <code>last.max</code>, we are done, return <code>true</code>;</p>
+</li>
+<li>
+<p>if  <code>num</code>  &gt;= <code>last.max</code>, we merge <code>num</code> into <code>last</code>, which means <code>last.max</code> = <code>num</code>.<br/>
+Once we update <code>last</code>,  if stack is empty, we just push back <code>last</code>.<br/>
+<strong>However, the crucial part is:</strong><br/>
+If stack is not empty, the updated <code>last</code> might:</p>
+<ul>
+<li>Entirely covered stack.peek(), i.e. <code>last.min</code> &lt; <code>stack.peek().min</code> (which is always true) &amp;&amp; <code>last.max</code> &gt;= <code>stack.peek().max</code>, in which case we keep popping out stack.peek().</li>
+<li>Form a 1-3-2 pattern, we are done ,return <code>true</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>So at any time in the stack, <strong>non-overlapping</strong> <code>Pairs</code> are formed in descending order by their min value, which means the min value of peek element in the stack is always the min value globally.</p>
+<pre><code>   class Pair{
+        int min, max;
+        public Pair(int min, int max){
+            this.min = min;
+            this.max = max;
+        }
+    }
+    public boolean find132pattern(int[] nums) {
+        Stack&lt;Pair&gt; stack = new Stack();
+        for(int n: nums){
+            if(stack.isEmpty() || n &lt;stack.peek().min ) stack.push(new Pair(n,n));
+            else if(n &gt; stack.peek().min){ 
+                Pair last = stack.pop();
+                if(n &lt; last.max) return true;
+                else {
+                    last.max = n;
+                    while(!stack.isEmpty() &amp;&amp; n &gt;= stack.peek().max) stack.pop();
+                    // At this time, n &lt; stack.peek().max (if stack not empty)
+                    if(!stack.isEmpty() &amp;&amp; stack.peek().min &lt; n) return true;
+                    stack.push(last);
+                }
+                
+            }
+        }
+        return false;
+    }
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/leogogogo">leogogogo</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68193/java-o-n-solution-using-stack-in-detail-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p><strong><code>I. Naive O(n^3) solution</code></strong></p>
+<p>The naive <code>O(n^3)</code> solution is a no-brainer --- simply check every <code>(i, j, k)</code> combination to see if there is any <code>132</code> pattern.</p>
+<pre><code>public boolean find132pattern(int[] nums) {
+    for (int i = 0; i &lt; nums.length; i++) {
+        for (int j = i + 1; j &lt; nums.length; j++) {
+            for (int k = j + 1; k &lt; nums.length; k++) {
+                if (nums[i] &lt; nums[k] &amp;&amp; nums[k] &lt; nums[j]) return true;
+            }
+        }
+    }
+    return false;
+}
+</code></pre>
+<p>And of course it will get rejected due to TLE. So let's see how we can do better.</p>
+<p><strong><code>II. Improved O(n^2) solution</code></strong></p>
+<p>To reduce the time complexity down to <code>O(n^2)</code>, we need to do some observations. In the naive solution above, let's assume we have index <code>j</code> fixed, what should index <code>i</code> be so that it is most probable we will have a <code>132</code> pattern? Or in other words, what should <code>i</code> be so that we will be certain there is no such <code>132</code> pattern for combination <code>(*, j, *)</code> whenever there is no <code>132</code> pattern for combination of <code>(i, j, *)</code>? (Here <code>*</code> means any index before or after index <code>j</code>.)</p>
+<p>The answer lies in the fact that once the first two numbers <code>nums[i]</code> and <code>nums[j]</code> are fixed, we are up to find the third number <code>nums[k]</code> which will be within the range <code>(nums[i], nums[j])</code> (the two bounds are exclusive). Intuitively the larger the range is, the more likely there will be a number "falling into" it. Therefore we need to choose index <code>i</code> which will maximize the range <code>(nums[i], nums[j])</code>. Since the upper bound <code>nums[j]</code> is fixed, this is equivalent to minimizing the lower bound <code>nums[i]</code>. Thus it is clear <code>i</code> should be the index of the minimum element of the subarray <code>nums[0, j)</code> (left inclusive, right exclusive).</p>
+<p>Since we are scanning index <code>j</code> from the beginning of the input array <code>nums</code>, we can keep track of the minimum element of the subarray from index <code>0</code> up to <code>j - 1</code> without rescanning it. Therefore the first two loops in the naive solution can be combined into one and leads to the following <code>O(n^2)</code> solution:</p>
+<pre><code>public boolean find132pattern(int[] nums) {
+    for (int j = 0, min = Integer.MAX_VALUE; j &lt; nums.length; j++) {
+         min = Math.min(nums[j], min);
+         if (min == nums[j]) continue;
+         
+         for (int k = nums.length - 1; k &gt; j; k--) {
+             if (min &lt; nums[k] &amp;&amp; nums[k] &lt; nums[j]) return true;
+         }
+     }
+     
+     return false;
+}
+</code></pre>
+<p>While this solution can be accepted, it runs slow. One obvious drawback is that in the second loop we are throwing away information about elements in the right part of <code>nums</code> that may be "useful" for later combinations. It turns out we can retain this "useful" information by applying the classic space-time tradeoff, which leads to the following <code>O(n)</code> time and <code>O(n)</code> space solution.</p>
+<p><strong><code>III. Optimized O(n) solution</code></strong></p>
+<p>As I mentioned, to further reduce the time complexity, we need to record the "useful" information about elements in the right part of the input array <code>nums</code>. Since these elements are located at the right part of <code>nums</code>, it will be hard to do so if we are scanning the array from the beginning. So the idea is to scan it from the end while in the meantime keep track of the "useful" information. But still at each index <code>j</code>, we need to know the minimum element for subarray <code>nums[0, j)</code>. This can be done by doing a pre-scan in the forward direction and memorize the results for each index in an auxiliary array (we will call the array as <code>arr</code> whose element <code>arr[j]</code> will denote the minimum element in the subarray <code>nums[0, j)</code>).</p>
+<p>Until now we are kinda vague about the exact meaning of "useful" information, so let's try to be more specific. Assume we're currently scanning (from the end) the element with index <code>j</code>, our task is to find two elements <code>nums[i]</code> and <code>nums[k]</code> to determine if there exists a <code>132</code> pattern, with i &lt; j &lt; k. The left element <code>nums[i]</code>, as it has been shown in part <code>II</code>, will be chosen as <code>arr[j]</code>, the minimum element of subarray <code>nums[0, j)</code>. What about the right element <code>nums[k]</code>?</p>
+<p>The answer to that will address the meaning of "useful" information. First note we are only interested in elements that are greater than <code>arr[j]</code>, so it is sensible to maintain only those elements. Second, among all these qualified elements, which one will be the most probable to fall into the range <code>(nums[i], nums[j])</code>? I would say it is the smallest one (i.e., if the smallest one is out of the range, all others will also be out of range). So to sum up, the "useful" information for current index <code>j</code> will be a collection of scanned elements that are greater than <code>arr[j]</code>, and <code>nums[k]</code> will be chosen as the smallest one if the collection is not empty.</p>
+<p>From the analyses above, it looks like we have to do some sorting stuff for the retained elements (or at least find a way to figure out its smallest element). Well, it turns out these elements will be sorted automatically due to the fact that <code>arr[j'] &gt;= arr[j]</code> as long as <code>j' &lt; j</code>. Here is how it goes, which is a proof by induction.</p>
+<p>At the beginning we have an empty collection and of course it is sorted. Now suppose we are at index <code>j</code> and the corresponding collection is still sorted, let's see if it remains so at index <code>j - 1</code>. First we will check if <code>nums[j]</code> is greater than <code>arr[j]</code>. If not, we simply continue to <code>j - 1</code>. Since the collection is intact so it will be sorted at <code>j - 1</code>. Otherwise, we need to remove elements in the collection that are no greater than <code>arr[j]</code> (this is necessary because some smaller elements may be left over in the collection from previous steps). After removal, we then compare the first element in the collection with <code>nums[j]</code> to see if a <code>132</code> pattern has been found, provided the collection is not empty. If so, return true. Otherwise one of the following must be true: the collection is empty or <code>nums[j]</code> is no greater than the first element in the collection. In either case the collection is sorted. Now if we have <code>arr[j - 1] &lt; nums[j]</code>, we need to add <code>nums[j]</code> to the collection since it is a qualified number for <code>arr[j - 1]</code>. Again in either case the collection will remain sorted after addition (if it is empty, after addition there is only one element; otherwise since the added element is no greater than the first element in the collection before addition, it will become the new first element after addition and the collection stays sorted).</p>
+<p>Here is the program with <code>O(n)</code> time and space complexity. There is one minor optimization based on the observation that the total number of elements in the collection will never exceed the total number of elements scanned so far. Therefore the right part of the <code>arr</code> array can be used to serve as the collection. For time complexity, each element in the input array <code>nums</code> will be pushed into and popped out from the collection (or stack to be exact) at most once, the time complexity will be <code>O(n)</code> despite of the nested loop.</p>
+<pre><code>public boolean find132pattern(int[] nums) {
+    int[] arr = Arrays.copyOf(nums, nums.length);
+
+    for (int i = 1; i &lt; nums.length; i++) {
+        arr[i] = Math.min(nums[i - 1], arr[i - 1]);
+    }
+    
+    for (int j = nums.length - 1, top = nums.length; j &gt;= 0; j--) {
+        if (nums[j] &lt;= arr[j]) continue;
+        while (top &lt; nums.length &amp;&amp; arr[top] &lt;= arr[j]) top++;
+        if (top &lt; nums.length &amp;&amp; nums[j] &gt; arr[top]) return true;
+        arr[--top] = nums[j];
+    }
+        
+    return false;
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/fun4leetcode">fun4LeetCode</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68242/java-solutions-from-o-n-3-to-o-n-for-132-pattern">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

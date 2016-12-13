@@ -1,0 +1,135 @@
+<!DOCTYPE html><html><head><title>Binary Watch  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57deba299cbe5e60b1f87ccd" data-set="true" class="title">Binary Watch  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>A binary watch has 4 LEDs on the top which represent the hours (0-11), and the 6 LEDs on the bottom represent the minutes (0-59).</p>
+<p>Each LED represents a zero or one, with the least significant bit on the right.</p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/Binary_clock_samui_moon.jpg" height="300">
+<p>For example, the above binary watch reads "3:25".</p>
+
+<p>Given a non-negative integer <i>n</i> which represents the number of LEDs that are currently on, return all possible times the watch could represent.</p>
+
+<p><b>Example:</b>
+</p><pre>Input: n = 1<br>Return: ["1:00", "2:00", "4:00", "8:00", "0:01", "0:02", "0:04", "0:08", "0:16", "0:32"]</pre>
+
+
+<p><b>Note:</b><br>
+</p><ul>
+<li>The order of output does not matter.</li>
+<li>The hour must not contain a leading zero, for example "01:00" is not valid, it should be "1:00".</li>
+<li>The minute must be consist of two digits and may contain a leading zero, for example "10:2" is not valid, it should be "10:02".</li>
+</ul>
+
+              
+                <div>
+                  <p><a href="/subscribe/">Subscribe</a> to see which companies asked this question</p>
+                </div>
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/bit-manipulation/">Bit Manipulation</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#letter-combinations-of-a-phone-number"> (M) Letter Combinations of a Phone Number</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#number-of-1-bits"> (E) Number of 1 Bits</a>
+                    
+                  </span>
+                </div>
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Just go through the possible times and collect those with the correct number of one-bits.</p>
+<p>Python:</p>
+<pre><code>def readBinaryWatch(self, num):
+    return ['%d:%02d' % (h, m)
+            for h in range(12) for m in range(60)
+            if (bin(h) + bin(m)).count('1') == num]
+</code></pre>
+<p>Java:</p>
+<pre><code>public List&lt;String&gt; readBinaryWatch(int num) {
+    List&lt;String&gt; times = new ArrayList&lt;&gt;();
+    for (int h=0; h&lt;12; h++)
+        for (int m=0; m&lt;60; m++)
+            if (Integer.bitCount(h * 64 + m) == num)
+                times.add(String.format("%d:%02d", h, m));
+    return times;        
+}</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/59374/simple-python-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>vector&lt;string&gt; readBinaryWatch(int num) {
+    vector&lt;string&gt; rs;
+    for (int h = 0; h &lt; 12; h++)
+    for (int m = 0; m &lt; 60; m++)
+        if (bitset&lt;10&gt;(h &lt;&lt; 6 | m).count() == num)
+            rs.emplace_back(to_string(h) + (m &lt; 10 ? ":0" : ":") + to_string(m));
+    return rs;
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/mzchen">mzchen</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/59401/straight-forward-6-line-c-solution-no-need-to-explain">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>public class Solution {
+    public List&lt;String&gt; readBinaryWatch(int num) {
+        List&lt;String&gt; res = new ArrayList&lt;&gt;();
+        int[] nums1 = new int[]{8, 4, 2, 1}, nums2 = new int[]{32, 16, 8, 4, 2, 1};
+        for(int i = 0; i &lt;= num; i++) {
+            List&lt;Integer&gt; list1 = generateDigit(nums1, i);
+            List&lt;Integer&gt; list2 = generateDigit(nums2, num - i);
+            for(int num1: list1) {
+                if(num1 &gt;= 12) continue;
+                for(int num2: list2) {
+                    if(num2 &gt;= 60) continue;
+                    res.add(num1 + ":" + (num2 &lt; 10 ? "0" + num2 : num2));
+                }
+            }
+        }
+        return res;
+    }
+
+    private List&lt;Integer&gt; generateDigit(int[] nums, int count) {
+        List&lt;Integer&gt; res = new ArrayList&lt;&gt;();
+        generateDigitHelper(nums, count, 0, 0, res);
+        return res;
+    }
+
+    private void generateDigitHelper(int[] nums, int count, int pos, int sum, List&lt;Integer&gt; res) {
+        if(count == 0) {
+            res.add(sum);
+            return;
+        }
+        
+        for(int i = pos; i &lt; nums.length; i++) {
+            generateDigitHelper(nums, count - 1, i + 1, sum + nums[i], res);    
+        }
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/xietao0221">xietao0221</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/59494/3ms-java-solution-using-backtracking-and-idea-of-permutation-and-combination">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

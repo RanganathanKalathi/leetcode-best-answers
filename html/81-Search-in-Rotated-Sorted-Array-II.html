@@ -1,0 +1,167 @@
+<!DOCTYPE html><html><head><title>Search in Rotated Sorted Array II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cdc8fd1aae28585753bd" data-set="true" class="title">Search in Rotated Sorted Array II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Follow up for "Search in Rotated Sorted Array":<br>
+What if <i>duplicates</i> are allowed?</p>
+
+<p>Would this affect the run-time complexity? How and why?</p>
+
+<p>Write a function to determine if a given target is in the array.</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/binary-search/">Binary Search</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#search-in-rotated-sorted-array"> (H) Search in Rotated Sorted Array</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Since we will have some duplicate elements in this problem, it is a little tricky because sometimes we cannot decide whether to go to the left side or right side. So for this condition, I have to probe both left  and right side simultaneously to decide which side we need to find the number. Only in this condition, the time complexity may be <em>O(n)</em>. The rest conditions are always <em>O(log n)</em>.</p>
+
+<p>For example:</p>
+
+<p>input: <code>113111111111</code>,  Looking for <em>target</em> <code>3</code>.</p>
+
+<p>Is my solution correct? My code is as followed:</p>
+
+<pre><code>public class Solution {
+    public boolean search(int[] A, int target) {
+        // IMPORTANT: Please reset any member data you declared, as
+        // the same Solution instance will be reused for each test case.
+        int i = 0;
+        int j = A.length - 1;
+        while(i &lt;= j){
+            int mid = (i + j) / 2;
+            if(A[mid] == target)
+                return true;
+            else if(A[mid] &lt; A[i]){
+                if(target &gt; A[j])
+                    j = mid - 1;
+                else if(target &lt; A[mid])
+                    j = mid - 1;
+                else
+                    i = mid + 1;
+            }else if(A[mid] &gt; A[i]){
+                if(target &lt; A[mid] &amp;&amp; target &gt;= A[i])
+                    j = mid - 1;
+                else
+                    i = mid + 1;
+            }else{ // A[mid] == A[i]
+                if(A[mid] != A[j])
+                    i = mid + 1;
+                else{
+                    boolean flag = true;
+                    for(int k = 1; mid - k &gt;= i &amp;&amp; mid + k &lt;= j; k++){
+                        if(A[mid] != A[mid - k]){
+                            j = mid - k;
+                            flag = false;
+                            break;
+                        }else if(A[mid] != A[mid + k]){
+                            i = mid + k;
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if(flag)
+                        return false;
+                }
+            }
+        }
+        return false;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/baojialiang">baojialiang</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/223/when-there-are-duplicates-the-worst-case-is-could-we-do-better">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+  bool search(int A[], int n, int target) {
+    int lo =0, hi = n-1;
+    int mid = 0;
+    while(lo&lt;hi){
+          mid=(lo+hi)/2;
+          if(A[mid]==target) return true;
+          if(A[mid]&gt;A[hi]){
+              if(A[mid]&gt;target &amp;&amp; A[lo] &lt;= target) hi = mid;
+              else lo = mid + 1;
+          }else if(A[mid] &lt; A[hi]){
+              if(A[mid]&lt;target &amp;&amp; A[hi] &gt;= target) lo = mid + 1;
+              else hi = mid;
+          }else{
+              hi--;
+          }
+
+    }
+    return A[lo] == target ? true : false;
+  }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/ggyc1993">ggyc1993</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/23559/c-concise-log-n-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>The idea is the same as the previous one without duplicates</p>
+
+<pre><code>1) everytime check if targe == nums[mid], if so, we find it.
+2) otherwise, we check if the first half is in order (i.e. nums[left]&lt;=nums[mid]) 
+  and if so, go to step 3), otherwise, the second half is in order,   go to step 4)
+3) check if target in the range of [left, mid-1] (i.e. nums[left]&lt;=target &lt; nums[mid]), if so, do search in the first half, i.e. right = mid-1; otherwise, search in the second half left = mid+1;
+4)  check if target in the range of [mid+1, right] (i.e. nums[mid]&lt;target &lt;= nums[right]), if so, do search in the second half, i.e. left = mid+1; otherwise search in the first half right = mid-1;
+</code></pre>
+
+<p>The only difference is that due to the existence of duplicates, we can have nums[left] == nums[mid] and in that case, the first half could be out of order (i.e. NOT in the ascending order, e.g. [3 1 2 3 3 3 3]) and we have to deal this case separately. In that case, it is guaranteed that nums[right] also equals to nums[mid], so what we can do is to check if nums[mid]== nums[left] == nums[right] before the original logic, and if so, we can move left and right both towards the middle by 1. and repeat.  </p>
+
+<pre><code>class Solution {
+public:
+    bool search(vector&lt;int&gt;&amp; nums, int target) {
+        int left = 0, right =  nums.size()-1, mid;
+
+        while(left&lt;=right)
+        {
+            mid = (left + right) &gt;&gt; 1;
+            if(nums[mid] == target) return true;
+
+            // the only difference from the first one, trickly case, just updat left and right
+            if( (nums[left] == nums[mid]) &amp;&amp; (nums[right] == nums[mid]) ) {++left; --right;}
+
+            else if(nums[left] &lt;= nums[mid])
+            {
+                if( (nums[left]&lt;=target) &amp;&amp; (nums[mid] &gt; target) ) right = mid-1;
+                else left = mid + 1; 
+            }
+            else
+            {
+                if((nums[mid] &lt; target) &amp;&amp;  (nums[right] &gt;= target) ) left = mid+1;
+                else right = mid-1;
+            }
+        }
+        return false;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dong.wang.1694">dong.wang.1694</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/41318/my-8ms-c-solution-o-logn-on-average-o-n-worst-case">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

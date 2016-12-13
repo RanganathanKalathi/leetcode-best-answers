@@ -1,0 +1,223 @@
+<!DOCTYPE html><html><head><title>Meeting Rooms II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c866fd1aae2858575321" data-set="true" class="title">Meeting Rooms II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given an array of meeting time intervals consisting of start and end times <code>[[s1,e1],[s2,e2],...]</code> (s<sub>i</sub> i), find the minimum number of conference rooms required.</p>
+
+<p>
+For example,<br>
+Given <code>[[0, 30],[5, 10],[15, 20]]</code>,<br>
+return <code>2</code>.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/facebook/">Facebook</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/heap/">Heap</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/greedy/">Greedy</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/sort/">Sort</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#merge-intervals"> (H) Merge Intervals</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#meeting-rooms"> (E) Meeting Rooms</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Just want to share another idea that uses min heap, average time complexity is O(nlogn).</p>
+
+<pre><code>public int minMeetingRooms(Interval[] intervals) {
+    if (intervals == null || intervals.length == 0)
+        return 0;
+
+    // Sort the intervals by start time
+    Arrays.sort(intervals, new Comparator&lt;Interval&gt;() {
+        public int compare(Interval a, Interval b) { return a.start - b.start; }
+    });
+
+    // Use a min heap to track the minimum end time of merged intervals
+    PriorityQueue&lt;Interval&gt; heap = new PriorityQueue&lt;Interval&gt;(intervals.length, new Comparator&lt;Interval&gt;() {
+        public int compare(Interval a, Interval b) { return a.end - b.end; }
+    });
+
+    // start with the first meeting, put it to a meeting room
+    heap.offer(intervals[0]);
+
+    for (int i = 1; i &lt; intervals.length; i++) {
+        // get the meeting room that finishes earliest
+        Interval interval = heap.poll();
+
+        if (intervals[i].start &gt;= interval.end) {
+            // if the current meeting starts right after 
+            // there's no need for a new room, merge the interval
+            interval.end = intervals[i].end;
+        } else {
+            // otherwise, this meeting needs a new room
+            heap.offer(intervals[i]);
+        }
+
+        // don't forget to put the meeting room back
+        heap.offer(interval);
+    }
+
+    return heap.size();
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jeantimex">jeantimex</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/50911/ac-java-solution-using-min-heap">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>First collect the changes: at what times the number of meetings goes up or down and by how much. Then go through those changes in ascending order and keep track of the current and maximum number of rooms needed.</p>
+
+<hr>
+
+<p><strong>Solution 1: Using <code>map</code></strong> ... 600 ms</p>
+
+<pre><code>int minMeetingRooms(vector&lt;Interval&gt;&amp; intervals) {
+    map&lt;int, int&gt; changes;
+    for (auto i : intervals) {
+        changes[i.start] += 1;
+        changes[i.end] -= 1;
+    }
+    int rooms = 0, maxrooms = 0;
+    for (auto change : changes)
+        maxrooms = max(maxrooms, rooms += change.second);
+    return maxrooms;
+}
+</code></pre>
+
+<hr>
+
+<p><strong>Solution 2: Using <code>vector</code></strong> ... 588 ms</p>
+
+<pre><code>int minMeetingRooms(vector&lt;Interval&gt;&amp; intervals) {
+    vector&lt;pair&lt;int, int&gt;&gt; changes;
+    for (auto i : intervals) {
+        changes.push_back({i.start, 1});
+        changes.push_back({i.end, -1});
+    };
+    sort(begin(changes), end(changes));
+    int rooms = 0, maxrooms = 0;
+    for (auto change : changes)
+        maxrooms = max(maxrooms, rooms += change.second);
+    return maxrooms;
+}
+</code></pre>
+
+<hr>
+
+<p><strong>Solution 3: Using two <code>vector</code>s</strong> ... 584 ms</p>
+
+<p>Based on <a rel="nofollow" href="https://leetcode.com/discuss/50793/my-python-solution-with-explanation">yinfeng.zhang.9's Python solution</a>. Uses separate vectors for start and end times, which ends up consistently being fastest. I'm guessing it's mostly because working with ints is simpler than working with pairs of ints. The initial sorting also needs fewer steps, 2(nlogn) instead of (2n)log(2n), but I think the added merging in the later loop cancels that advantage out.</p>
+
+<pre><code>int minMeetingRooms(vector&lt;Interval&gt;&amp; intervals) {
+    vector&lt;int&gt; starts, ends;
+    for (auto i : intervals) {
+        starts.push_back(i.start);
+        ends.push_back(i.end);
+    }
+    sort(begin(starts), end(starts));
+    sort(begin(ends), end(ends));
+    int e = 0, rooms = 0, available = 0;
+    for (int start : starts) {
+        while (ends[e] &lt;= start) {
+            ++e;
+            ++available;
+        }
+        available ? --available : ++rooms;
+    }
+    return rooms;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/50948/c-o-n-log-n-584-ms-3-solutions">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Simulate event queue procession. Create event for each <code>start</code> and <code>end</code> of intervals. Then for <code>start</code> event, open one more room;  for <code>end</code> event, close one meeting room. At the same time, update the most rooms that is required.</p>
+
+<p>Be careful of events like <code>[(end at 11), (start at 11)]</code>. Put <code>end</code> before <code>start</code> event when they share the same happening time, so that two events can share one meeting room.</p>
+
+<pre><code>public class Solution {
+
+    private static final int START = 1;
+
+    private static final int END = 0;
+
+    private class Event {
+        int time;
+        int type; // end event is 0; start event is 1
+
+        public Event(int time, int type) {
+            this.time = time;
+            this.type = type;
+        }
+    }
+
+    public int minMeetingRooms(Interval[] intervals) {
+        int rooms = 0; // occupied meeting rooms
+        int res = 0;
+
+        // initialize an event queue based on event's happening time
+        Queue&lt;Event&gt; events = new PriorityQueue&lt;&gt;(new Comparator&lt;Event&gt;() {
+            @Override
+            public int compare(Event e1, Event e2) {
+                // for same time, let END event happens first to save rooms
+                return e1.time != e2.time ? 
+                       e1.time - e2.time : e1.type - e2.type;
+            }
+        });
+
+        // create event and push into event queue
+        for (Interval interval : intervals) {
+            events.offer(new Event(interval.start, START));
+            events.offer(new Event(interval.end, END));
+        }
+
+        // process events
+        while (!events.isEmpty()) {
+            Event event = events.poll();
+            if (event.type == START) {
+                rooms++;
+                res = Math.max(res, rooms);
+            } else {
+                rooms--; 
+            }
+        }
+
+        return res;
+    }
+
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StevenCooks">StevenCooks</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/60659/java-another-thinking-process-event-queue">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

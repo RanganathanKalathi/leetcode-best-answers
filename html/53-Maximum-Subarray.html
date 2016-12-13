@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><title>Maximum Subarray</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cec5fd1aae28585753d9" data-set="true" class="title">Maximum Subarray</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Find the contiguous subarray within an array (containing at least one number) which has the largest sum.
+</p>
+<p>
+For example, given the array <code>[&#8722;2,1,&#8722;3,4,&#8722;1,2,1,&#8722;5,4]</code>,<br>
+the contiguous subarray <code>[4,&#8722;1,2,1]</code> has the largest sum = <code>6</code>.
+</p>
+
+<p class="showspoilers"><a href="#" onclick="showSpoilers(this); return false;">click to show more practice.</a></p>
+
+<div class="spoilers"><b>More practice:</b>
+
+<p>If you have figured out the O(<i>n</i>) solution, try coding another solution using the divide and conquer approach, which is more subtle.</p>
+</div>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/linkedin/">LinkedIn</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/divide-and-conquer/">Divide and Conquer</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#best-time-to-buy-and-sell-stock"> (M) Best Time to Buy and Sell Stock</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#maximum-product-subarray"> (M) Maximum Product Subarray</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>this problem was discussed by Jon Bentley (Sep. 1984 Vol. 27 No. 9 Communications of the ACM P885)</p>
+
+<p>the paragraph below was copied from his paper (with a little modifications)</p>
+
+<p>algorithm that operates on arrays: it starts at the left end (element A[1]) and scans through to the right end (element A[n]), keeping track of the maximum sum subvector seen so far. The maximum is initially A[0]. Suppose we've solved the problem for A[1 .. i - 1]; how can we extend that to A[1 .. i]? The maximum 
+sum in the first I elements is either the maximum sum in the first i - 1 elements (which we'll call MaxSoFar), or it is that of a subvector that ends in position i (which we'll call MaxEndingHere).  </p>
+
+<p>MaxEndingHere is either A[i] plus the previous MaxEndingHere, or just A[i], whichever is larger.</p>
+
+<pre><code>public static int maxSubArray(int[] A) {
+    int maxSoFar=A[0], maxEndingHere=A[0];
+    for (int i=1;i&lt;A.length;++i){
+        maxEndingHere= Math.max(maxEndingHere+A[i],A[i]);
+        maxSoFar=Math.max(maxSoFar, maxEndingHere); 
+    }
+    return maxSoFar;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/cbmbbz">cbmbbz</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/15805/accepted-o-n-solution-in-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Analysis of this problem:
+ Apparently, this is a optimization problem, which can be usually solved by DP. So when it comes to DP, the first thing for us to figure out is the format of the sub problem(or the state of each sub problem).  The format of the sub problem can be helpful when we are trying to come up with the recursive relation. </p>
+
+<p>At first, I think the sub problem should look like: <code>maxSubArray(int A[], int i, int j)</code>, which means the maxSubArray for A[i: j]. In this way, our goal is to figure out what <code>maxSubArray(A, 0, A.length - 1)</code> is. However, if we define the format of the sub problem in this way, it's hard to find the connection from the sub problem to the original problem(at least for me). In other words, I can't find a way to divided the original problem into the sub problems and use the solutions of the sub problems to somehow create the solution of the original one. </p>
+
+<p>So I change the format of the sub problem into something like: <code>maxSubArray(int A[], int i)</code>, which means the maxSubArray for A[0:i ] which must has A[i] as the end element. Note that now the sub problem's format is less flexible and less powerful than the previous one because there's a limitation that A[i] should be contained in that sequence and we have to keep track of each solution of the sub problem to update the global optimal value. However, now the connect between the sub problem &amp; the original one becomes clearer:</p>
+
+<pre><code>maxSubArray(A, i) = maxSubArray(A, i - 1) &gt; 0 ? maxSubArray(A, i - 1) : 0 + A[i]; 
+</code></pre>
+
+<p>And here's the code</p>
+
+<pre><code>public int maxSubArray(int[] A) {
+        int n = A.length;
+        int[] dp = new int[n];//dp[i] means the maximum subarray ending with A[i];
+        dp[0] = A[0];
+        int max = dp[0];
+
+        for(int i = 1; i &lt; n; i++){
+            dp[i] = A[i] + (dp[i - 1] &gt; 0 ? dp[i - 1] : 0);
+            max = Math.max(max, dp[i]);
+        }
+
+        return max;
+} 
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/FujiwaranoSai">FujiwaranoSai</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/19614/dp-solution-%26-some-thoughts">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Idea is very simple. Basically, keep adding each integer to the sequence until the sum drops below 0. 
+If sum is negative, then should reset the sequence.</p>
+
+<pre><code>class Solution {
+public:
+    int maxSubArray(int A[], int n) {
+        int ans=A[0],i,j,sum=0;
+        for(i=0;i&lt;n;i++){
+            sum+=A[i];
+            ans=max(sum,ans);
+            sum=max(sum,0);
+        }
+        return ans;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/lucastan">lucastan</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/11288/simplest-and-fastest-o-n-c-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html><html><head><title>Perfect Squares</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c7affd1aae2858575308" data-set="true" class="title">Perfect Squares</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a positive integer <i>n</i>, find the least number of perfect square numbers (for example, <code>1, 4, 9, 16, ...</code>) which sum to <i>n</i>.
+</p>
+
+<p>
+For example, given <i>n</i> = <code>12</code>, return <code>3</code> because <code>12 = 4 + 4 + 4</code>; given <i>n</i> = <code>13</code>, return <code>2</code> because <code>13 = 4 + 9</code>.
+</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/jianchao.li.fighter">@jianchao.li.fighter</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/breadth-first-search/">Breadth-first Search</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#count-primes"> (E) Count Primes</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#ugly-number-ii"> (M) Ugly Number II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Came up with the 2 solutions of breadth-first search and dynamic programming. Also "copied" StefanPochmann's static dynamic programming solution (https://leetcode.com/discuss/56993/static-dp-c-12-ms-python-172-ms-ruby-384-ms) and davidtan1890's mathematical solution (https://leetcode.com/discuss/57066/4ms-c-code-solve-it-mathematically) here with minor style changes and some comments. Thank Stefan and David for posting their nice solutions!</p>
+
+<p><strong>1.Dynamic Programming:</strong> 440ms</p>
+
+<pre><code>class Solution 
+{
+public:
+    int numSquares(int n) 
+    {
+        if (n &lt;= 0)
+        {
+            return 0;
+        }
+
+        // cntPerfectSquares[i] = the least number of perfect square numbers 
+        // which sum to i. Note that cntPerfectSquares[0] is 0.
+        vector&lt;int&gt; cntPerfectSquares(n + 1, INT_MAX);
+        cntPerfectSquares[0] = 0;
+        for (int i = 1; i &lt;= n; i++)
+        {
+            // For each i, it must be the sum of some number (i - j*j) and 
+            // a perfect square number (j*j).
+            for (int j = 1; j*j &lt;= i; j++)
+            {
+                cntPerfectSquares[i] = 
+                    min(cntPerfectSquares[i], cntPerfectSquares[i - j*j] + 1);
+            }
+        }
+
+        return cntPerfectSquares.back();
+    }
+};
+</code></pre>
+
+<p><strong>2.Static Dynamic Programming:</strong> 12ms</p>
+
+<pre><code>class Solution 
+{
+public:
+    int numSquares(int n) 
+    {
+        if (n &lt;= 0)
+        {
+            return 0;
+        }
+
+        // cntPerfectSquares[i] = the least number of perfect square numbers 
+        // which sum to i. Since cntPerfectSquares is a static vector, if 
+        // cntPerfectSquares.size() &gt; n, we have already calculated the result 
+        // during previous function calls and we can just return the result now.
+        static vector&lt;int&gt; cntPerfectSquares({0});
+
+        // While cntPerfectSquares.size() &lt;= n, we need to incrementally 
+        // calculate the next result until we get the result for n.
+        while (cntPerfectSquares.size() &lt;= n)
+        {
+            int m = cntPerfectSquares.size();
+            int cntSquares = INT_MAX;
+            for (int i = 1; i*i &lt;= m; i++)
+            {
+                cntSquares = min(cntSquares, cntPerfectSquares[m - i*i] + 1);
+            }
+
+            cntPerfectSquares.push_back(cntSquares);
+        }
+
+        return cntPerfectSquares[n];
+    }
+};
+</code></pre>
+
+<p><strong>3.Mathematical Solution:</strong> 4ms</p>
+
+<pre><code>class Solution 
+{  
+private:  
+    int is_square(int n)
+    {  
+        int sqrt_n = (int)(sqrt(n));  
+        return (sqrt_n*sqrt_n == n);  
+    }
+
+public:
+    // Based on Lagrange's Four Square theorem, there 
+    // are only 4 possible results: 1, 2, 3, 4.
+    int numSquares(int n) 
+    {  
+        // If n is a perfect square, return 1.
+        if(is_square(n)) 
+        {
+            return 1;  
+        }
+
+        // The result is 4 if and only if n can be written in the 
+        // form of 4^k*(8*m + 7). Please refer to 
+        // Legendre's three-square theorem.
+        while ((n &amp; 3) == 0) // n%4 == 0  
+        {
+            n &gt;&gt;= 2;  
+        }
+        if ((n &amp; 7) == 7) // n%8 == 7
+        {
+            return 4;
+        }
+
+        // Check whether 2 is the result.
+        int sqrt_n = (int)(sqrt(n)); 
+        for(int i = 1; i &lt;= sqrt_n; i++)
+        {  
+            if (is_square(n - i*i)) 
+            {
+                return 2;  
+            }
+        }  
+
+        return 3;  
+    }  
+}; 
+</code></pre>
+
+<p><strong>4.Breadth-First Search:</strong> 80ms</p>
+
+<pre><code>class Solution 
+{
+public:
+    int numSquares(int n) 
+    {
+        if (n &lt;= 0)
+        {
+            return 0;
+        }
+
+        // perfectSquares contain all perfect square numbers which 
+        // are smaller than or equal to n.
+        vector&lt;int&gt; perfectSquares;
+        // cntPerfectSquares[i - 1] = the least number of perfect 
+        // square numbers which sum to i.
+        vector&lt;int&gt; cntPerfectSquares(n);
+
+        // Get all the perfect square numbers which are smaller than 
+        // or equal to n.
+        for (int i = 1; i*i &lt;= n; i++)
+        {
+            perfectSquares.push_back(i*i);
+            cntPerfectSquares[i*i - 1] = 1;
+        }
+
+        // If n is a perfect square number, return 1 immediately.
+        if (perfectSquares.back() == n)
+        {
+            return 1;
+        }
+
+        // Consider a graph which consists of number 0, 1,...,n as
+        // its nodes. Node j is connected to node i via an edge if  
+        // and only if either j = i + (a perfect square number) or 
+        // i = j + (a perfect square number). Starting from node 0, 
+        // do the breadth-first search. If we reach node n at step 
+        // m, then the least number of perfect square numbers which 
+        // sum to n is m. Here since we have already obtained the 
+        // perfect square numbers, we have actually finished the 
+        // search at step 1.
+        queue&lt;int&gt; searchQ;
+        for (auto&amp; i : perfectSquares)
+        {
+            searchQ.push(i);
+        }
+
+        int currCntPerfectSquares = 1;
+        while (!searchQ.empty())
+        {
+            currCntPerfectSquares++;
+
+            int searchQSize = searchQ.size();
+            for (int i = 0; i &lt; searchQSize; i++)
+            {
+                int tmp = searchQ.front();
+                // Check the neighbors of node tmp which are the sum 
+                // of tmp and a perfect square number.
+                for (auto&amp; j : perfectSquares)
+                {
+                    if (tmp + j == n)
+                    {
+                        // We have reached node n.
+                        return currCntPerfectSquares;
+                    }
+                    else if ((tmp + j &lt; n) &amp;&amp; (cntPerfectSquares[tmp + j - 1] == 0))
+                    {
+                        // If cntPerfectSquares[tmp + j - 1] &gt; 0, this is not 
+                        // the first time that we visit this node and we should 
+                        // skip the node (tmp + j).
+                        cntPerfectSquares[tmp + j - 1] = currCntPerfectSquares;
+                        searchQ.push(tmp + j);
+                    }
+                    else if (tmp + j &gt; n)
+                    {
+                        // We don't need to consider the nodes which are greater ]
+                        // than n.
+                        break;
+                    }
+                }
+
+                searchQ.pop();
+            }
+        }
+
+        return 0;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/zhukov">zhukov</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/58056/summary-of-different-solutions-bfs-static-and-mathematics">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>dp[n] indicates that the perfect squares count of the given n, and we have:</p>
+
+<pre><code>dp[0] = 0 
+dp[1] = dp[0]+1 = 1
+dp[2] = dp[1]+1 = 2
+dp[3] = dp[2]+1 = 3
+dp[4] = Min{ dp[4-1*1]+1, dp[4-2*2]+1 } 
+      = Min{ dp[3]+1, dp[0]+1 } 
+      = 1               
+dp[5] = Min{ dp[5-1*1]+1, dp[5-2*2]+1 } 
+      = Min{ dp[4]+1, dp[1]+1 } 
+      = 2
+                        .
+                        .
+                        .
+dp[13] = Min{ dp[13-1*1]+1, dp[13-2*2]+1, dp[13-3*3]+1 } 
+       = Min{ dp[12]+1, dp[9]+1, dp[4]+1 } 
+       = 2
+                        .
+                        .
+                        .
+dp[n] = Min{ dp[n - i*i] + 1 },  n - i*i &gt;=0 &amp;&amp; i &gt;= 1
+</code></pre>
+
+<p>and the sample code is like below:</p>
+
+<pre><code>public int numSquares(int n) {
+    int[] dp = new int[n + 1];
+    Arrays.fill(dp, Integer.MAX_VALUE);
+    dp[0] = 0;
+    for(int i = 1; i &lt;= n; ++i) {
+        int min = Integer.MAX_VALUE;
+        int j = 1;
+        while(i - j*j &gt;= 0) {
+            min = Math.min(min, dp[i - j*j] + 1);
+            ++j;
+        }
+        dp[i] = min;
+    }       
+    return dp[n];
+}
+</code></pre>
+
+<p>Hope it can help to understand the DP solution.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Karci">Karci</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/62526/an-easy-understanding-dp-solution-in-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>These solutions use some number theory (see explanation further down).</p>
+
+<hr>
+
+<p><strong>Ruby solution</strong></p>
+
+<pre><code>require 'prime'
+
+def num_squares(n)
+  n /= 4 while n % 4 == 0
+  return 4 if n % 8 == 7
+  return 3 if n.prime_division.any? { |p, e| p % 4 == 3 &amp;&amp; e.odd? }
+  (n**0.5).to_i**2 == n ? 1 : 2
+end
+</code></pre>
+
+<p>Or:</p>
+
+<pre><code>require 'prime'
+
+def num_squares(n)
+  n /= 4 while n % 4 == 0
+  return 4 if n % 8 == 7
+  pd = n.prime_division
+  return 3 if pd.any? { |p, e| p % 4 == 3 &amp;&amp; e.odd? }
+  pd.any? { |_, e| e.odd? } ? 2 : 1
+end
+</code></pre>
+
+<hr>
+
+<p><strong>C++ solution</strong></p>
+
+<pre><code>int numSquares(int n) {
+    while (n % 4 == 0)
+        n /= 4;
+    if (n % 8 == 7)
+        return 4;
+    bool min2 = false;
+    for (int i=2; i&lt;=n; ++i) {
+        if (i &gt; n/i)
+            i = n;
+        int e = 0;
+        while (n % i == 0)
+            n /= i, ++e;
+        if (e % 2 &amp;&amp; i % 4 == 3)
+            return 3;
+        min2 |= e % 2;
+    }
+    return 1 + min2;
+}
+</code></pre>
+
+<hr>
+
+<p><strong>C solution</strong></p>
+
+<p>Inspired by <a rel="nofollow" href="https://leetcode.com/discuss/57020/java-solution-o-n-1-2-time-and-o-1-space">kevin36's solution</a>. We don't really need to compute the prime factorization. Knowing that four squares always suffice and using the three-squares test is enough. Single-square and sum-of-two-squares cases can be done simpler.</p>
+
+<pre><code>int numSquares(int n) {
+    while (n % 4 == 0)
+        n /= 4;
+    if (n % 8 == 7)
+        return 4;
+    for (int a=0; a*a&lt;=n; ++a) {
+        int b = sqrt(n - a*a);
+        if (a*a + b*b == n)
+            return 1 + !!a;
+    }
+    return 3;
+}
+</code></pre>
+
+<hr>
+
+<p><strong>Explanation</strong></p>
+
+<p>I happen to have given a little talk about just this topic a while back in a number theory seminar. This problem is completely solved, in the sense of being reduced to simple checks of a number's prime factorization. A natural number is...</p>
+
+<ul>
+<li>... a <strong>square</strong> if and only if each prime factor occurs to an even power in the number's prime factorization.</li>
+<li>... a <a rel="nofollow" href="https://en.wikipedia.org/wiki/Fermat%27s_theorem_on_sums_of_two_squares"><strong>sum of two squares</strong></a> if and only if each prime factor that's 3 modulo 4 occurs to an even power in the number's prime factorization.</li>
+<li>... a <a rel="nofollow" href="https://en.wikipedia.org/wiki/Legendre%27s_three-square_theorem"><strong>sum of three squares</strong></a> if and only if it's not of the form 4<sup>a</sup>(8b+7) with integers a and b.</li>
+<li>... a <a rel="nofollow" href="https://en.wikipedia.org/wiki/Lagrange%27s_four-square_theorem"><strong>sum of four squares</strong></a>. Period. No condition. You never need more than four.</li>
+</ul>
+
+<p>Of course single squares can also be identified by comparing a given number with the square of the rounded root of the number.</p>
+
+<p>The problem statement says <em>"1, 4, 9, 16, ..."</em>, for some reason apparently excluding 0, but it really is a perfect square and the above theorems do consider it one. With that, you can for example always extend a sum of two squares a<sup>2</sup>+b<sup>2</sup> to the sum of three squares a<sup>2</sup>+b<sup>2</sup>+0<sup>2</sup>. Put differently, if n isn't a sum of three squares, then it also isn't a sum of two squares. So you can read the above statements as <em>"... a sum of m <strong>(or fewer)</strong> squares"</em>. Thanks to ruben3 for asking about this in the comments.</p>
+
+<p>In my above solutions, I first divide the given number by 4 as often as possible and then do the three-squares check. Dividing by 4 doesn't affect the other checks, and the n % 8 == 7 is cheaper than the prime factorization, so this saves time in cases where we do need four squares.</p>
+
+<p>Armed with just the knowledge that you never need more than four squares, it's also easy to write O(n) solutions, e.g.:</p>
+
+<pre><code>int numSquares(int n) {
+    int ub = sqrt(n);
+    for (int a=0; a&lt;=ub; ++a) {
+        for (int b=a; b&lt;=ub; ++b) {
+            int c = sqrt(n - a*a - b*b);
+            if (a*a + b*b + c*c == n)
+                return !!a + !!b + !!c;
+        }
+    }
+    return 4;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/56982/o-sqrt-n-in-ruby-c-c">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

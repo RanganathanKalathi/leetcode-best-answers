@@ -1,0 +1,191 @@
+<!DOCTYPE html><html><head><title>Linked List Random Node</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57aaa6c99cbe5e1d6927d288" data-set="true" class="title">Linked List Random Node</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a singly linked list, return a random node's value from the linked list. Each node must have the <b>same probability</b> of being chosen.</p>
+
+<p><b>Follow up:</b><br>
+What if the linked list is extremely large and its length is unknown to you? Could you solve this efficiently without using extra space?
+</p>
+
+<p><b>Example:</b>
+</p><pre>
+// Init a singly linked list [1,2,3].
+ListNode head = new ListNode(1);
+head.next = new ListNode(2);
+head.next.next = new ListNode(3);
+Solution solution = new Solution(head);
+
+// getRandom() should return either 1, 2, or 3 randomly. Each element should have equal probability of returning.
+solution.getRandom();
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/reservoir-sampling/">Reservoir Sampling</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<h3>Problem:</h3>
+<ul>
+<li>Choose <code>k</code> entries from <code>n</code> numbers. Make sure each number is selected with the probability of <code>k/n</code></li>
+</ul>
+<h3>Basic idea:</h3>
+<ul>
+<li>Choose <code>1, 2, 3, ..., k</code> first and put them into the reservoir.</li>
+<li>For <code>k+1</code>, pick it with a probability of <code>k/(k+1)</code>, and randomly replace a number in the reservoir.</li>
+<li>For <code>k+i</code>, pick it with a probability of <code>k/(k+i)</code>, and randomly replace a number in the reservoir.</li>
+<li>Repeat until <code>k+i</code> reaches <code>n</code></li>
+</ul>
+<h3>Proof:</h3>
+<ul>
+<li>For <code>k+i</code>, the probability that it is selected and will replace a number in the reservoir is <code>k/(k+i)</code></li>
+<li>For a number in the reservoir before (let's say <code>X</code>), the probability that it keeps staying in the reservoir is
+<ul>
+<li><code>P(X was in the reservoir last time)</code> &#215; <code>P(X is not replaced by k+i)</code></li>
+<li>= <code>P(X was in the reservoir last time)</code> &#215; (<code>1</code> - <code>P(k+i is selected and replaces X)</code>)</li>
+<li>= <code>k/(k+i-1)</code> &#215; &#65288;<code>1</code> - <code>k/(k+i)</code> &#215; <code>1/k</code>&#65289;</li>
+<li>= <code>k/(k+i)</code></li>
+</ul>
+</li>
+<li>When <code>k+i</code> reaches <code>n</code>, the probability of each number staying in the reservoir is <code>k/n</code></li>
+</ul>
+<h3>Example</h3>
+<ul>
+<li>Choose <code>3</code> numbers from <code>[111, 222, 333, 444]</code>. Make sure each number is selected with a probability of <code>3/4</code></li>
+<li>First, choose <code>[111, 222, 333]</code> as the initial reservior</li>
+<li>Then choose <code>444</code> with a probability of <code>3/4</code></li>
+<li>For <code>111</code>, it stays with a probability of
+<ul>
+<li><code>P(444 is not selected)</code> + <code>P(444 is selected but it replaces 222 or 333)</code></li>
+<li>= <code>1/4</code> + <code>3/4</code>*<code>2/3</code></li>
+<li>= <code>3/4</code></li>
+</ul>
+</li>
+<li>The same case with <code>222</code> and <code>333</code></li>
+<li>Now all the numbers have the probability of <code>3/4</code> to be picked</li>
+</ul>
+<h3>This Problem &lt;Linked List Random Node&gt;</h3>
+<ul>
+<li>This problem is the sp case where <code>k=1</code></li>
+</ul>
+<hr/>
+<p>P.S. Thanks for <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/37344">@WKVictor</a> for pointing out my mistake!</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/wtifs">WTIFS</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/53753/brief-explanation-for-reservoir-sampling">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>import java.util.*;
+public class Solution {
+
+    /** @param head The linked list's head. Note that the head is guanranteed to be not null, so it contains at least one node. */
+    ListNode head = null;
+    Random randomGenerator = null;
+    public Solution(ListNode head) {
+        this.head = head;
+        this.randomGenerator = new Random();
+
+    }
+    
+    /** Returns a random node's value. */
+    public int getRandom() {
+        ListNode result = null;
+        ListNode current = head;
+        
+        for(int n = 1; current!=null; n++) {
+            if (randomGenerator.nextInt(n) == 0) {
+                result = current;
+            }
+            current = current.next;
+        }
+        
+        return result.val;
+        
+    }
+}
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution obj = new Solution(head);
+ * int param_1 = obj.getRandom();
+ */
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/abi93k">abi93k</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/53738/o-n-time-o-1-space-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>according  to the wiki <a href="https://en.wikipedia.org/wiki/Reservoir_sampling" rel="nofollow">https://en.wikipedia.org/wiki/Reservoir_sampling</a><br/>
+here is sudo code for k size reservoir:</p>
+<pre><code>/*
+  S has items to sample, R will contain the result
+*/
+ReservoirSample(S[1..n], R[1..k])
+  // fill the reservoir array
+  for i = 1 to k
+      R[i] := S[i]
+
+  // replace elements with gradually decreasing probability
+  for i = k+1 to n
+    j := random(1, i)   // important: inclusive range
+    if j &lt;= k
+        R[j] := S[i]
+</code></pre>
+<p>you need to remember  the range [ 0, i ] should be inclusive.</p>
+<pre><code>class Solution {
+private:
+    ListNode* head;
+public:
+    /** @param head The linked list's head. Note that the head is guanranteed to be not null, so it contains at least one node. */
+    Solution(ListNode* head) {
+        this-&gt;head = head;
+    }
+    
+    /** Returns a random node's value. */
+    int getRandom() {
+        int res = head-&gt;val;
+        ListNode* node = head-&gt;next;
+        int i = 2;
+        while(node){
+            int j = rand()%i;
+            if(j==0)
+                res = node-&gt;val;
+            i++;
+            node = node-&gt;next;
+        }
+        return res;
+    }
+};
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/primbo">primbo</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/53812/using-reservoir-sampling-o-1-space-o-n-time-complexity-c">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

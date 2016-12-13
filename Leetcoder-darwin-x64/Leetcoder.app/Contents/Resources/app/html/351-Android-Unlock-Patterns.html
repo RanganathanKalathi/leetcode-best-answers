@@ -1,0 +1,288 @@
+<!DOCTYPE html><html><head><title>Android Unlock Patterns</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="574280459cbe5e113c032063" data-set="true" class="title">Android Unlock Patterns</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given an Android <b>3x3</b> key lock screen and two integers <b>m</b> and <b>n</b>, where  1 &#8804; m &#8804; n &#8804; 9, count the total number of unlock patterns of the Android lock screen, which consist of minimum of <b>m</b> keys and maximum <b>n</b> keys.</p>
+
+<p><b>Rules for a valid pattern:</b><br>
+</p><ol>
+<li>Each pattern must connect at least <b>m</b> keys and at most <b>n</b> keys.</li>
+<li>All the keys must be distinct.</li>
+<li>If the line connecting two consecutive keys in the pattern passes through any other keys, the other keys must have previously selected in the pattern. No jumps through non selected key is allowed.</li>
+<li>The order of keys used matters.</li>
+</ol>
+
+
+<img src="https://discuss.leetcode.com/uploads/files/1461680355228-cptqh.png">
+
+<p><b>Explanation:</b><br>
+
+</p><pre>| 1 | 2 | 3 |
+| 4 | 5 | 6 |
+| 7 | 8 | 9 |</pre>
+
+
+<p>
+<b>Invalid move:</b> <code>4 - 1 - 3 - 6 </code><br>
+
+Line  1 - 3 passes through key 2 which had not been selected in the pattern.</p>
+
+<p><b>Invalid move:</b> <code>4 - 1 - 9 - 2</code><br>
+
+Line  1 - 9 passes through key 5 which had not been selected in the pattern.</p>
+
+<p><b>Valid move:</b> <code>2 - 4 - 1 - 3 - 6</code><br>
+
+Line 1 - 3 is valid because it passes through key 2, which had been selected in the pattern</p>
+
+<p><b>Valid move:</b> <code>6 - 5 - 4 - 1 - 9 - 2</code><br>
+
+Line 1 - 9 is valid because it passes through key 5, which had been selected in the pattern.</p>
+
+<p><b>Example:</b><br>
+Given <b>m</b> = 1, <b>n</b> = 1, return 9.
+</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://discuss.leetcode.com/user/elmirap">@elmirap</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The optimization idea is that 1,3,7,9 are symmetric, 2,4,6,8 are also symmetric. Hence we only calculate one among each group and multiply by 4.</p>
+
+<pre><code>public class Solution {
+    // cur: the current position
+    // remain: the steps remaining
+    int DFS(boolean vis[], int[][] skip, int cur, int remain) {
+        if(remain &lt; 0) return 0;
+        if(remain == 0) return 1;
+        vis[cur] = true;
+        int rst = 0;
+        for(int i = 1; i &lt;= 9; ++i) {
+            // If vis[i] is not visited and (two numbers are adjacent or skip number is already visited)
+            if(!vis[i] &amp;&amp; (skip[i][cur] == 0 || (vis[skip[i][cur]]))) {
+                rst += DFS(vis, skip, i, remain - 1);
+            }
+        }
+        vis[cur] = false;
+        return rst;
+    }
+
+    public int numberOfPatterns(int m, int n) {
+        // Skip array represents number to skip between two pairs
+        int skip[][] = new int[10][10];
+        skip[1][3] = skip[3][1] = 2;
+        skip[1][7] = skip[7][1] = 4;
+        skip[3][9] = skip[9][3] = 6;
+        skip[7][9] = skip[9][7] = 8;
+        skip[1][9] = skip[9][1] = skip[2][8] = skip[8][2] = skip[3][7] = skip[7][3] = skip[4][6] = skip[6][4] = 5;
+        boolean vis[] = new boolean[10];
+        int rst = 0;
+        // DFS search each length from m to n
+        for(int i = m; i &lt;= n; ++i) {
+            rst += DFS(vis, skip, 1, i - 1) * 4;    // 1, 3, 7, 9 are symmetric
+            rst += DFS(vis, skip, 2, i - 1) * 4;    // 2, 4, 6, 8 are symmetric
+            rst += DFS(vis, skip, 5, i - 1);        // 5
+        }
+        return rst;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/zzz1322">zzz1322</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/104500/java-solution-with-clear-explanations-and-optimization-81ms">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The general idea is DFS all the possible combinations from 1 to 9 and skip invalid moves along the way. </p>
+
+<p>We can check invalid moves by using a jumping table. e.g. If a move requires a jump and the key that it is crossing is not visited, then the move is invalid. Furthermore, we can utilize symmetry to reduce runtime, in this case it reduced from ~120ms to ~70ms.</p>
+
+<p>I felt clueless when first encountered this problem, and considered there must be lots of edge cases. Turns out, it's pretty straight forward. Hope this solution helps :D</p>
+
+<pre><code>private int[][] jumps;
+private boolean[] visited;
+
+public int numberOfPatterns(int m, int n) {
+    jumps = new int[10][10];
+    jumps[1][3] = jumps[3][1] = 2;
+    jumps[4][6] = jumps[6][4] = 5;
+    jumps[7][9] = jumps[9][7] = 8;
+    jumps[1][7] = jumps[7][1] = 4;
+    jumps[2][8] = jumps[8][2] = 5;
+    jumps[3][9] = jumps[9][3] = 6;
+    jumps[1][9] = jumps[9][1] = jumps[3][7] = jumps[7][3] = 5;
+    visited = new boolean[10];
+    int count = 0;
+    count += DFS(1, 1, 0, m, n) * 4; // 1, 3, 7, 9 are symmetrical
+    count += DFS(2, 1, 0, m, n) * 4; // 2, 4, 6, 8 are symmetrical
+    count += DFS(5, 1, 0, m, n);
+    return count;
+}
+
+private int DFS(int num, int len, int count, int m, int n) {
+    if (len &gt;= m) count++;
+    len++;
+    if (len &gt; n) return count;
+    visited[num] = true;
+    for (int next = 1; next &lt;= 9; next++) {
+        int jump = jumps[num][next];
+        if (!visited[next] &amp;&amp; (jump == 0 || visited[jump])) {
+            count = DFS(next, len, count, m, n);
+        }
+    }
+    visited[num] = false; // backtracking
+    return count;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/david.liu">david.liu</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/104688/simple-and-concise-java-solution-in-69ms">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>If we use the symmetry, we can only start from 1, 2 and 5 then multiply the results of 1 and 2 by 4. (170ms) Thanks to <a rel="nofollow" href="http://%20woaizuguo999">@woaizuguo999</a></p>
+
+<pre><code>int res=0;
+public int numberOfPatterns(int m, int n) {
+    boolean[][] keyboard = new boolean[3][3];
+    int ret=0;
+    for (int p=m;p&lt;=n;p++){
+        for (int i=0;i&lt;2;i++){
+            for (int j=0;j&lt;2;j++){
+                if (j == 0 &amp;&amp; i == 1) continue;
+                keyboard[i][j] = true;
+                helper(keyboard,p-1,i,j);
+                keyboard[i][j] = false;
+                ret += (i == 1 &amp;&amp; j == 1)? res:4*res;
+                res=0;
+            }
+        }
+    }
+    return ret;
+}
+private void helper(boolean[][] keyboard,int left, int x, int y){
+    if (left == 0){
+        res++;
+        return;
+    }
+    for (int i=0;i&lt;3;i++){
+        for (int j=0;j&lt;3;j++){
+            if (keyboard[i][j] 
+                ||  (x==i &amp;&amp; Math.abs(y-j)&gt;1) &amp;&amp; !keyboard[x][1]
+                ||  (y==j &amp;&amp; Math.abs(x-i)&gt;1) &amp;&amp; !keyboard[1][y]
+                ||  (x+y == i+j) &amp;&amp; Math.abs(x-i) &gt;1 &amp;&amp; !keyboard[1][1]
+                ||  (x-y == i-j) &amp;&amp; Math.abs(x-i) &gt;1 &amp;&amp; !keyboard[1][1]
+                ||  (x == i &amp;&amp; y == j)) {
+                continue;
+            }
+            else{
+                keyboard[i][j] = true;
+                helper(keyboard,left-1,i,j);
+                keyboard[i][j] = false;
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>And we can continue improving the performance by using symmetry in step 1, which is the next step after start. For start from 1, only consider 2 6 and 5. For start from 2, only consider 3,6,9 and 5. For start from 5, only consider 1 and 2.(72 ms)</p>
+
+<pre><code>int res=0;
+public int numberOfPatterns(int m, int n) {
+    boolean[][] keyboard = new boolean[3][3];
+    int ret=0;
+    for (int p=m;p&lt;=n;p++){
+        for (int i=0;i&lt;2;i++){
+            for (int j=0;j&lt;2;j++){
+                if (j == 0 &amp;&amp; i == 1) continue;
+                keyboard[i][j] = true;
+                helper(keyboard,p-1,i,j,true);
+                keyboard[i][j] = false;
+                ret += (i == 1 &amp;&amp; j == 1)? res:4*res;
+                res=0;
+            }
+        }
+    }
+    return ret;
+}
+
+private void dfshelper(boolean[][] keyboard, int left, int x, int y){
+    keyboard[x][y] = true;
+    helper(keyboard,left,x,y,false);
+    keyboard[x][y] = false;
+}
+
+private void helper(boolean[][] keyboard,int left, int x, int y, boolean step1){
+    if (left == 0){
+        res++;
+        return;
+    }
+    if (step1){
+        if (x == 0 &amp;&amp; y == 0){
+            dfshelper(keyboard,left-1,0,1);
+            dfshelper(keyboard,left-1,1,2);
+            int temp = 2*res;
+            res = 0;
+            dfshelper(keyboard,left-1,1,1);
+            res += temp;
+        }
+        if (x == 0 &amp;&amp; y == 1){
+            dfshelper(keyboard,left-1,0,2);
+            dfshelper(keyboard,left-1,1,2);
+            dfshelper(keyboard,left-1,2,2);
+            int temp = 2*res;
+            res = 0;
+            dfshelper(keyboard,left-1,1,1);
+            res += temp;
+        }
+        if (x == 1 &amp;&amp; y == 1){
+            dfshelper(keyboard,left-1,0,0);
+            dfshelper(keyboard,left-1,0,1);
+            res=res*4;
+        }
+    }
+    else{
+        for (int i=0;i&lt;3;i++){
+            for (int j=0;j&lt;3;j++){
+                if (keyboard[i][j] 
+                    ||  (x==i &amp;&amp; Math.abs(y-j)&gt;1) &amp;&amp; !keyboard[x][1]
+                    ||  (y==j &amp;&amp; Math.abs(x-i)&gt;1) &amp;&amp; !keyboard[1][y]
+                    ||  (x+y == i+j) &amp;&amp; Math.abs(x-i) &gt;1 &amp;&amp; !keyboard[1][1]
+                    ||  (x-y == i-j) &amp;&amp; Math.abs(x-i) &gt;1 &amp;&amp; !keyboard[1][1]
+                    ||  (x == i &amp;&amp; y == j)) {
+                    continue;
+                }
+                else{
+                    keyboard[i][j] = true;
+                    helper(keyboard,left-1,i,j,false);
+                    keyboard[i][j] = false;
+                }
+            }
+        }
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/qwe5103368">qwe5103368</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/104311/java-easy-understand-dfs-solution-72ms">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

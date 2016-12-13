@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><title>Random Pick Index  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57de394f9cbe5e5c585a7c15" data-set="true" class="title">Random Pick Index  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given an array of integers with possible duplicates, randomly output the index of a given target number. You can assume that the given target number must exist in the array.
+</p>
+
+<p>
+<b>Note:</b><br>
+The array size can be very large. Solution that uses too much extra space will not pass the judge.
+</p>
+
+<p><b>Example:</b>
+</p><pre>
+int[] nums = new int[] {1,2,3,3,3};
+Solution solution = new Solution(nums);
+
+// pick(3) should return either index 2, 3, or 4 randomly. Each index should have equal probability of returning.
+solution.pick(3);
+
+// pick(1) should return 0. Since in the array only nums[0] is equal to 1.
+solution.pick(1);
+</pre>
+
+              
+                <div>
+                  <p><a href="/subscribe/">Subscribe</a> to see which companies asked this question</p>
+                </div>
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/reservoir-sampling/">Reservoir Sampling</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#linked-list-random-node"> (M) Linked List Random Node</a>
+                    
+                  </span>
+                </div>
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>public class Solution {
+
+    int[] nums;
+    Random rnd;
+
+    public Solution(int[] nums) {
+        this.nums = nums;
+        this.rnd = new Random();
+    }
+    
+    public int pick(int target) {
+        int result = -1;
+        int count = 0;
+        for (int i = 0; i &lt; nums.length; i++) {
+            if (nums[i] != target)
+                continue;
+            if (rnd.nextInt(++count) == 0)
+                result = i;
+        }
+        
+        return result;
+    }
+}```</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/dettier">dettier</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/58301/simple-reservoir-sampling-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Because I've made a rather naive map-of-index-lists Java solution and it was happily accepted by the OJ. So far I see three types of solutions:</p>
+<ol>
+<li>
+<p>Like mine, O(N) memory, O(N) init, O(1) pick.</p>
+</li>
+<li>
+<p>Like <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/53346">@dettier</a>'s <a href="https://discuss.leetcode.com/topic/58301/simple-reservoir-sampling-solution">Reservoir Sampling</a>. O(1) init, O(1) memory, but O(N) to pick.</p>
+</li>
+<li>
+<p>Like <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/8501">@chin-heng</a>'s <a href="https://discuss.leetcode.com/topic/58295/share-my-c-solution-o-lg-n-to-pick-o-nlg-n-for-sorting">binary search</a>: O(N) memory, O(N lg N) init, O(lg N) pick.</p>
+</li>
+</ol>
+<p>Are all three kinds acceptable?</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/sergeytachenov">SergeyTachenov</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/58322/what-on-earth-is-meant-by-too-much-memory">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>class Solution {
+public:
+    vector&lt;int&gt; n;
+    Solution(vector&lt;int&gt; nums) 
+    {
+        n = nums;
+    }
+    
+    int pick(int target) 
+    {
+        int count = 0, res = -1;
+        for (int i = 0; i &lt; n.size(); ++i)
+        {
+            if(n[i] != target) continue;
+            if(++count == 1) res = i;
+            else
+                if(!(rand()%count)) res = i;
+        }
+        return res;
+    }
+};
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/ycf303">ycf303</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/58297/share-c-o-n-time-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

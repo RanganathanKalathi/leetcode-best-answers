@@ -1,0 +1,126 @@
+<!DOCTYPE html><html><head><title>Compare Version Numbers</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cab8fd1aae2858575369" data-set="true" class="title">Compare Version Numbers</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Compare two version numbers <i>version1</i> and <i>version2</i>.<br>
+If <i>version1</i> &gt; <i>version2</i> return 1, if <i>version1</i> &lt; <i>version2</i> return -1, otherwise return 0.</p>
+
+<p>You may assume that the version strings are non-empty and contain only digits and the <code>.</code> character.<br>
+The <code>.</code> character does not represent a decimal point and is used to separate number sequences.<br>
+For instance, <code>2.5</code> is not "two and a half" or "half way to version three", it is the fifth second-level revision of the second first-level revision.</p>
+
+<p>Here is an example of version numbers ordering:</p>
+<pre>0.1 &lt; 1.1 &lt; 1.2 &lt; 13.37</pre>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://oj.leetcode.com/discuss/user/ts">@ts</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>This code assumes that next level is zero if no mo levels in shorter version number. And than compare levels.</p>
+
+<pre><code>public int compareVersion(String version1, String version2) {
+    String[] levels1 = version1.split("\\.");
+    String[] levels2 = version2.split("\\.");
+
+    int length = Math.max(levels1.length, levels2.length);
+    for (int i=0; i&lt;length; i++) {
+        Integer v1 = i &lt; levels1.length ? Integer.parseInt(levels1[i]) : 0;
+        Integer v2 = i &lt; levels2.length ? Integer.parseInt(levels2[i]) : 0;
+        int compare = v1.compareTo(v2);
+        if (compare != 0) {
+            return compare;
+        }
+    }
+
+    return 0;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/pavel-shlyk">pavel-shlyk</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/19118/accepted-small-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>int compareVersion(string version1, string version2) {
+    int i = 0; 
+    int j = 0;
+    int n1 = version1.size(); 
+    int n2 = version2.size();
+
+    int num1 = 0;
+    int num2 = 0;
+    while(i&lt;n1 || j&lt;n2)
+    {
+        while(i&lt;n1 &amp;&amp; version1[i]!='.'){
+            num1 = num1*10+(version1[i]-'0');
+            i++;
+        }
+
+        while(j&lt;n2 &amp;&amp; version2[j]!='.'){
+            num2 = num2*10+(version2[j]-'0');;
+            j++;
+        }
+
+        if(num1&gt;num2) return 1;
+        else if(num1 &lt; num2) return -1;
+
+        num1 = 0;
+        num2 = 0;
+        i++;
+        j++;
+    }
+
+    return 0;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/XUYAN3">XUYAN3</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/30652/my-2ms-easy-solution-with-c-c">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>I checked other Java solution and the basic idea is the same. In addition, I simply the logic by making the two version number same length. For example, if version1 = "1.0.2", and version2 = "1.0", the I will convert the version2 to "1.0.0".</p>
+
+<blockquote>
+<pre><code>public int compareVersion(String version1, String version2) {
+    
+    String[] v1 = version1.split("\\.");
+    String[] v2 = version2.split("\\.");
+    
+    for ( int i = 0; i &lt; Math.max(v1.length, v2.length); i++ ) {
+        int num1 = i &lt; v1.length ? Integer.parseInt( v1[i] ) : 0;
+        int num2 = i &lt; v2.length ? Integer.parseInt( v2[i] ) : 0;
+        if ( num1 &lt; num2 ) {
+            return -1;
+        } else if ( num1 &gt; num2 ) {
+            return +1;
+        }
+    } 
+    
+    return 0;
+} 
+</code></pre>
+</blockquote>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/benjamin19890721">benjamin19890721</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/32731/java-solution-with-fewer-if-logic">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

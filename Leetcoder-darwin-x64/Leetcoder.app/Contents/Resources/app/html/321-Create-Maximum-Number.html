@@ -1,0 +1,304 @@
+<!DOCTYPE html><html><head><title>Create Maximum Number</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c68afd1aae28585752de" data-set="true" class="title">Create Maximum Number</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+    Given two arrays of length <code>m</code> and <code>n</code> with digits <code>0-9</code> representing two numbers.
+    Create the maximum number of length <code>k  from digits of the two. The relative order of the digits
+    from the same array must be preserved. Return an array of the <code>k</code> digits. You should try to optimize your time and space complexity.
+</code></p>
+
+<p>
+    <b>Example 1:</b><br>
+</p>
+<p>
+    nums1 = <code>[3, 4, 6, 5]</code><br>
+    nums2 = <code>[9, 1, 2, 5, 8, 3]</code><br>
+    k = <code>5</code><br>
+    return <code>[9, 8, 6, 5, 3]</code>
+</p>
+<p>
+    <b>Example 2:</b><br>
+</p>
+<p>
+    nums1 = <code>[6, 7]</code><br>
+    nums2 = <code>[6, 0, 4]</code><br>
+    k = <code>5</code><br>
+    return <code>[6, 7, 6, 0, 4]</code>
+</p>
+<p>
+    <b>Example 3:</b><br>
+</p>
+<p>
+    nums1 = <code>[3, 9]</code><br>
+    nums2 = <code>[8, 9]</code><br>
+    k = <code>3</code><br>
+    return <code>[9, 8, 9]</code>
+</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/dietpepsi">@dietpepsi</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/greedy/">Greedy</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Many of the posts have the same algorithm. In short we can first solve 2 simpler problem</p>
+
+<ol>
+<li>Create the maximum number of one array </li>
+<li>Create the maximum number of two array using all of their digits.</li>
+</ol>
+
+<p>For an long and detailed explanation see my blog <a rel="nofollow" href="http://algobox.org/create-maximum-number/">here</a>.</p>
+
+<p>The algorithm is O((m+n)^3) in the worst case. It runs in 22 ms.</p>
+
+<p><strong>Java</strong></p>
+
+<pre><code>public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+    int n = nums1.length;
+    int m = nums2.length;
+    int[] ans = new int[k];
+    for (int i = Math.max(0, k - m); i &lt;= k &amp;&amp; i &lt;= n; ++i) {
+        int[] candidate = merge(maxArray(nums1, i), maxArray(nums2, k - i), k);
+        if (greater(candidate, 0, ans, 0)) ans = candidate;
+    }
+    return ans;
+}
+private int[] merge(int[] nums1, int[] nums2, int k) {
+    int[] ans = new int[k];
+    for (int i = 0, j = 0, r = 0; r &lt; k; ++r)
+        ans[r] = greater(nums1, i, nums2, j) ? nums1[i++] : nums2[j++];
+    return ans;
+}
+public boolean greater(int[] nums1, int i, int[] nums2, int j) {
+    while (i &lt; nums1.length &amp;&amp; j &lt; nums2.length &amp;&amp; nums1[i] == nums2[j]) {
+        i++;
+        j++;
+    }
+    return j == nums2.length || (i &lt; nums1.length &amp;&amp; nums1[i] &gt; nums2[j]);
+}
+public int[] maxArray(int[] nums, int k) {
+    int n = nums.length;
+    int[] ans = new int[k];
+    for (int i = 0, j = 0; i &lt; n; ++i) {
+        while (n - i + j &gt; k &amp;&amp; j &gt; 0 &amp;&amp; ans[j - 1] &lt; nums[i]) j--;
+        if (j &lt; k) ans[j++] = nums[i];
+    }
+    return ans;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dietpepsi">dietpepsi</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/75756/share-my-greedy-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p><strong>Python</strong></p>
+
+<pre><code>def maxNumber(self, nums1, nums2, k):
+
+    def prep(nums, k):
+        drop = len(nums) - k
+        out = []
+        for num in nums:
+            while drop and out and out[-1] &lt; num:
+                out.pop()
+                drop -= 1
+            out.append(num)
+        return out[:k]
+
+    def merge(a, b):
+        return [max(a, b).pop(0) for _ in a+b]
+
+    return max(merge(prep(nums1, i), prep(nums2, k-i))
+               for i in range(k+1)
+               if i &lt;= len(nums1) and k-i &lt;= len(nums2))
+</code></pre>
+
+<p>Solved it on my own but now I see others already posted this idea. Oh well, at least it's short, particularly my <code>merge</code> function.</p>
+
+<p>The last two lines can be combined, but I find it rather ugly and not worth it:<br>
+<code>for i in range(max(k-len(nums2), 0), min(k, len(nums1))+1))</code></p>
+
+<hr>
+
+<p><strong>Ruby</strong></p>
+
+<pre><code>def prep(nums, k)
+  drop = nums.size - k
+  out = [9]
+  nums.each do |num|
+    while drop &gt; 0 &amp;&amp; out[-1] &lt; num
+      out.pop
+      drop -= 1
+    end
+    out &lt;&lt; num
+  end
+  out[1..k]
+end
+
+def max_number(nums1, nums2, k)
+  ([k-nums2.size, 0].max .. [nums1.size, k].min).map { |k1|
+    parts = [prep(nums1, k1), prep(nums2, k-k1)]
+    (1..k).map { parts.max.shift }
+  }.max
+end
+</code></pre>
+
+<hr>
+
+<p><strong>C++</strong></p>
+
+<p>Translated it to C++ as well now. Not as short anymore, but still decent. And C++ allows different functions with the same name, so I chose to do that here to show how nicely the <code>maxNumber(nums1, nums2, k)</code> problem can be based on the problems <code>maxNumber(nums, k)</code> and <code>maxNumber(nums1, nums2)</code>, which would make fine problems on their own.</p>
+
+<pre><code>vector&lt;int&gt; maxNumber(vector&lt;int&gt;&amp; nums1, vector&lt;int&gt;&amp; nums2, int k) {
+    int n1 = nums1.size(), n2 = nums2.size();
+    vector&lt;int&gt; best;
+    for (int k1=max(k-n2, 0); k1&lt;=min(k, n1); ++k1)
+        best = max(best, maxNumber(maxNumber(nums1, k1),
+                                   maxNumber(nums2, k-k1)));
+    return best;
+}
+
+vector&lt;int&gt; maxNumber(vector&lt;int&gt; nums, int k) {
+    int drop = nums.size() - k;
+    vector&lt;int&gt; out;
+    for (int num : nums) {
+        while (drop &amp;&amp; out.size() &amp;&amp; out.back() &lt; num) {
+            out.pop_back();
+            drop--;
+        }
+        out.push_back(num);
+    }
+    out.resize(k);
+    return out;
+}
+
+vector&lt;int&gt; maxNumber(vector&lt;int&gt; nums1, vector&lt;int&gt; nums2) {
+    vector&lt;int&gt; out;
+    while (nums1.size() + nums2.size()) {
+        vector&lt;int&gt;&amp; now = nums1 &gt; nums2 ? nums1 : nums2;
+        out.push_back(now[0]);
+        now.erase(now.begin());
+    }
+    return out;
+}
+</code></pre>
+
+<p>An alternative for <code>maxNumber(nums1, nums2)</code>:</p>
+
+<pre><code>vector&lt;int&gt; maxNumber(vector&lt;int&gt; nums1, vector&lt;int&gt; nums2) {
+    vector&lt;int&gt; out;
+    auto i1 = nums1.begin(), end1 = nums1.end();
+    auto i2 = nums2.begin(), end2 = nums2.end();
+    while (i1 != end1 || i2 != end2)
+        out.push_back(lexicographical_compare(i1, end1, i2, end2) ? *i2++ : *i1++);
+    return out;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/75804/short-python-ruby-c">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>To find the maximum ,we can enumerate how digits we should get from nums1 , we suppose it is i.</p>
+
+<p>So ,  the digits from nums2 is K - i.</p>
+
+<p>And we can use a stack to get the get maximum number(x digits) from one array.</p>
+
+<p>OK, Once we choose two maximum subarray , we should combine it to the answer.</p>
+
+<p>It is just like merger sort, but we should pay attention to the case: the two digital are equal.</p>
+
+<p>we should find the digits behind it to judge which digital we should choose now.</p>
+
+<p>In other words,we should judge which subarry is bigger than the other.</p>
+
+<p>That's all.</p>
+
+<p>If you have any question or suggest, I am happy you can comment on my blog : <a rel="nofollow" href="http://www.hrwhisper.me/leetcode-create-maximum-number/">Create Maximum Number</a>.</p>
+
+<p>Thanks, merry christmas :)</p>
+
+<p><em>update:use stack to find max sub array and it runs 21ms now.( thanks to @dietpepsi )</em></p>
+
+<pre><code> /**  * Created by hrwhisper on 2015/11/23.  * http://www.hrwhisper.me/leetcode-create-maximum-number/  */
+
+
+public class Solution {
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int get_from_nums1 = Math.min(nums1.length, k);
+        int[] ans = new int[k];
+        for (int i = Math.max(k - nums2.length, 0); i &lt;= get_from_nums1; i++) {
+            int[] res1 = new int[i];
+            int[] res2 = new int[k - i];
+            int[] res = new int[k];
+            res1 = solve(nums1, i);
+            res2 = solve(nums2, k - i);
+            int pos1 = 0, pos2 = 0, tpos = 0;
+
+            while (res1.length &gt; 0 &amp;&amp; res2.length &gt; 0 &amp;&amp; pos1 &lt; res1.length &amp;&amp; pos2 &lt; res2.length) {
+                if (compare(res1, pos1, res2, pos2))
+                    res[tpos++] = res1[pos1++];
+                else
+                    res[tpos++] = res2[pos2++];
+            }
+            while (pos1 &lt; res1.length)
+                res[tpos++] = res1[pos1++];
+            while (pos2 &lt; res2.length)
+                res[tpos++] = res2[pos2++];
+
+            if (!compare(ans, 0, res, 0))
+                ans = res;
+        }
+
+        return ans;
+    }
+
+    public boolean compare(int[] nums1, int start1, int[] nums2, int start2) {
+        for (; start1 &lt; nums1.length &amp;&amp; start2 &lt; nums2.length; start1++, start2++) {
+            if (nums1[start1] &gt; nums2[start2]) return true;
+            if (nums1[start1] &lt; nums2[start2]) return false;
+        }
+        return start1 != nums1.length;
+    }
+
+    public int[] solve(int[] nums, int k) {
+        int[] res = new int[k];
+        int len = 0;
+        for (int i = 0; i &lt; nums.length; i++) {
+            while (len &gt; 0 &amp;&amp; len + nums.length - i &gt; k &amp;&amp; res[len - 1] &lt; nums[i]) {
+                len--;
+            }
+            if (len &lt; k)
+                res[len++] = nums[i];
+        }
+        return res;
+    } }
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/hrwhisper">hrwhisper</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/75668/share-my-21ms-java-solution-with-comments">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

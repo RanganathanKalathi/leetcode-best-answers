@@ -1,0 +1,209 @@
+<!DOCTYPE html><html><head><title>Minimum Unique Word Abbreviation  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57f14cbe9cbe5e7288575315" data-set="true" class="title">Minimum Unique Word Abbreviation  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>A string such as <code>"word"</code> contains the following abbreviations:</p>
+
+<pre>["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+</pre>
+
+<p>Given a target string and a set of strings in a dictionary, find an abbreviation of this target string with the <b><i>smallest possible</i></b> length such that it does not conflict with abbreviations of the strings in the dictionary. </p>
+
+<p>Each <b>number</b> or letter in the abbreviation is considered length = 1. For example, the abbreviation "a32bc" has length = 4.</p>
+
+<p><b>Note:</b><br>
+</p><ul>
+<li>In the case of multiple answers as shown in the second example below, you may return any one of them.</li>
+<li>Assume length of target string = <b>m</b>, and dictionary size = <b>n</b>. You may assume that <b>m &#8804; 21</b>, <b>n &#8804; 1000</b>, and <b>log<sub>2</sub>(n) + m &#8804; 20</b>.</li>
+</ul>
+
+
+<p><b>Examples:</b><br>
+</p><pre>
+"apple", ["blade"] -&gt; "a4" (because "5" or "4e" conflicts with "blade")
+
+"apple", ["plain", "amber", "blade"] -&gt; "1p3" (other valid answers include "ap3", "a3e", "2p2", "3le", "3l1").
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#generalized-abbreviation"> (M) Generalized Abbreviation</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#valid-word-abbreviation"> (E) Valid Word Abbreviation</a>
+                    
+                  </span>
+                </div>
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>I think this problem is NP-hard. For proof, I'll reduce the <a href="https://en.wikipedia.org/wiki/Set_cover_problem" rel="nofollow"><strong>set cover</strong></a> decision problem to it. The example there is:</p>
+<pre><code>U = {1, 2, 3, 4, 5}
+S = {{1, 2, 3}, {2, 4}, {3, 4}, {4, 5}}
+</code></pre>
+<p>Now I'd encode that for <strong>Minimum Unique Word Abbreviation</strong> like this:</p>
+<pre><code>target: "oooo"
+dict:   "looo" (word 1)
+        "lloo" (word 2)
+        "lolo" (word 3)
+        "olll" (word 4)
+        "oool" (word 5)
+</code></pre>
+<p>The five dictionary words correspond to the five elements of U. And every word has four letters, corresponding to the four subsets in S. You can see for example the second subset {2, 4} encoded as the second colum in the dictionary, which has <code>l</code> in words 2 and 4 (and otherwise only <code>o</code>).</p>
+<p>(Side note: You can build an abbreviation by picking letters and then replacing the unpicked ones with numbers. For example, when you have <code>leetcode</code> and pick the letters <code>l</code>, <code>t</code> and the last <code>e</code>, you get <code>l2t3e</code>. This way you can get all 2<sup>|word|</sup> possible abbreviations from the 2<sup>|word|</sup> possible ways of picking, as I've done in the <a href="https://discuss.leetcode.com/topic/32108/python-solutions">first solution here</a>.)</p>
+<p>Now an optimal abbreviation for the target is "o2o", which we get by picking the first "o" because that distinguishes the target from words {1, 2, 3} and by picking the last "o" because that distinguishes the target from words {4, 5}. Just like picking the subsets {1, 2, 3} and {4, 5} cover all of U in the set cover problem.</p>
+<p>A little problem is that if I switch the third and fourth element of S,  then an optimal abbreviation picks the first and <em>third</em> "o", so instead of "o2o" we'd get "o1o1". That's a different length. So instead of the above encoding, I'd really do this, inserting "x" before and after each letter:</p>
+<pre><code>target: "xoxoxoxox"
+dict:   "xlxoxoxox"
+        "xlxlxoxox"
+        "xlxoxlxox"
+        "xoxlxlxlx"
+        "xoxoxoxlx"
+</code></pre>
+<p>Now "1o5o1" is an optimal abbreviation, and when I switch third and fourth element of S again, I instead get "1o3o3", which still has the same length.</p>
+<p>To be precise and usable: When I pick k letters, the optimal abbreviation will have those k letters as well as k+1 numbers, so length 2k+1. That means minimizing the abbreviation length is equivalent to minimizing the number of picked letters, which is equivalent to minimizing the number of picked elements of S in the decision problem.</p>
+<p><strong>Summary:</strong> To solve a given <strong>set cover</strong> decision problem instance, I translate it to a <strong>Minimum Unique Word Abbreviation</strong> instance like above, and then from the computed optimal abbreviation, I subtract 1 from its length and divide it by 2 to get the number of picked letters, which is the minimum number of elements of S that cover U. And with that, I can directly answer the original set cover instance.</p>
+<p><strong>Moral of the story:</strong> Don't feel bad about writing a brute force solution :-)</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/61341/it-s-np-hard">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>The key idea of my solution is to preprocess the dictionary to transfer all the words to bit sequences (int):<br/>
+Pick the words with same length as target string from the dictionary and compare the characters with target. If the characters are different, set the corresponding bit to 1, otherwise, set to 0.<br/>
+Ex: "abcde", ["abxdx", "xbcdx"] =&gt; [00101, 10001]</p>
+<p>The problem is now converted to find a bit mask that can represent the shortest abbreviation, so that for all the bit sequences in dictionary, mask &amp; bit sequence &gt; 0.<br/>
+Ex: for [00101, 10001], the mask should be [00001]. if we mask the target string with it, we get "****e" ("4e"), which is the abbreviation we are looking for.</p>
+<p>To find the bit mask, we need to perform DFS with some optimizations. But which bits should be checked? We can perform "or" operation for all the bit sequences in the dictionary and do DFS for the "1" bits in the result.<br/>
+Ex: 00101 | 10001 = 10101, so we only need to take care of the 1st, 3rd, and 5th bit.</p>
+<p>Here is a C++ implementation, the running time should be about 3ms. Any suggestions would be appreciated.</p>
+<pre><code>class Solution {
+    int n, cand, bn, minlen, minab;
+    vector&lt;int&gt; dict;
+    
+    // Return the length of abbreviation given bit sequence
+    int abbrLen(int mask) {
+        int count = 0;
+        for (int b = 1; b &lt; bn;) {
+            if ((mask &amp; b) == 0)
+                for (; b &lt; bn and (mask &amp; b) == 0; b &lt;&lt;= 1);
+            else b &lt;&lt;= 1;
+            count ++;
+        }
+        return count;
+    }
+
+    // DFS backtracking
+    void dfs(int bit, int mask) {
+        int len = abbrLen(mask);
+        if (len &gt;= minlen) return;
+        bool match = true;
+        for (auto d : dict) {
+            if ((mask &amp; d) == 0) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            minlen = len;
+            minab = mask;
+        }
+        else
+            for (int b = bit; b &lt; bn; b &lt;&lt;= 1)
+                if (cand &amp; b) dfs(b &lt;&lt; 1, mask + b);
+    }
+
+public:
+    string minAbbreviation(string target, vector&lt;string&gt;&amp; dictionary) {
+        n = target.size(), bn = 1 &lt;&lt; n, cand = 0, minlen = INT_MAX;
+        string res;
+        
+        // Preprocessing with bit manipulation
+        for (auto w : dictionary) {
+            int word = 0;
+            if (w.size() != n) continue;
+            for (int i = n-1, bit = 1; i &gt;= 0; --i, bit &lt;&lt;= 1)
+                if (target[i] != w[i]) word += bit;
+            dict.push_back(word);
+            cand |= word;
+        }
+        dfs(1, 0);
+
+        // Reconstruct abbreviation from bit sequence
+        for (int i = n-1, pre = i; i &gt;= 0; --i, minab &gt;&gt;= 1) {
+            if (minab &amp; 1) {
+                if (pre-i &gt; 0) res = to_string(pre-i) + res;
+                pre = i - 1;
+                res = target[i] + res;
+            }
+            else if (i == 0) res = to_string(pre-i+1) + res;
+        }
+        return res;
+    }
+};
+</code></pre>
+<p><strong>UPDATE</strong>: a better way to determine the length of abbreviation mentioned by <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/591">@StefanPochmann</a></p>
+<pre><code>int abbrLen(int mask) {
+    int count = n;
+    for (int b = 3; b &lt; bn; b &lt;&lt;= 1)
+        if ((mask &amp; b) == 0)
+            count --;
+    return count;
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/topcoder007">topcoder007</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/61457/c-bit-manipulation-dfs-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Gets accepted in ~130 ms.</p>
+<pre><code>def minAbbreviation(self, target, dictionary):
+    m = len(target)
+    diffs = {sum(2**i for i, c in enumerate(word) if target[i] != c)
+             for word in dictionary if len(word) == m}
+    if not diffs:
+        return str(m)
+    bits = max((i for i in range(2**m) if all(d &amp; i for d in diffs)),
+               key=lambda bits: sum((bits &gt;&gt; i) &amp; 3 == 0 for i in range(m-1)))
+    s = ''.join(target[i] if bits &amp; 2**i else '#' for i in range(m))
+    return re.sub('#+', lambda m: str(len(m.group())), s)
+</code></pre>
+<p>If the target is <code>apple</code> and the dictionary contains <code>apply</code>, then the abbreviation must include the <code>e</code> as the letter <code>e</code>, not in a number. It's the only letter distinguishing these two words. Similarly, if the dictionary contains <code>tuple</code>, then the abbreviation must include the <code>a</code> or the first <code>p</code> as a letter.</p>
+<p>For each dictionary word (of correct size), I create a diff-number whose bits tell me which of the word's letters differ from the target. Then I go through the 2<sup>m</sup> possible abbreviations, represented as number from 0 to 2<sup>m</sup>-1, the bits representing which letters of target are in the abbreviation. An abbreviation is ok if it doesn't match any dictionary word. To check whether an abbreviation doesn't match a dictionary word, I simply check whether the abbreviation number and the dictionary word's diff-number have a common 1-bit. Which means that the abbreviation contains a letter where the dictionary word differs from the target.</p>
+<p>Then from the ok abbreviations I find one that maximizes how much length it saves me. Two consecutive 0-bits in the abbreviation number mean that the two corresponding letters will be encoded as the number 2. It saves length 1. Three consecutive 0-bits save length 2, and so on. To compute the saved length, I just count how many pairs of adjacent bits are zero.</p>
+<p>Now that I have the number representing an optimal abbreviation, I just need to turn it into the actual abbreviation. First I turn it into a string where each 1-bit is turned into the corresponding letter of the target and each 0-bit is turned into <code>#</code>. Then I replace streaks of <code>#</code> into numbers.</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/61690/python-with-bit-masks">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

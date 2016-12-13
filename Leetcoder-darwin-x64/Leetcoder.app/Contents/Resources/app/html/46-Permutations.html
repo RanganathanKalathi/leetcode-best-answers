@@ -1,0 +1,157 @@
+<!DOCTYPE html><html><head><title>Permutations</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cf02fd1aae28585753e0" data-set="true" class="title">Permutations</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a collection of <b>distinct</b> numbers, return all possible permutations.
+</p>
+
+<p>
+For example,<br>
+<code>[1,2,3]</code> have the following permutations:<br>
+<code>[1,2,3]</code>, <code>[1,3,2]</code>, <code>[2,1,3]</code>, <code>[2,3,1]</code>, <code>[3,1,2]</code>, and <code>[3,2,1]</code>.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/linkedin/">LinkedIn</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#next-permutation"> (M) Next Permutation</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#permutations-ii"> (M) Permutations II</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#permutation-sequence"> (M) Permutation Sequence</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#combinations"> (M) Combinations</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>This recursive solution is the my first response for this problem. I was surprised when I found no similar solution posted here. It is much easier to understand than DFS-based ones, at least in my opinion. Please find more explanations <a rel="nofollow" href="http://xiaohuiliucuriosity.blogspot.com/2014/12/permutations.html">here</a>. All comments are welcome.</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; permute(vector&lt;int&gt; &amp;num) {
+        vector&lt;vector&lt;int&gt; &gt; result;
+
+        permuteRecursive(num, 0, result);
+        return result;
+    }
+
+    // permute num[begin..end]
+    // invariant: num[0..begin-1] have been fixed/permuted
+    void permuteRecursive(vector&lt;int&gt; &amp;num, int begin, vector&lt;vector&lt;int&gt; &gt; &amp;result)    {
+        if (begin &gt;= num.size()) {
+            // one permutation instance
+            result.push_back(num);
+            return;
+        }
+
+        for (int i = begin; i &lt; num.size(); i++) {
+            swap(num[begin], num[i]);
+            permuteRecursive(num, begin + 1, result);
+            // reset
+            swap(num[begin], num[i]);
+        }
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/xiaohui7">xiaohui7</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/18212/my-elegant-recursive-c-solution-with-inline-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>the basic idea is, to permute n numbers, we can add the nth number into the resulting <code>List&lt;List&lt;Integer&gt;&gt;</code> from the n-1 numbers, in every possible position. </p>
+
+<p>For example, if the input num[] is {1,2,3}: First, add 1 into the initial <code>List&lt;List&lt;Integer&gt;&gt;</code> (let's call it "answer"). </p>
+
+<p>Then, 2 can be added in front or after 1. So we have to copy the List in answer (it's just {1}), add 2 in position 0 of {1}, then copy the original {1} again, and add 2 in position 1. Now we have an answer of {{2,1},{1,2}}. There are 2 lists in the current answer.</p>
+
+<p>Then we have to add 3. first copy {2,1} and {1,2}, add 3 in position 0; then copy {2,1} and {1,2}, and add 3 into position 1, then do the same thing for position 3. Finally we have 2*3=6 lists in answer, which is what we want.</p>
+
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; permute(int[] num) {
+    List&lt;List&lt;Integer&gt;&gt; ans = new ArrayList&lt;List&lt;Integer&gt;&gt;();
+    if (num.length ==0) return ans;
+    List&lt;Integer&gt; l0 = new ArrayList&lt;Integer&gt;();
+    l0.add(num[0]);
+    ans.add(l0);
+    for (int i = 1; i&lt; num.length; ++i){
+        List&lt;List&lt;Integer&gt;&gt; new_ans = new ArrayList&lt;List&lt;Integer&gt;&gt;(); 
+        for (int j = 0; j&lt;=i; ++j){            
+           for (List&lt;Integer&gt; l : ans){
+               List&lt;Integer&gt; new_l = new ArrayList&lt;Integer&gt;(l);
+               new_l.add(j,num[i]);
+               new_ans.add(new_l);
+           }
+        }
+        ans = new_ans;
+    }
+    return ans;
+}
+</code></pre>
+
+<hr>
+
+<p>python version is more concise:</p>
+
+<pre><code>def permute(self, nums):
+    perms = [[]]   
+    for n in nums:
+        new_perms = []
+        for perm in perms:
+            for i in xrange(len(perm)+1):   
+                new_perms.append(perm[:i] + [n] + perm[i:])   ###insert n
+        perms = new_perms
+    return perms
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/cbmbbz">cbmbbz</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/19510/my-ac-simple-iterative-java-python-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>public List&lt;List&lt;Integer&gt;&gt; permute(int[] num) {
+    LinkedList&lt;List&lt;Integer&gt;&gt; res = new LinkedList&lt;List&lt;Integer&gt;&gt;();
+    res.add(new ArrayList&lt;Integer&gt;());
+    for (int n : num) {
+        int size = res.size();
+        for (; size &gt; 0; size--) {
+            List&lt;Integer&gt; r = res.pollFirst();
+            for (int i = 0; i &lt;= r.size(); i++) {
+                List&lt;Integer&gt; t = new ArrayList&lt;Integer&gt;(r);
+                t.add(i, n);
+                res.add(t);
+            }
+        }
+    }
+    return res;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/tusizi">tusizi</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/29483/share-my-short-iterative-java-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

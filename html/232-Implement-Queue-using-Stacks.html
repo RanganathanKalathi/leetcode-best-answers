@@ -1,0 +1,229 @@
+<!DOCTYPE html><html><head><title>Implement Queue using Stacks</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c8f9fd1aae2858575336" data-set="true" class="title">Implement Queue using Stacks</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Implement the following operations of a queue using stacks.
+</p><ul>
+<li>
+push(x) -- Push element x to the back of queue.
+</li>
+<li>
+pop() -- Removes the element from in front of queue.
+</li>
+<li>
+peek() -- Get the front element.
+</li>
+<li>
+empty() -- Return whether the queue is empty.
+</li>
+</ul>
+<b>Notes:</b><br>
+<ul>
+<li>You must use <i>only</i> standard operations of a stack -- which means only <code>push to top</code>, <code>peek/pop from top</code>, <code>size</code>, and <code>is empty</code> operations are valid.</li>
+<li>Depending on your language, stack may not be supported natively. You may simulate a stack by using a list or deque (double-ended queue), as long as you use only standard operations of a stack.</li>
+<li>You may assume that all operations are valid (for example, no pop or peek operations will be called on an empty queue).</li>
+</ul>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/stack/">Stack</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#implement-stack-using-queues"> (E) Implement Stack using Queues</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>I have one input stack, onto which I push the incoming elements, and one output stack, from which I peek/pop. I move elements from input stack to output stack when needed, i.e., when I need to peek/pop but the output stack is empty. When that happens, I move all elements from input to output stack, thereby reversing the order so it's the correct order for peek/pop.</p>
+
+<p>The loop in <code>peek</code> does the moving from input to output stack. Each element only ever gets moved like that once, though, and only after we already spent time pushing it, so the overall amortized cost for each operation is O(1).</p>
+
+<p><strong>Ruby</strong></p>
+
+<pre><code>class Queue
+    def initialize
+        @in, @out = [], []
+    end
+
+    def push(x)
+        @in &lt;&lt; x
+    end
+
+    def pop
+        peek
+        @out.pop
+    end
+
+    def peek
+        @out &lt;&lt; @in.pop until @in.empty? if @out.empty?
+        @out.last
+    end
+
+    def empty
+        @in.empty? &amp;&amp; @out.empty?
+    end
+end
+</code></pre>
+
+<p><strong>Java</strong></p>
+
+<pre><code>class MyQueue {
+
+    Stack&lt;Integer&gt; input = new Stack();
+    Stack&lt;Integer&gt; output = new Stack();
+
+    public void push(int x) {
+        input.push(x);
+    }
+
+    public void pop() {
+        peek();
+        output.pop();
+    }
+
+    public int peek() {
+        if (output.empty())
+            while (!input.empty())
+                output.push(input.pop());
+        return output.peek();
+    }
+
+    public boolean empty() {
+        return input.empty() &amp;&amp; output.empty();
+    }
+}
+</code></pre>
+
+<p><strong>C++</strong></p>
+
+<pre><code>class Queue {
+    stack&lt;int&gt; input, output;
+public:
+
+    void push(int x) {
+        input.push(x);
+    }
+
+    void pop(void) {
+        peek();
+        output.pop();
+    }
+
+    int peek(void) {
+        if (output.empty())
+            while (input.size())
+                output.push(input.top()), input.pop();
+        return output.top();
+    }
+
+    bool empty(void) {
+        return input.empty() &amp;&amp; output.empty();
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/44106/short-o-1-amortized-c-java-ruby">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>class MyQueue {
+Stack&lt;Integer&gt; queue = new Stack&lt;Integer&gt;();
+// Push element x to the back of queue.
+public void push(int x) {
+    Stack&lt;Integer&gt; temp = new Stack&lt;Integer&gt;();
+    while(!queue.empty()){
+        temp.push(queue.pop());
+    }
+    queue.push(x);
+    while(!temp.empty()){
+        queue.push(temp.pop());
+    }
+}
+
+// Removes the element from in front of queue.
+public void pop() {
+    queue.pop();
+}
+
+// Get the front element.
+public int peek() {
+    return queue.peek();
+}
+
+// Return whether the queue is empty.
+public boolean empty() {
+    return queue.empty();
+}
+</code></pre>
+
+<p>}</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yangneu2015">yangneu2015</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/67154/easy-java-solution-just-edit-push-method">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class MyQueue {
+    Stack&lt;Integer&gt; pushStack = new Stack&lt;&gt;();
+    Stack&lt;Integer&gt; popStack = new Stack&lt;&gt;();
+
+    // Push element x to the back of queue.
+    public void push(int x) {
+        pushStack.push(x);
+    }
+
+    // Removes the element from in front of queue.
+    public void pop() {
+        if(popStack.isEmpty()) {
+            while(!pushStack.isEmpty()) {
+                popStack.push(pushStack.pop());
+            }
+        }
+        popStack.pop();
+    }
+
+    // Get the front element.
+    public int peek() {
+        if(popStack.isEmpty()) {
+            while(!pushStack.isEmpty()) {
+                popStack.push(pushStack.pop());
+            }
+        }
+        return popStack.peek();
+    }
+
+    // Return whether the queue is empty.
+    public boolean empty() {
+        return pushStack.isEmpty() &amp;&amp; popStack.isEmpty();
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/tuan.huu.minh.nguyen">tuan.huu.minh.nguyen</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/53948/java-solution-using-two-stacks">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

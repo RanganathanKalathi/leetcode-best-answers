@@ -1,0 +1,278 @@
+<!DOCTYPE html><html><head><title>LRU Cache</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cb62fd1aae285857537c" data-set="true" class="title">LRU Cache</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: <code>get</code> and <code>set</code>.
+</p>
+
+<p>
+<code>get(key)</code> - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.<br>
+<code>set(key, value)</code> - Set or insert the value if the key is not already present. When the cache reached its capacity, it should invalidate the least recently used item before inserting a new item.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/zenefits/">Zenefits</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/amazon/">Amazon</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/bloomberg/">Bloomberg</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The problem can be solved with a hashtable that keeps track of the keys and its values in the double linked list. One interesting property about double linked list is that the node can remove itself without other reference. In addition, it takes constant time to add and remove nodes from the head or tail.</p>
+
+<p>One particularity about the double linked list that I implemented is that I create a pseudo head and tail to mark the boundary, so that we don't need to check the NULL node during the update. This makes the code more concise and clean, and also it is good for the performance as well. </p>
+
+<p>Voila, here is the code. </p>
+
+<pre><code>class DLinkedNode {
+    int key;
+    int value;
+    DLinkedNode pre;
+    DLinkedNode post;
+}
+
+/**
+ * Always add the new node right after head;
+ */
+private void addNode(DLinkedNode node){
+    node.pre = head;
+    node.post = head.post;
+
+    head.post.pre = node;
+    head.post = node;
+}
+
+/**
+ * Remove an existing node from the linked list.
+ */
+private void removeNode(DLinkedNode node){
+    DLinkedNode pre = node.pre;
+    DLinkedNode post = node.post;
+
+    pre.post = post;
+    post.pre = pre;
+}
+
+/**
+ * Move certain node in between to the head.
+ */
+private void moveToHead(DLinkedNode node){
+    this.removeNode(node);
+    this.addNode(node);
+}
+
+// pop the current tail. 
+private DLinkedNode popTail(){
+    DLinkedNode res = tail.pre;
+    this.removeNode(res);
+    return res;
+}
+
+private Hashtable&lt;Integer, DLinkedNode&gt; 
+    cache = new Hashtable&lt;Integer, DLinkedNode&gt;();
+private int count;
+private int capacity;
+private DLinkedNode head, tail;
+
+public LRUCache(int capacity) {
+    this.count = 0;
+    this.capacity = capacity;
+
+    head = new DLinkedNode();
+    head.pre = null;
+
+    tail = new DLinkedNode();
+    tail.post = null;
+
+    head.post = tail;
+    tail.pre = head;
+}
+
+public int get(int key) {
+
+    DLinkedNode node = cache.get(key);
+    if(node == null){
+        return -1; // should raise exception here.
+    }
+
+    // move the accessed node to the head;
+    this.moveToHead(node);
+
+    return node.value;
+}
+
+
+public void set(int key, int value) {
+    DLinkedNode node = cache.get(key);
+
+    if(node == null){
+
+        DLinkedNode newNode = new DLinkedNode();
+        newNode.key = key;
+        newNode.value = value;
+
+        this.cache.put(key, newNode);
+        this.addNode(newNode);
+
+        ++count;
+
+        if(count &gt; capacity){
+            // pop the tail
+            DLinkedNode tail = this.popTail();
+            this.cache.remove(tail.key);
+            --count;
+        }
+    }else{
+        // update the value.
+        node.value = value;
+        this.moveToHead(node);
+    }
+
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/liaison">liaison</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/20139/java-hashtable-double-linked-list-with-touch-of-pseudo-nodes">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>There is a similar example in Java, but I wanted to share my solution using the new C++11 unordered_map and a list. The good thing about lists is that iterators are never invalidated by modifiers (unless erasing the element itself). This way, we can store the iterator to the corresponding LRU queue in the values of the hash map. Since using erase on a list with an iterator takes constant time, all operations of the LRU cache run in constant time.</p>
+
+<pre><code>class LRUCache {
+public:
+    LRUCache(int capacity) : _capacity(capacity) {}
+
+    int get(int key) {
+        auto it = cache.find(key);
+        if (it == cache.end()) return -1;
+        touch(it);
+        return it-&gt;second.first;
+    }
+
+    void set(int key, int value) {
+        auto it = cache.find(key);
+        if (it != cache.end()) touch(it);
+        else {
+            if (cache.size() == _capacity) {
+                cache.erase(used.back());
+                used.pop_back();
+            }
+            used.push_front(key);
+        }
+        cache[key] = { value, used.begin() };
+    }
+
+private:
+    typedef list&lt;int&gt; LI;
+    typedef pair&lt;int, LI::iterator&gt; PII;
+    typedef unordered_map&lt;int, PII&gt; HIPII;
+
+    void touch(HIPII::iterator it) {
+        int key = it-&gt;first;
+        used.erase(it-&gt;second.second);
+        used.push_front(key);
+        it-&gt;second.second = used.begin();
+    }
+
+    HIPII cache;
+    LI used;
+    int _capacity;
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/afernandez90">afernandez90</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/20619/c-11-code-74ms-hash-table-list">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Solution is unusual - combination of 2 data structures - hash map and linked list.
+Algorithm:</p>
+
+<ol>
+<li>hash map holds iterators to linked list</li>
+<li>linked list holds key and value, key to access hash map items</li>
+<li>when item is accessed, it's promoted - moved to the tail of the list - O(1) operation</li>
+<li>when item should be removed, we remove head of the list - O(1) operation</li>
+<li>when item is not promoted long time, it's moved to the head of the list automatically</li>
+<li><p>get() - O(1) performance, set() - O(1) performance</p>
+
+<p>{</p>
+
+<pre><code>class LRUCache{
+private:
+    struct item_t{
+        int key, val;
+        item_t(int k, int v) :key(k), val(v){}
+    };
+    typedef list&lt;item_t&gt; list_t;
+    typedef unordered_map&lt;int, list_t::iterator&gt; map_t;
+
+    map_t   m_map;
+    list_t  m_list;
+    int     m_capacity;
+public:
+    LRUCache(int capacity) : m_capacity(capacity) {
+    }
+    int get(int key) {
+        map_t::iterator i = m_map.find(key);
+        if (i == m_map.end()) return -1;
+        m_map[key] = promote(i-&gt;second);
+        return m_map[key]-&gt;val;
+    }
+    void set(int key, int value) {
+        map_t::iterator i = m_map.find(key);
+        if (i != m_map.end()){
+            m_map[key] = promote(i-&gt;second);
+            m_map[key]-&gt;val = value;
+        }
+        else {
+            if (m_map.size() &lt; m_capacity){
+                m_map[key] = m_list.insert(m_list.end(), item_t(key, value));
+            }
+            else {
+                m_map.erase(m_list.front().key);
+                m_list.pop_front();
+                m_map[key] = m_list.insert(m_list.end(), item_t(key, value));
+            }
+        }
+    }
+    list_t::iterator promote(list_t::iterator i){
+        list_t::iterator inew = m_list.insert(m_list.end(), *i);
+        m_list.erase(i);
+        return inew;
+    }
+};
+</code></pre>
+
+<p>}</p></li>
+</ol>
+
+<p>btw LeetCode, it was really hard to insert this code, after pressing {} button, class was improperly formatted. I inserted additional braces around class. </p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yakov.sum">yakov.sum</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/13964/accepted-c-solution-296-ms">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

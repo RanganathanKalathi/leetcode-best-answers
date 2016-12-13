@@ -1,0 +1,172 @@
+<!DOCTYPE html><html><head><title>Fraction to Recurring Decimal</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2caaefd1aae2858575368" data-set="true" class="title">Fraction to Recurring Decimal</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given two integers representing the numerator and denominator of a fraction, return the fraction in string format.</p>
+
+<p>If the fractional part is repeating, enclose the repeating part in parentheses.</p>
+<p>
+For example,
+</p><ul>
+<li>Given numerator = 1, denominator = 2, return "0.5".</li>
+<li>Given numerator = 2, denominator = 1, return "2".</li>
+<li>Given numerator = 2, denominator = 3, return "0.(6)".</li>
+</ul>
+
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://oj.leetcode.com/discuss/user/Shangrila">@Shangrila</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>// upgraded parameter types
+string fractionToDecimal(int64_t n, int64_t d) {
+    // zero numerator
+    if (n == 0) return "0";
+
+    string res;
+    // determine the sign
+    if (n &lt; 0 ^ d &lt; 0) res += '-';
+
+    // remove sign of operands
+    n = abs(n), d = abs(d);
+
+    // append integral part
+    res += to_string(n / d);
+
+    // in case no fractional part
+    if (n % d == 0) return res;
+
+    res += '.';
+
+    unordered_map&lt;int, int&gt; map;
+
+    // simulate the division process
+    for (int64_t r = n % d; r; r %= d) {
+
+        // meet a known remainder
+        // so we reach the end of the repeating part
+        if (map.count(r) &gt; 0) {
+            res.insert(map[r], 1, '(');
+            res += ')';
+            break;
+        }
+
+        // the remainder is first seen
+        // remember the current position for it
+        map[r] = res.size();
+
+        r *= 10;
+
+        // append the quotient digit
+        res += to_string(r / d);
+    }
+
+    return res;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/mzchen">mzchen</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/18731/accepted-cpp-solution-with-explainations">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The important thing is to consider all edge cases while thinking this problem through, including: negative integer, possible overflow, etc.</p>
+
+<p>Use HashMap to store a remainder and its associated index while doing the division so that whenever a same remainder comes up, we know there is a repeating fractional part.</p>
+
+<p>Please comment if you see something wrong or can be improved. Cheers!</p>
+
+<pre><code>public class Solution {
+    public String fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) {
+            return "0";
+        }
+        StringBuilder res = new StringBuilder();
+        // "+" or "-"
+        res.append(((numerator &gt; 0) ^ (denominator &gt; 0)) ? "-" : "");
+        long num = Math.abs((long)numerator);
+        long den = Math.abs((long)denominator);
+
+        // integral part
+        res.append(num / den);
+        num %= den;
+        if (num == 0) {
+            return res.toString();
+        }
+
+        // fractional part
+        res.append(".");
+        HashMap&lt;Long, Integer&gt; map = new HashMap&lt;Long, Integer&gt;();
+        map.put(num, res.length());
+        while (num != 0) {
+            num *= 10;
+            res.append(num / den);
+            num %= den;
+            if (map.containsKey(num)) {
+                int index = map.get(num);
+                res.insert(index, "(");
+                res.append(")");
+                break;
+            }
+            else {
+                map.put(num, res.length());
+            }
+        }
+        return res.toString();
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dchen0215">dchen0215</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/23079/my-clean-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>public String fractionToDecimal(int numerator, int denominator) {
+    StringBuilder result = new StringBuilder();
+    String sign = (numerator &lt; 0 == denominator &lt; 0 || numerator == 0) ? "" : "-";
+    long num = Math.abs((long) numerator);
+    long den = Math.abs((long) denominator);
+    result.append(sign);
+    result.append(num / den);
+    long remainder = num % den;
+    if (remainder == 0)
+        return result.toString();
+    result.append(".");
+    HashMap&lt;Long, Integer&gt; hashMap = new HashMap&lt;Long, Integer&gt;();
+    while (!hashMap.containsKey(remainder)) {
+        hashMap.put(remainder, result.length());
+        result.append(10 * remainder / den);
+        remainder = 10 * remainder % den;
+    }
+    int index = hashMap.get(remainder);
+    result.insert(index, "(");
+    result.append(")");
+    return result.toString().replace("(0)", "");
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/tusizi">tusizi</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/31521/short-java-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

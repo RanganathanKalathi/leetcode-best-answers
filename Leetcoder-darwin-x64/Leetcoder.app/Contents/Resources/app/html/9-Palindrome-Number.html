@@ -1,0 +1,103 @@
+<!DOCTYPE html><html><head><title>Palindrome Number</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2d060fd1aae2858575405" data-set="true" class="title">Palindrome Number</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Determine whether an integer is a palindrome. Do this without extra space.</p>
+
+<p class="showspoilers"><a href="#" onclick="showSpoilers(this); return false;">click to show spoilers.</a></p>
+
+<div class="spoilers"><b>Some hints:</b>
+
+<p>Could negative integers be palindromes? (ie, -1)</p>
+
+<p>If you are thinking of converting the integer to string, note the restriction of using extra space.</p>
+
+<p>You could also try reversing an integer. However, if you have solved the problem "Reverse Integer", you know that the reversed integer might overflow. How would you handle such case?</p>
+
+<p>There is a more generic way of solving this problem.</p>
+
+</div>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#palindrome-linked-list"> (E) Palindrome Linked List</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    bool isPalindrome(int x) {
+        if(x&lt;0|| (x!=0 &amp;&amp;x%10==0)) return false;
+        int sum=0;
+        while(x&gt;sum)
+        {
+            sum = sum*10+x%10;
+            x = x/10;
+        }
+        return (x==sum)||(x==sum/10);
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/gaurav5">gaurav5</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/33500/an-easy-lines-code-only-reversing-till-half-and-then-compare">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>compare half of the digits in x, so don't need to deal with overflow.</p>
+
+<pre><code>public boolean isPalindrome(int x) {
+    if (x&lt;0 || (x!=0 &amp;&amp; x%10==0)) return false;
+    int rev = 0;
+    while (x&gt;rev){
+        rev = rev*10 + x%10;
+        x = x/10;
+    }
+    return (x==rev || x==rev/10);
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/cbmbbz">cbmbbz</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/23563/line-accepted-java-code-without-the-need-handling-overflow">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>public boolean isPalindrome(int x) {
+
+    if (x &lt; 0) return false;
+
+    int p = x; 
+    int q = 0; 
+
+    while (p &gt;= 10){
+        q *=10; 
+        q += p%10; 
+        p /=10; 
+    }
+
+    return q == x / 10 &amp;&amp; p == x % 10;
+}
+</code></pre>
+
+<p>// so the reversed version of int is always  1 time short in the factor of 10s . </p>
+
+<p>in case of Int16,  check 63556  will finally check if (6553 == 6355 &amp;&amp; 6 == 63556%10)  so there will have no concerns about the overflow.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/evlstyle">evlstyle</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/26665/o-1-space-o-lgn-time-java-solution-no-overflow-risk">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

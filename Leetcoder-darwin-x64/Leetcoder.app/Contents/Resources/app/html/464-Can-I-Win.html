@@ -1,0 +1,241 @@
+<!DOCTYPE html><html><head><title>Can I Win  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="58327f6f9cbe5e334ccb5788" data-set="true" class="title">Can I Win  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>In the "100 game," two players take turns adding, to a running total, any integer from 1..10. The player who first causes the running total to reach or exceed 100 wins. </p>
+
+<p>What if we change the game so that players cannot re-use integers? </p>
+
+<p>For example, two players might take turns drawing from a common pool of numbers of 1..15 without replacement until they reach a total &gt;= 100.</p>
+
+<p>Given an integer <code>maxChoosableInteger</code> and another integer <code>desiredTotal</code>, determine if the first player to move can force a win, assuming both players play optimally. </p>
+
+<p>You can always assume that <code>maxChoosableInteger</code> will not be larger than 20 and <code>desiredTotal</code> will not be larger than 300.
+</p>
+
+<p><b>Example</b>
+</p><pre>
+<b>Input:</b>
+maxChoosableInteger = 10
+desiredTotal = 11
+
+<b>Output:</b>
+false
+
+<b>Explanation:</b>
+No matter which integer the first player choose, the first player will lose.
+The first player can choose an integer from 1 up to 10.
+If the first player choose 1, the second player can only choose integers from 2 up to 10.
+The second player will win by choosing 10 and get a total = 11, which is &gt;= desiredTotal.
+Same with other integers chosen by the first player, the second player will always win.
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/linkedin/">LinkedIn</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#flip-game-ii"> (M) Flip Game II</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#guess-number-higher-or-lower-ii"> (M) Guess Number Higher or Lower II</a>
+                    
+                  </span>
+                </div>
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>After solving several "Game Playing" questions in leetcode, I find them to be pretty similar. Most of them can be solved using the <strong>top-down DP</strong> approach, which "brute-forcely" simulates every possible state of the game.</p>
+<p>The key part for the top-down dp strategy is that we need to <strong>avoid repeatedly solving sub-problems</strong>. Instead, we should use some strategy to "remember" the outcome of  sub-problems. Then when we see them again, we instantly know their result.  By doing this, <s>we can always reduce time complexity from <strong>exponential</strong> to <strong>polynomial</strong></s>.<br/>
+(<strong>EDIT:</strong> Thanks for <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/65204">@billbirdh</a> for pointing out the mistake here. For this problem, by applying the memo, we at most compute for every subproblem once, and there are <code>O(2^n)</code> subproblems, so the complexity is  <code>O(2^n)</code> after memorization. (Without memo, time complexity should be like <code>O(n!)</code>)</p>
+<p>For this question, the key part is: <code>what is the state of the game</code>? Intuitively, to uniquely determine the result of any state, we need to know:</p>
+<ol>
+<li>The unchosen numbers</li>
+<li>The remaining desiredTotal to reach</li>
+</ol>
+<p>A second thought reveals that <strong>1)</strong> and <strong>2)</strong> are actually related because we can always get the <strong>2)</strong> by deducting the sum of chosen numbers from original desiredTotal.</p>
+<p>Then the problem becomes how to describes the state using <strong>1)</strong>.</p>
+<p>In my solution, I use a <strong>boolean array</strong> to denote which numbers have been chosen, and  then a question comes to mind, if we want to use a Hashmap to remember the outcome of sub-problems, can we just use <code>Map&lt;boolean[], Boolean&gt;</code> ? <strong>Obviously we cannot</strong>, because the if we use boolean[] as a key, the reference to boolean[] won't reveal the actual content in boolean[].</p>
+<p>Since in the problem statement, it says <code>maxChoosableInteger</code> will not be larger than <code>20</code>, which means the length of our <strong>boolean[] array</strong> will be less than <code>20</code>. Then we can use an <code>Integer</code> to represent this boolean[] array. How?</p>
+<p>Say the boolean[] is <code>{false, false, true, true, false}</code>, then we can transfer it to an Integer with binary representation as <code>00110</code>. Since Integer is a perfect choice to be the key of HashMap, then we now can "memorize" the sub-problems using <code>Map&lt;Integer, Boolean&gt;</code>.</p>
+<p>The rest part of the solution is just simulating the game process using the top-down dp.</p>
+<pre><code>public class Solution {
+    Map&lt;Integer, Boolean&gt; map;
+    boolean[] used;
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        int sum = (1+maxChoosableInteger)*maxChoosableInteger/2;
+        if(sum &lt; desiredTotal) return false;
+        if(desiredTotal &lt;= 0) return true;
+        
+        map = new HashMap();
+        used = new boolean[maxChoosableInteger+1];
+        return helper(desiredTotal);
+    }
+    
+    public boolean helper(int desiredTotal){
+        if(desiredTotal &lt;= 0) return false;
+        int key = format(used);
+        if(!map.containsKey(key)){
+    // try every unchosen number as next step
+            for(int i=1; i&lt;used.length; i++){
+                if(!used[i]){
+                    used[i] = true;
+     // check whether this lead to a win (i.e. the other player lose)
+                    if(!helper(desiredTotal-i)){
+                        map.put(key, true);
+                        used[i] = false;
+                        return true;
+                    }
+                    used[i] = false;
+                }
+            }
+            map.put(key, false);
+        }
+        return map.get(key);
+    }
+   
+// transfer boolean[] to an Integer 
+    public int format(boolean[] used){
+        int num = 0;
+        for(boolean b: used){
+            num &lt;&lt;= 1;
+            if(b) num |= 1;
+        }
+        return num;
+    }
+}
+</code></pre>
+<p><strong>Updated:</strong> Thanks for <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/14025">@ckcz123</a> for sharing the great idea. In Java, to denote <code>boolean[]</code>, an easier way is to use <code>Arrays.toString(boolean[])</code>, which will transfer a <code>boolean[]</code> to sth like <code>"[true, false, false, ....]"</code>, which is also not limited to how <code>maxChoosableInteger</code> is set, so it can be generalized to arbitrary large <code>maxChoosableInteger</code>.</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/leogogogo">leogogogo</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68896/java-solution-using-hashmap-with-detailed-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>public class Solution {
+
+    private Boolean[] win;
+    int choosen = 0;
+
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        if (desiredTotal == 0) {
+            return true;
+        }
+        if ((1 + maxChoosableInteger) * maxChoosableInteger / 2 &lt; desiredTotal) {
+            return false;
+        }
+        win = new Boolean[1 &lt;&lt; maxChoosableInteger];
+        return canWin(maxChoosableInteger, desiredTotal, 0);
+    }
+
+    private boolean canWin(int n, int total, int now) {
+        if (win[choosen] != null)
+            return win[choosen];
+        if (now &gt;= total) {
+            win[choosen] = false;
+            return false;
+        }
+        for (int i = 1; i &lt;= n; i++) {
+            int bit = 1 &lt;&lt; (i - 1);
+            if ((choosen &amp; bit) == 0) {
+                choosen ^= bit;
+                boolean ulose = !canWin(n, total, now + i);
+                choosen ^= bit;
+
+                if (ulose) {
+                    win[choosen] = true;
+                    return true;
+                }
+            }
+        }
+        win[choosen] = false;
+        return false;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/wzdxt">wzdxt</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68773/java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>The solution is quite strightforward. First off we have to eliminate primitive cases. So,</p>
+<ul>
+<li>if the first player can choose a number, which is already greater than or equal to the desired total obviously it wins.</li>
+<li>If max choosable integer is less than the desired total, but if it exceeds the desired total in sum with any other number then the  first player looses anyway.</li>
+<li>If the sum of all number in the pool cannot exceed or reach the desired total, then no one can win.</li>
+</ul>
+<p>Now, for the other cases we can use <a href="https://en.wikipedia.org/wiki/Minimax" rel="nofollow">MiniMax</a> logic to reveal the winner. Because both player play optimally, In order to win, the first player has to make a choice, that leaves the second player no chance to win.  Thus, at each step we consider all the possible choices by the current player and give turn to the second player recursively. If we find a move, after which the second player looses anyway or we have already exceed the desired total by adding the chosen number, we return true, i.e the current player wins. This way the game looks like the following tree:</p>
+<pre><code>     player1 -&gt;  0
+              /| ...\
+  player2 -&gt; 1 2 ....max 
+            /|\ ..../ | \
+player1 -&gt; 2 3...  1  2 ..max-1
+           ...                \
+player1 -&gt;   /      |     \   loose
+player2 -&gt; loose   win   loose
+</code></pre>
+<p>The figure above helps to imagine how the algorithm considers all possible scenarios of the game. The leafs of the game tree are loose or win states for one of the players. Finally the logic concludes to the idea, that if some branch does not contain any leaf that ends with win state for player2, the move associated with that branch is the optimal one for the first player.</p>
+<p>P.S: Time complexity of naive implementation will work for O(n!). Therefore we have to memorize branch states after traversing once.</p>
+<pre><code>public class Solution {
+    Map&lt;Integer, Boolean&gt; set[];
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        if(maxChoosableInteger &gt;= desiredTotal) return true;
+        if(maxChoosableInteger+1 &gt;=desiredTotal) return false;
+        set = new Map[301];
+        for(int i  =0 ;i&lt;301;i++) set[i] = new HashMap&lt;&gt;();
+        if(maxChoosableInteger*(maxChoosableInteger+1)/2 &lt; desiredTotal) return false;
+        return canWin((1&lt;&lt;maxChoosableInteger+1)-1, desiredTotal);
+    }
+    
+    public boolean canWin(int set1, int total){
+        if(set[total].containsKey(set1)) return set[total].get(set1);
+        for(int i = 20;i&gt;=1;i--){
+            int p = (1&lt;&lt;i);
+            if((p&amp;set1) == p){
+                int set1next = (set1^p);
+                int totalNext = total - i;
+                if(totalNext&lt;=0) return true;
+                boolean x;
+                if(set[totalNext].containsKey(set1next)) x = set[totalNext].get(set1next);
+                else x = canWin(set1next, totalNext);
+                if(!x){
+                    set[total].put(set1, true);
+                    return true;
+                }
+            }
+        }
+        set[total].put(set1, false);
+        return false;
+    }
+}</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/zhassanb">ZhassanB</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68792/java-easy-strightforward-solution-with-explanation">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

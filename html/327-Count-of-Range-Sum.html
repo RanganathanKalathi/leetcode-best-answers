@@ -1,0 +1,293 @@
+<!DOCTYPE html><html><head><title>Count of Range Sum</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c664fd1aae28585752d8" data-set="true" class="title">Count of Range Sum</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+    Given an integer array <code>nums</code>, return the number of range sums that lie in <code>[lower, upper]</code> inclusive.<br>
+
+    Range sum <code>S(i, j)</code> is defined as the sum of the elements in <code>nums</code> between indices <code>i</code> and 
+    <code>j</code> (<code>i</code> &#8804; <code>j</code>), inclusive.
+</p>
+
+<p>
+    <b>Note:</b><br>
+    A naive algorithm of <i>O</i>(<i>n</i><sup>2</sup>) is trivial. You MUST do better than that.
+</p>
+<p>
+    <b>Example:</b><br>
+    Given <i>nums</i> = <code>[-2, 5, -1]</code>, <i>lower</i> = <code>-2</code>, <i>upper</i> = <code>2</code>,<br>
+    Return <code>3</code>.<br>
+    The three ranges are : <code>[0, 0]</code>, <code>[2, 2]</code>, <code>[0, 2]</code> and their respective sums are: <code>-2, -1, 2</code>.
+</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/dietpepsi">@dietpepsi</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/divide-and-conquer/">Divide and Conquer</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/binary-search-tree/">Binary Search Tree</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#count-of-smaller-numbers-after-self"> (H) Count of Smaller Numbers After Self</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p><strong>See <a rel="nofollow" href="http://algobox.org/count-of-range-sum/">here for better view</a></strong></p>
+
+<p>First of all, let's look at the naive solution. Preprocess to calculate the prefix sums <code>S[i]</code> = <code>S(0, i)</code>, then <code>S(i, j)</code> = <code>S[j] - S[i]</code>. Note that here we define <code>S(i, j)</code> as the sum of range <code>[i, j)</code> where <code>j</code> exclusive and <code>j</code> &gt; <code>i</code>. With these prefix sums, it is trivial to see that with <code>O(n^2)</code> time we can find all <code>S(i, j)</code> in the range <code>[lower, upper]</code></p>
+
+<p><strong>Java - Naive Solution</strong></p>
+
+<pre><code>public int countRangeSum(int[] nums, int lower, int upper) {
+    int n = nums.length;
+    long[] sums = new long[n + 1];
+    for (int i = 0; i &lt; n; ++i)
+        sums[i + 1] = sums[i] + nums[i];
+    int ans = 0;
+    for (int i = 0; i &lt; n; ++i)
+        for (int j = i + 1; j &lt;= n; ++j)
+            if (sums[j] - sums[i] &gt;= lower &amp;&amp; sums[j] - sums[i] &lt;= upper)
+                ans++;
+    return ans;
+}
+</code></pre>
+
+<p><strong>However the naive solution is set to TLE intentionally</strong></p>
+
+<p><strong>Now let's do better than this.</strong></p>
+
+<p>Recall <a rel="nofollow" href="http://algobox.org/count-of-smaller-numbers-after-self/">count smaller number after self</a> where we encountered the problem</p>
+
+<ul>
+<li><code>count[i]</code> = count of <code>nums[j]</code> - <code>nums[i]</code> &lt; <code>0</code> with <code>j</code> &gt; <code>i</code></li>
+</ul>
+
+<p>Here, after we did the preprocess, we need to solve the problem</p>
+
+<ul>
+<li><code>count[i]</code> = count of <code>a</code> &lt;= <code>S[j]</code> - <code>S[i]</code> &lt;= <code>b</code> with <code>j</code> &gt; <code>i</code></li>
+<li><code>ans</code> = sum(count[:])</li>
+</ul>
+
+<p>Therefore the two problems are almost the same. We can use the same technique used in that problem to solve this problem. One solution is merge sort based; another one is Balanced BST based. The time complexity are both <code>O(n log n)</code>.</p>
+
+<p>The merge sort based solution counts the answer while doing the merge. During the merge stage, we have already sorted the left half <code>[start, mid)</code> and right half <code>[mid, end)</code>. We then iterate through the left half with index <code>i</code>. For each <code>i</code>, we need to find two indices <code>k</code> and <code>j</code> in the right half where</p>
+
+<ul>
+<li><code>j</code> is the first index satisfy <code>sums[j] - sums[i] &gt; upper</code> and </li>
+<li><code>k</code> is the first index satisfy <code>sums[k] - sums[i] &gt;= lower</code>. </li>
+</ul>
+
+<p>Then the number of sums in <code>[lower, upper]</code> is <code>j-k</code>. We also use another index <code>t</code> to copy the elements satisfy <code>sums[t] &lt; sums[i]</code> to a cache in order to complete the merge sort.</p>
+
+<p>Despite the nested loops, the time complexity of the "merge &amp; count" stage is still linear. Because the indices <code>k</code>, <code>j</code>, <code>t</code> will only increase but not decrease, each of them will only traversal the right half once at most. The total time complexity of this divide and conquer solution is then <code>O(n log n)</code>.</p>
+
+<p>One other concern is that the <code>sums</code> may overflow integer. So we use long instead.</p>
+
+<p><strong>Java - Merge Sort Solution</strong></p>
+
+<pre><code>public int countRangeSum(int[] nums, int lower, int upper) {
+    int n = nums.length;
+    long[] sums = new long[n + 1];
+    for (int i = 0; i &lt; n; ++i)
+        sums[i + 1] = sums[i] + nums[i];
+    return countWhileMergeSort(sums, 0, n + 1, lower, upper);
+}
+
+private int countWhileMergeSort(long[] sums, int start, int end, int lower, int upper) {
+    if (end - start &lt;= 1) return 0;
+    int mid = (start + end) / 2;
+    int count = countWhileMergeSort(sums, start, mid, lower, upper) 
+              + countWhileMergeSort(sums, mid, end, lower, upper);
+    int j = mid, k = mid, t = mid;
+    long[] cache = new long[end - start];
+    for (int i = start, r = 0; i &lt; mid; ++i, ++r) {
+        while (k &lt; end &amp;&amp; sums[k] - sums[i] &lt; lower) k++;
+        while (j &lt; end &amp;&amp; sums[j] - sums[i] &lt;= upper) j++;
+        while (t &lt; end &amp;&amp; sums[t] &lt; sums[i]) cache[r++] = sums[t++];
+        cache[r] = sums[i];
+        count += j - k;
+    }
+    System.arraycopy(cache, 0, sums, start, t - start);
+    return count;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dietpepsi">dietpepsi</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/79083/share-my-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Thanks for those contributing excellent ideas to this problem. Here is a quick summary of solutions based on either divide and conquer or binary indexed tree. </p>
+
+<p>To start, we already know there is a straightforward solution by computing each range sum and checking whether it lies in [lower, upper] or not. If the number of elements is n, we have n<em>(n+1)/2 such range sums so the naive solution will end up with O(n^2) time complexity. Now we are asked to do better than that. So what are the targeted time complexities in your mind? When I first looked at the problem, my instinct is that O(n) solution is too ambitious, so I will target at linearithmic-like (O(n</em>(logn)^b)) solutions. To get the logarithmic part, it's natural to think of breaking down the original array, and that's where the divide-and-conquer idea comes from.</p>
+
+<p>For this problem, we need some array to apply our divide and conquer algorithm. Without much thinking, we can do that directly with the input array (nums) itself. Since our problem also involves range sums and I believe you have the experience of computing range sums from prefix array of the input array, we might as well apply divide and conquer ideas on the prefix array. So I will give both the input-array based and prefix-array based divide&amp;conquer solutions.</p>
+
+<p>Let's first look at input-array based divide&amp;conquer solution. Our original problem is like this: given an input array nums with length n and a range [lower, upper], find the total number of range sums that lie in the given range. Note the range [lower, upper] and the input array are both fixed. Therefore each range sum can be characterized by two indices i1 and i2 (i1 &lt;= i2), such that range sum S(i1, i2) is the summation of input elements with indices going from i1 up to i2 (both inclusive). Then our problem can be redefined in terms of the value ranges of i1 and i2. For example our original problem can be restated as finding the total number of range sums lying in the given range with 0 &lt;= i1 &lt;= i2 &lt;= n - 1, or in a symbolic way T(0, n-1).</p>
+
+<p>Now if we break our original input array into two subarrays, [0, m] and [m+1, n-1] with m = (n-1)/2, our original problem can be divided into three parts, depending on the values of i1 and i2. If i1 and i2 are both from the first subarray [0, m], we have a subproblem T(0, m); if i1 and i2 are both from the second subarray, we have a subproblem T(m+1, n-1); if i1 is from the first subarray and i2 from the second (note we assume i1 &lt;= i2, therefore we don't have the other case with i2 from first subarray and i1 from second), then we have a new problem which I define as C. In summary we should have:</p>
+
+<p>T(0, n-1) = T(0, m) + T(m+1, n-1) + C</p>
+
+<p>Now from the master theorem, the time complexity of the new problem C should be better than O(n^2), otherwise we make no improvement by applying this divide&amp;conquer idea. So again, I will aim at linearithmic-like solutions for the new problem C: find the total number of range sums lying in the given range with each range sum starting from the first subarray and ending at the second subarray.</p>
+
+<p>First let's try to compute all such range sums. The way I did it was first computing the prefix array of the second subarray and the suffix array (or "backward" prefix array if you like) of the first subarray. Then I can naively add each element in the suffix array to all elements in the prefix array to obtain all the possible range sums. Of course you end up with O(n^2) solution, as expected. So how can we approach it with better time complexity?</p>
+
+<p>Here are the facts I observed: for each element e in the suffix array, we need to add it to all elements in the prefix array. But the order in which we add it doesn't matter. This implies that we can sort our prefix array. This can be done in O(nlogn) time. Now we have a sorted prefix array, do we still need to add the element e to all elements in the prefix array? The answer is no. Because our final goal is to compare the resulted range sums with the given range bounds lower and upper. It is equivalent to modifying the range bounds so we have new bounds (lower - e) and (upper - e) and leave the prefix array unchanged. Now we can compare these new bounds with the sorted prefix array, and I'm sure you can write your own binary search algorithm to do that. So for each element e in the suffix array, we can compute the modified range bounds and get the number of range sums in this new range in logn time. Therefore the total time will be O(nlogn). So in summary, our new problem C can be solved in O(nlogn) time and according to the master theorem, our original problem can be solved in O(n(logn)^2) time. The following is the complete java program:</p>
+
+<pre><code>public int countRangeSum(int[] nums, int lower, int upper) {
+    if (nums == null || nums.length == 0 || lower &gt; upper) {
+        return 0;
+    }
+
+    return countRangeSumSub(nums, 0, nums.length - 1, lower, upper);
+}
+
+private int countRangeSumSub(int[] nums, int l, int r, int lower, int upper) {
+    if (l == r) {
+        return nums[l] &gt;= lower &amp;&amp; nums[r] &lt;= upper ? 1 : 0;  // base case
+    }
+
+    int m = l + (r - l) / 2;
+    long[] arr = new long[r - m];  // prefix array for the second subarray
+    long sum = 0;
+    int count = 0;
+
+    for (int i = m + 1; i &lt;= r; i++) {
+        sum += nums[i];
+        arr[i - (m + 1)] = sum; // compute the prefix array
+    }
+
+    Arrays.sort(arr);  // sort the prefix array
+
+    // Here we can compute the suffix array element by element.
+    // For each element in the suffix array, we compute the corresponding
+    // "insertion" indices of the modified bounds in the sorted prefix array
+    // then the number of valid ranges sums will be given by the indices difference.
+    // I modified the bounds to be "double" to avoid duplicate elements.
+    sum = 0;
+    for (int i = m; i &gt;= l; i--) {
+        sum += nums[i];  
+        count += findIndex(arr, upper - sum + 0.5) - findIndex(arr, lower - sum - 0.5);
+    }
+
+    return countRangeSumSub(nums, l, m, lower, upper) + countRangeSumSub(nums, m + 1, r, lower, upper) + count;
+}
+
+// binary search function
+private int findIndex(long[] arr, double val) {
+    int l = 0, r = arr.length - 1, m = 0;
+
+    while (l &lt;= r) {
+        m = l + (r - l) / 2;
+
+        if (arr[m] &lt;= val) {
+            l = m + 1;
+        } else {
+            r = m - 1;
+        }
+    }
+
+    return l;
+}
+</code></pre>
+
+<p><strong>(Next two parts will come in answers due to the limitation of maximum length of characters )</strong></p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/fun4LeetCode">fun4LeetCode</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/79907/summary-divide-conquer-based-binary-indexed-based-solutions">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Understand my segmentTree implementation is not optimized.
+Please feel free to give me suggestions.</p>
+
+<pre><code>public class Solution {
+    class SegmentTreeNode {
+        SegmentTreeNode left;
+        SegmentTreeNode right;
+        int count;
+        long min;
+        long max;
+        public SegmentTreeNode(long min, long max) {
+            this.min = min;
+            this.max = max;
+        }
+    }
+    private SegmentTreeNode buildSegmentTree(Long[] valArr, int low, int high) {
+        if(low &gt; high) return null;
+        SegmentTreeNode stn = new SegmentTreeNode(valArr[low], valArr[high]);
+        if(low == high) return stn;
+        int mid = (low + high)/2;
+        stn.left = buildSegmentTree(valArr, low, mid);
+        stn.right = buildSegmentTree(valArr, mid+1, high);
+        return stn;
+    }
+    private void updateSegmentTree(SegmentTreeNode stn, Long val) {
+        if(stn == null) return;
+        if(val &gt;= stn.min &amp;&amp; val &lt;= stn.max) {
+            stn.count++;
+            updateSegmentTree(stn.left, val);
+            updateSegmentTree(stn.right, val);
+        }
+    }
+    private int getCount(SegmentTreeNode stn, long min, long max) {
+        if(stn == null) return 0;
+        if(min &gt; stn.max || max &lt; stn.min) return 0;
+        if(min &lt;= stn.min &amp;&amp; max &gt;= stn.max) return stn.count;
+        return getCount(stn.left, min, max) + getCount(stn.right, min, max);
+    }
+
+    public int countRangeSum(int[] nums, int lower, int upper) {
+
+        if(nums == null || nums.length == 0) return 0;
+        int ans = 0;
+        Set&lt;Long&gt; valSet = new HashSet&lt;Long&gt;();
+        long sum = 0;
+        for(int i = 0; i &lt; nums.length; i++) {
+            sum += (long) nums[i];
+            valSet.add(sum);
+        }
+
+        Long[] valArr = valSet.toArray(new Long[0]);
+
+        Arrays.sort(valArr);
+        SegmentTreeNode root = buildSegmentTree(valArr, 0, valArr.length-1);
+
+        for(int i = nums.length-1; i &gt;=0; i--) {
+            updateSegmentTree(root, sum);
+            sum -= (long) nums[i];
+            ans += getCount(root, (long)lower+sum, (long)upper+sum);
+        }
+        return ans;
+    }
+
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/fangyang">fangyang</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/79073/java-segmenttree-solution-36ms">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

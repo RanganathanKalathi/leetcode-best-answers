@@ -1,0 +1,131 @@
+<!DOCTYPE html><html><head><title>Candy</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cbc9fd1aae2858575387" data-set="true" class="title">Candy</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+There are <i>N</i> children standing in a line. Each child is assigned a rating value. 
+</p>
+<p>
+You are giving candies to these children subjected to the following requirements:
+</p>
+<ul>
+<li>Each child must have at least one candy.</li>
+<li>Children with a higher rating get more candies than their neighbors.</li>
+</ul>
+<p>
+What is the minimum candies you must give?
+</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/greedy/">Greedy</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>  int candy(vector&lt;int&gt; &amp;ratings)
+ {
+     int size=ratings.size();
+     if(size&lt;=1)
+         return size;
+     vector&lt;int&gt; num(size,1);
+     for (int i = 1; i &lt; size; i++)
+     {
+         if(ratings[i]&gt;ratings[i-1])
+             num[i]=num[i-1]+1;
+     }
+     for (int i= size-1; i&gt;0 ; i--)
+     {
+         if(ratings[i-1]&gt;ratings[i])
+             num[i-1]=max(num[i]+1,num[i-1]);
+     }
+     int result=0;
+     for (int i = 0; i &lt; size; i++)
+     {
+         result+=num[i];
+        // cout&lt;&lt;num[i]&lt;&lt;" ";
+     }
+     return result;
+ }
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/1145520074">1145520074</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/16463/a-simple-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Hi guys!</p>
+
+<p>This solution picks each element from the input array only once. First, we give a candy to the first child. Then for each child we have three cases:</p>
+
+<ol>
+<li>His/her rating is equal to the previous one -&gt; give 1 candy.</li>
+<li>His/her rating is greater than the previous one -&gt; give him (previous + 1) candies.</li>
+<li>His/her rating is less than the previous one -&gt; don't know what to do yet, let's just count the number of such consequent cases.</li>
+</ol>
+
+<p>When we enter 1 or 2 condition we can check our count from 3. If it's not zero then we know that we were descending before and we have everything to update our total candies amount: number of children in descending sequence of raitings - coundDown, number of candies given at peak - prev (we don't update prev when descending). Total number of candies for "descending" children can be found through arithmetic progression formula (1+2+...+countDown). Plus we need to update our peak child if his number of candies is less then or equal to countDown. </p>
+
+<p>Here's a pretty concise code below.</p>
+
+<hr>
+
+<pre><code>public class Solution {
+    public int candy(int[] ratings) {
+        if (ratings == null || ratings.length == 0) return 0;
+        int total = 1, prev = 1, countDown = 0;
+        for (int i = 1; i &lt; ratings.length; i++) {
+            if (ratings[i] &gt;= ratings[i-1]) {
+                if (countDown &gt; 0) {
+                    total += countDown*(countDown+1)/2; // arithmetic progression
+                    if (countDown &gt;= prev) total += countDown - prev + 1;
+                    countDown = 0;
+                    prev = 1;
+                }
+                prev = ratings[i] == ratings[i-1] ? 1 : prev+1;
+                total += prev;
+            } else countDown++;
+        }
+        if (countDown &gt; 0) { // if we were descending at the end
+            total += countDown*(countDown+1)/2;
+            if (countDown &gt;= prev) total += countDown - prev + 1;
+        }
+        return total;
+    }
+}
+</code></pre>
+
+<p>Have a nice coding!</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/shpolsky">shpolsky</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/23835/one-pass-constant-space-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>public int candy(int[] ratings) {
+    int candies[] = new int[ratings.length];        
+    Arrays.fill(candies, 1);// Give each child 1 candy 
+
+    for (int i = 1; i &lt; candies.length; i++){// Scan from left to right, to make sure right higher rated child gets 1 more candy than left lower rated child
+        if (ratings[i] &gt; ratings[i - 1]) candies[i] = (candies[i - 1] + 1);
+    }
+
+    for (int i = candies.length - 2; i &gt;= 0; i--) {// Scan from right to left, to make sure left higher rated child gets 1 more candy than right lower rated child
+        if (ratings[i] &gt; ratings[i + 1]) candies[i] = Math.max(candies[i], (candies[i + 1] + 1));
+    }
+
+    int sum = 0;        
+    for (int candy : candies)  
+        sum += candy;        
+    return sum;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Pixel_">Pixel_</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/61652/simple-o-n-java-solution-with-comments">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

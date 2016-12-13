@@ -1,0 +1,118 @@
+<!DOCTYPE html><html><head><title>Triangle</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cc5afd1aae2858575396" data-set="true" class="title">Triangle</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.</p>
+
+<p>
+For example, given the following triangle<br>
+</p><pre>
+[
+     [<font color="red">2</font>],
+    [<font color="red">3</font>,4],
+   [6,<font color="red">5</font>,7],
+  [4,<font color="red">1</font>,8,3]
+]
+</pre>
+
+<p>
+The minimum path sum from top to bottom is <code>11</code> (i.e., <font color="red">2</font> + <font color="red">3</font> + <font color="red">5</font> + <font color="red">1</font> = 11).
+</p>
+
+<p>
+<b>Note:</b><br>
+Bonus point if you are able to do this using only <i>O</i>(<i>n</i>) extra space, where <i>n</i> is the total number of rows in the triangle.
+</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>This problem is quite well-formed in my opinion. The triangle has a tree-like structure, which would lead people to think about traversal algorithms such as DFS. However, if you look closely, you would notice that the adjacent nodes always share a 'branch'. In other word, there are <strong>overlapping subproblems</strong>. Also, suppose x and y are 'children' of k. Once minimum paths from x and y to the bottom are known, the minimum path starting from k can be decided in O(1), that is <strong>optimal substructure</strong>. Therefore, dynamic programming would be the best solution to this problem in terms of time complexity.</p>
+
+<p>What I like about this problem even more is that the difference between 'top-down' and 'bottom-up' DP can be 'literally' pictured in the input triangle. For 'top-down' DP, starting from the node on the very top, we recursively find the minimum path sum of each node. When a path sum is calculated, we store it in an array (memoization); the next time we need to calculate the path sum of the same node, just retrieve it from the array. However, you will need a cache that is at least the same size as the input triangle itself to store the pathsum, which takes O(N^2) space. With some clever thinking, it might be possible to release some of the memory that will never be used after a particular point, but the order of the nodes being processed is not straightforwardly seen in a recursive solution, so deciding which part of the cache to discard can be a hard job.</p>
+
+<p>'Bottom-up' DP, on the other hand, is very straightforward: we start from the nodes on the bottom row; the min pathsums for these nodes are the values of the nodes themselves. From there, the min pathsum at the ith node on the kth row would be the lesser of the pathsums of its two children plus the value of itself, i.e.:</p>
+
+<pre><code>minpath[k][i] = min( minpath[k+1][i], minpath[k+1][i+1]) + triangle[k][i];
+</code></pre>
+
+<p>Or even better, since the row minpath[k+1] would be useless after minpath[k] is computed, we can simply set minpath as a 1D array, and iteratively update itself:</p>
+
+<pre><code>For the kth level:
+minpath[i] = min( minpath[i], minpath[i+1]) + triangle[k][i]; 
+</code></pre>
+
+<p>Thus, we have the following solution</p>
+
+<pre><code>int minimumTotal(vector&lt;vector&lt;int&gt; &gt; &amp;triangle) {
+    int n = triangle.size();
+    vector&lt;int&gt; minlen(triangle.back());
+    for (int layer = n-2; layer &gt;= 0; layer--) // For each layer
+    {
+        for (int i = 0; i &lt;= layer; i++) // Check its every 'node'
+        {
+            // Find the lesser of its two children, and sum the current value in the triangle with it.
+            minlen[i] = min(minlen[i], minlen[i+1]) + triangle[layer][i]; 
+        }
+    }
+    return minlen[0];
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/stellari">stellari</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/5337/dp-solution-for-triangle">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public int minimumTotal(List&lt;List&lt;Integer&gt;&gt; triangle) {
+        for(int i = triangle.size() - 2; i &gt;= 0; i--)
+            for(int j = 0; j &lt;= i; j++)
+                triangle.get(i).set(j, triangle.get(i).get(j) + Math.min(triangle.get(i + 1).get(j), triangle.get(i + 1).get(j + 1)));
+        return triangle.get(0).get(0);
+    }
+}
+</code></pre>
+
+<p>The idea is simple. </p>
+
+<p>1) Go from bottom to top.</p>
+
+<p>2) We start form the row above the bottom row [size()-2].</p>
+
+<p>3) Each number add the smaller number of two numbers that below it. </p>
+
+<p>4) And finally we get to the top we the smallest sum.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/SteveLee1989">SteveLee1989</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/23544/my-8-line-dp-java-code-4-meaningful-lines-with-o-1-space">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    int minimumTotal(vector&lt;vector&lt;int&gt; &gt; &amp;triangle) 
+    {
+        vector&lt;int&gt; mini = triangle[triangle.size()-1];
+        for ( int i = triangle.size() - 2; i&gt;= 0 ; --i )
+            for ( int j = 0; j &lt; triangle[i].size() ; ++ j )
+                mini[j] = triangle[i][j] + min(mini[j],mini[j+1]);
+        return mini[0];
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/rishav2">rishav2</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/20296/bottom-up-5-line-c-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

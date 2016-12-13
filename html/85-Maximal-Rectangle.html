@@ -1,0 +1,244 @@
+<!DOCTYPE html><html><head><title>Maximal Rectangle</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cda6fd1aae28585753b9" data-set="true" class="title">Maximal Rectangle</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing all ones and return its area.
+</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/stack/">Stack</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#largest-rectangle-in-histogram"> (H) Largest Rectangle in Histogram</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#maximal-square"> (M) Maximal Square</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The DP solution proceeds row by row, starting from the first row. Let the maximal rectangle area at row i and column j be computed by [right(i,j) - left(i,j)]*height(i,j).</p>
+
+<p>All the 3 variables left, right, and height can be determined by the information from previous row, and also information from the current row. So it can be regarded as a DP solution. The transition equations are:</p>
+
+<blockquote>
+  <p>left(i,j) = max(left(i-1,j), cur<em>left), cur</em>left can be determined from the current row</p>
+  
+  <p>right(i,j) = min(right(i-1,j), cur<em>right), cur</em>right can be determined from the current row </p>
+  
+  <p>height(i,j) = height(i-1,j) + 1,  if matrix[i][j]=='1'; </p>
+  
+  <p>height(i,j) = 0,  if matrix[i][j]=='0'</p>
+</blockquote>
+
+<p>The code is as below. The loops can be combined for speed but I separate them for more clarity of the algorithm.</p>
+
+<pre><code>class Solution {public:
+int maximalRectangle(vector&lt;vector&lt;char&gt; &gt; &amp;matrix) {
+    if(matrix.empty()) return 0;
+    const int m = matrix.size();
+    const int n = matrix[0].size();
+    int left[n], right[n], height[n];
+    fill_n(left,n,0); fill_n(right,n,n); fill_n(height,n,0);
+    int maxA = 0;
+    for(int i=0; i&lt;m; i++) {
+        int cur_left=0, cur_right=n; 
+        for(int j=0; j&lt;n; j++) { // compute height (can do this from either side)
+            if(matrix[i][j]=='1') height[j]++; 
+            else height[j]=0;
+        }
+        for(int j=0; j&lt;n; j++) { // compute left (from left to right)
+            if(matrix[i][j]=='1') left[j]=max(left[j],cur_left);
+            else {left[j]=0; cur_left=j+1;}
+        }
+        // compute right (from right to left)
+        for(int j=n-1; j&gt;=0; j--) {
+            if(matrix[i][j]=='1') right[j]=min(right[j],cur_right);
+            else {right[j]=n; cur_right=j;}    
+        }
+        // compute the area of rectangle (can do this from either side)
+        for(int j=0; j&lt;n; j++)
+            maxA = max(maxA,(right[j]-left[j])*height[j]);
+    }
+    return maxA;
+}
+</code></pre>
+
+<p>};</p>
+
+<p>If you think this algorithm is not easy to understand, you can try this example:</p>
+
+<pre><code>0 0 0 1 0 0 0 
+0 0 1 1 1 0 0 
+0 1 1 1 1 1 0
+</code></pre>
+
+<p>The vector "left" and "right" from row 0 to row 2 are as follows</p>
+
+<p>row 0:</p>
+
+<pre><code>l: 0 0 0 3 0 0 0
+r: 7 7 7 4 7 7 7
+</code></pre>
+
+<p>row 1:</p>
+
+<pre><code>l: 0 0 2 3 2 0 0
+r: 7 7 5 4 5 7 7 
+</code></pre>
+
+<p>row 2:</p>
+
+<pre><code>l: 0 1 2 3 2 1 0
+r: 7 6 5 4 5 6 7
+</code></pre>
+
+<p>The vector "left" is computing the left boundary. Take (i,j)=(1,3) for example. On current row 1, the left boundary is at j=2. However, because matrix[1][3] is 1, you need to consider the left boundary on previous row as well, which is 3. So the real left boundary at (1,3) is 3. </p>
+
+<p>I hope this additional explanation makes things clearer.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/morrischen2008">morrischen2008</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/20240/share-my-dp-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>This question is similar as <a rel="nofollow" href="http://oj.leetcode.com/problems/largest-rectangle-in-histogram/">[Largest Rectangle in Histogram]</a>:</p>
+
+<p>You can maintain a row length of Integer array H recorded its height of '1's, and scan and update row by row to find out the largest rectangle of each row.</p>
+
+<p>For each row, if matrix[row][i] == '1'. H[i] +=1, or reset the H[i] to zero.
+and accroding the algorithm of [Largest Rectangle in Histogram], to update the maximum area.</p>
+
+<pre><code>public class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        if (matrix==null||matrix.length==0||matrix[0].length==0)
+            return 0;
+        int cLen = matrix[0].length;    // column length
+        int rLen = matrix.length;       // row length
+        // height array 
+        int[] h = new int[cLen+1];
+        h[cLen]=0;
+        int max = 0;
+
+
+        for (int row=0;row&lt;rLen;row++) {
+            Stack&lt;Integer&gt; s = new Stack&lt;Integer&gt;();
+            for (int i=0;i&lt;cLen+1;i++) {
+                if (i&lt;cLen)
+                    if(matrix[row][i]=='1')
+                        h[i]+=1;
+                    else h[i]=0;
+
+                if (s.isEmpty()||h[s.peek()]&lt;=h[i])
+                    s.push(i);
+                else {
+                    while(!s.isEmpty()&amp;&amp;h[i]&lt;h[s.peek()]){
+                        int top = s.pop();
+                        int area = h[top]*(s.isEmpty()?i:(i-s.peek()-1));
+                        if (area&gt;max)
+                            max = area;
+                    }
+                    s.push(i);
+                }
+            }
+        }
+        return max;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/wangyushawn">wangyushawn</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/5198/a-o-n-2-solution-based-on-largest-rectangle-in-histogram">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>We can apply the maximum in histogram in each row of the 2D matrix. What we need is to maintain an int array for each row, which represent for the height of the histogram.</p>
+
+<p>Please refer to https://leetcode.com/problems/largest-rectangle-in-histogram/      first.</p>
+
+<p>Suppose there is a 2D matrix like</p>
+
+<p>1 1 0 1 0 1</p>
+
+<p>0 1 0 0 1 1</p>
+
+<p>1 1 1 1 0 1</p>
+
+<p>1 1 1 1 0 1</p>
+
+<p>First initiate the height array as 1 1 0 1 0 1, which is just a copy of the first row. Then we can easily calculate the max area is 2.</p>
+
+<p>Then update the array. We scan the second row, when the matrix[1][i] is 0, set the height[i] to 0; else height[i] += 1, which means the height has increased by 1. So the height array again becomes 0 2 0 0 1 2. The max area now is also 2.</p>
+
+<p>Apply the same method until we scan the whole matrix. the last height arrays is 2 4 2 2 0 2, so the max area has been found as 2 * 4 = 8.</p>
+
+<p>Then reason we scan the whole matrix is that the maximum value may appear in any row of the height.</p>
+
+<p>Code as follows: </p>
+
+<pre><code>public class Solution {
+public int maximalRectangle(char[][] matrix) {
+    if(matrix == null || matrix.length == 0 || matrix[0].length == 0) return 0;
+
+    int[] height = new int[matrix[0].length];
+    for(int i = 0; i &lt; matrix[0].length; i ++){
+        if(matrix[0][i] == '1') height[i] = 1;
+    }
+    int result = largestInLine(height);
+    for(int i = 1; i &lt; matrix.length; i ++){
+        resetHeight(matrix, height, i);
+        result = Math.max(result, largestInLine(height));
+    }
+
+    return result;
+}
+
+private void resetHeight(char[][] matrix, int[] height, int idx){
+    for(int i = 0; i &lt; matrix[0].length; i ++){
+        if(matrix[idx][i] == '1') height[i] += 1;
+        else height[i] = 0;
+    }
+}    
+
+public int largestInLine(int[] height) {
+    if(height == null || height.length == 0) return 0;
+    int len = height.length;
+    Stack&lt;Integer&gt; s = new Stack&lt;Integer&gt;();
+    int maxArea = 0;
+    for(int i = 0; i &lt;= len; i++){
+        int h = (i == len ? 0 : height[i]);
+        if(s.isEmpty() || h &gt;= height[s.peek()]){
+            s.push(i);
+        }else{
+            int tp = s.pop();
+            maxArea = Math.max(maxArea, height[tp] * (s.isEmpty() ? i : i - 1 - s.peek()));
+            i--;
+        }
+    }
+    return maxArea;
+}
+</code></pre>
+
+<p>}</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/bu.will.9">bu.will.9</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/52670/solution-based-maximum-rectangle-histogram-with-explanation">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

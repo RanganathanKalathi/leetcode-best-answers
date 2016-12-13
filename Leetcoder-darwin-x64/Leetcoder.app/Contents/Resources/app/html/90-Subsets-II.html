@@ -1,0 +1,175 @@
+<!DOCTYPE html><html><head><title>Subsets II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cd78fd1aae28585753b4" data-set="true" class="title">Subsets II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a collection of integers that might contain duplicates, <b><i>nums</i></b>, return all possible subsets.
+</p>
+<p><b>Note:</b><br>
+</p><ul>
+<li>Elements in a subset must be in non-descending order.</li>
+<li>The solution set must not contain duplicate subsets.</li>
+</ul>
+
+<p>
+For example,<br>
+If <b><i>nums</i></b> = <code>[1,2,2]</code>, a solution is:
+</p>
+
+<pre>
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+</pre>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>To solve this problem, it is helpful to first think how many subsets are there. If there is no duplicate element, the answer is simply 2^n, where n is the number of elements. This is because you have two choices for each element, either putting it into the subset or not. So all subsets for this no-duplicate set can be easily constructed:
+num of subset</p>
+
+<ul>
+<li>(1        to 2^0) empty set is the first subset</li>
+<li>(2^0+1 to 2^1) add the first element into subset from (1)</li>
+<li>(2^1+1 to 2^2) add the second element into subset (1 to 2^1)</li>
+<li>(2^2+1 to 2^3) add the third element into subset (1 to 2^2)</li>
+<li>....</li>
+<li>(2^(n-1)+1 to 2^n) add the nth element into subset(1 to 2^(n-1))</li>
+</ul>
+
+<p>Then how many subsets are there if there are duplicate elements? We can treat duplicate element as a spacial element. For example, if we have duplicate elements (5, 5), instead of treating them as two elements that are duplicate, we can treat it as one special element 5, but this element has more than two choices: you can either NOT put it into the subset, or put ONE 5 into the subset, or put TWO 5s into the subset. Therefore, we are given an array (a1, a2, a3, ..., an) with each of them appearing (k1, k2, k3, ..., kn) times, the number of subset is (k1+1)<em>(k2+1)</em>...(kn+1). We can easily see how to write down all the subsets similar to the approach above.</p>
+
+<pre><code>    class Solution {
+public:
+    vector&lt;vector&lt;int&gt; &gt; subsetsWithDup(vector&lt;int&gt; &amp;S) {
+        vector&lt;vector&lt;int&gt; &gt; totalset = {{}};
+        sort(S.begin(),S.end());
+        for(int i=0; i&lt;S.size();){
+            int count = 0; // num of elements are the same
+            while(count + i&lt;S.size() &amp;&amp; S[count+i]==S[i])  count++;
+            int previousN = totalset.size();
+            for(int k=0; k&lt;previousN; k++){
+                vector&lt;int&gt; instance = totalset[k];
+                for(int j=0; j&lt;count; j++){
+                    instance.push_back(S[i]);
+                    totalset.push_back(instance);
+                }
+            }
+            i += count;
+        }
+        return totalset;
+        }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/mathsam">mathsam</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/14902/c-solution-and-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>If we want to insert an element which is a dup, we can only insert it after the newly inserted elements from last step.</p>
+
+<pre><code>vector&lt;vector&lt;int&gt; &gt; subsetsWithDup(vector&lt;int&gt; &amp;S) {
+    sort(S.begin(), S.end());
+    vector&lt;vector&lt;int&gt;&gt; ret = {{}};
+    int size = 0, startIndex = 0;
+    for (int i = 0; i &lt; S.size(); i++) {
+        startIndex = i &gt;= 1 &amp;&amp; S[i] == S[i - 1] ? size : 0;
+        size = ret.size();
+        for (int j = startIndex; j &lt; size; j++) {
+            vector&lt;int&gt; temp = ret[j];
+            temp.push_back(S[i]);
+            ret.push_back(temp);
+        }
+    }
+    return ret;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yuruofeifei">yuruofeifei</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/11905/simple-iterative-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p><strong>The characteristics of C++ reference is an outstanding tool for backtracking algorithm!</strong></p>
+
+<p>let us use [1,2,3,4] as an example to explain my solution:</p>
+
+<pre><code>subsets([1,2,3,4]) = []
+                     // push(1)
+                     [1, subsets([2,3,4])] // if push N times in subsets([2,3,4]), the pop times is also N, so vec is also [1] after backtrack.
+                     // pop(), push(2)
+                     [2, subsets([3,4])]
+                     // pop(), push(3)
+                     [3, subsets([4])]
+                     // pop(), push(4)
+                     [4, subsets([])]
+                     // pop()
+</code></pre>
+
+<p>Accepted 10ms c++ solution use backtracking for <a rel="nofollow" href="https://leetcode.com/problems/subsets/">Subsets </a></p>
+
+<pre><code>class Solution {
+public:
+    std::vector&lt;std::vector&lt;int&gt; &gt; subsets(std::vector&lt;int&gt; &amp;nums) {
+        std::sort(nums.begin(), nums.end());
+        std::vector&lt;std::vector&lt;int&gt; &gt; res;
+        std::vector&lt;int&gt; vec;
+        subsets(res, nums, vec, 0);
+        return res;
+    }
+private:
+    void subsets(std::vector&lt;std::vector&lt;int&gt; &gt; &amp;res, std::vector&lt;int&gt; &amp;nums, std::vector&lt;int&gt; &amp;vec, int begin) {
+        res.push_back(vec);
+        for (int i = begin; i != nums.size(); ++i) {
+            vec.push_back(nums[i]);
+            subsets(res, nums, vec, i + 1);
+            vec.pop_back();
+        }
+    }
+};
+</code></pre>
+
+<p>Accepted 10ms c++ solution use backtracking for <a rel="nofollow" href="https://leetcode.com/problems/subsets-ii/">Subsets II</a></p>
+
+<pre><code>class Solution {
+public:
+    std::vector&lt;std::vector&lt;int&gt; &gt; subsetsWithDup(std::vector&lt;int&gt; &amp;nums) {
+        std::sort(nums.begin(), nums.end());
+        std::vector&lt;std::vector&lt;int&gt; &gt; res;
+        std::vector&lt;int&gt; vec;
+        subsetsWithDup(res, nums, vec, 0);
+        return res;
+    }
+private:
+    void subsetsWithDup(std::vector&lt;std::vector&lt;int&gt; &gt; &amp;res, std::vector&lt;int&gt; &amp;nums, std::vector&lt;int&gt; &amp;vec, int begin) {
+        res.push_back(vec);
+        for (int i = begin; i != nums.size(); ++i)
+            if (i == begin || nums[i] != nums[i - 1]) { 
+                vec.push_back(nums[i]);
+                subsetsWithDup(res, nums, vec, i + 1);
+                vec.pop_back();
+            }
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/prime_tang">prime_tang</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/34975/accepted-solution-backtracking-only-lines-easy-understand">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

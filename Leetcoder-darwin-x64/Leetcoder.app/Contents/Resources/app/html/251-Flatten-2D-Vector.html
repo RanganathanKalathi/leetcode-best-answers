@@ -1,0 +1,237 @@
+<!DOCTYPE html><html><head><title>Flatten 2D Vector</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c86efd1aae2858575323" data-set="true" class="title">Flatten 2D Vector</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Implement an iterator to flatten a 2d vector.
+</p>
+
+<p>For example,<br>
+Given 2d vector = 
+</p><pre>
+[
+  [1,2],
+  [3],
+  [4,5,6]
+]
+</pre>
+
+<p>
+By calling <i>next</i> repeatedly until <i>hasNext</i> returns false, the order of elements returned by <i>next</i> should be: <code>[1,2,3,4,5,6]</code>.
+</p>
+
+<ol id="hints">
+  <li class="hint">How many variables do you need to keep track?</li>
+  <li class="hint">Two variables is all you need. Try with <code>x</code> and <code>y</code>.</li>
+  <li class="hint">Beware of empty rows. It could be the first few rows.</li>
+  <li class="hint">To write correct code, think about the <a href="https://en.wikipedia.org/wiki/Invariant_(computer_science)" target="_blank">invariant</a> to maintain. What is it?</li>
+  <li class="hint">The invariant is <code>x</code> and <code>y</code> must always point to a valid point in the 2d vector. Should you maintain your invariant <i>ahead of time</i> or <i>right when you need it</i>?</li>
+  <li class="hint">Not sure? Think about how you would implement <code>hasNext()</code>. Which is more complex?</li>
+  <li class="hint">Common logic in two different places should be refactored into a common method.</li>
+</ol>
+
+<p>
+<b>Follow up:</b><br>
+As an added challenge, try to code it using only <a href="http://www.cplusplus.com/reference/iterator/iterator/" target="_blank">iterators in C++</a> or <a href="http://docs.oracle.com/javase/7/docs/api/java/util/Iterator.html" target="_blank">iterators in Java</a>.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/airbnb/">Airbnb</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/zenefits/">Zenefits</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-search-tree-iterator"> (M) Binary Search Tree Iterator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#zigzag-iterator"> (M) Zigzag Iterator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#peeking-iterator"> (M) Peeking Iterator</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Since the OJ does <code>while (i.hasNext()) cout &lt;&lt; i.next();</code>, i.e., always calls <code>hasNext</code> before <code>next</code>, I don't really have to call it myself so I could save that line in <code>next</code>. But I think that would be bad, we shouldn't rely on that.</p>
+
+<p><strong>C++</strong></p>
+
+<pre><code>class Vector2D {
+    vector&lt;vector&lt;int&gt;&gt;::iterator i, iEnd;
+    int j = 0;
+public:
+    Vector2D(vector&lt;vector&lt;int&gt;&gt;&amp; vec2d) {
+        i = vec2d.begin();
+        iEnd = vec2d.end();
+    }
+
+    int next() {
+        hasNext();
+        return (*i)[j++];
+    }
+
+    bool hasNext() {
+        while (i != iEnd &amp;&amp; j == (*i).size())
+            i++, j = 0;
+        return i != iEnd;
+    }
+};
+</code></pre>
+
+<p><strong>Java</strong></p>
+
+<pre><code>public class Vector2D {
+
+    private Iterator&lt;List&lt;Integer&gt;&gt; i;
+    private Iterator&lt;Integer&gt; j;
+
+    public Vector2D(List&lt;List&lt;Integer&gt;&gt; vec2d) {
+        i = vec2d.iterator();
+    }
+
+    public int next() {
+        hasNext();
+        return j.next();
+    }
+
+    public boolean hasNext() {
+        while ((j == null || !j.hasNext()) &amp;&amp; i.hasNext())
+            j = i.next().iterator();
+        return j != null &amp;&amp; j.hasNext();
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/50292/7-9-lines-added-java-and-c-o-1-space">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>//1. with positions of vectors</p>
+
+<pre><code>class Vector2D {
+   int row;
+   int col;
+   vector&lt;vector&lt;int&gt;&gt; data;
+
+public:
+   Vector2D(vector&lt;vector&lt;int&gt;&gt;&amp; vec2d) {
+       data = vec2d;
+       row = 0;
+       col = 0;
+   }
+
+   int next() {
+       return data[row][col++];
+   }
+
+   bool hasNext() {
+       while(row &lt; data.size() &amp;&amp; data[row].size() == col)
+           row++, col = 0;
+       return row &lt; data.size();
+   }
+};
+</code></pre>
+
+<p>//2. with Iterator</p>
+
+<pre><code>class Vector2D {
+   vector&lt;vector&lt;int&gt;&gt; data;
+   vector&lt;vector&lt;int&gt;&gt;::iterator rowIter;
+   vector&lt;int&gt;::iterator colIter;
+
+public:
+   Vector2D(vector&lt;vector&lt;int&gt;&gt;&amp; vec2d) {
+       data = vec2d;
+       rowIter = data.begin();
+       if(rowIter != data.end())
+           colIter = rowIter-&gt;begin();
+   }
+
+   int next() {
+       int r = *colIter;
+       colIter++;
+       return r;
+   }
+
+   bool hasNext() {
+       while(rowIter != data.end() &amp;&amp; colIter == rowIter-&gt;end()) {
+           rowIter++;
+           if(rowIter != data.end())
+                colIter = rowIter-&gt;begin();
+       }
+
+       return rowIter != data.end();
+   }
+ };
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jaewoo">jaewoo</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/52614/2-short-c-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><ul>
+<li>Put all iterator in a queue</li>
+<li>Keep track of the current iterator</li>
+<li><p>Check hasNext() and next() of current</p>
+
+<p>public class Vector2D {</p>
+
+<pre><code>Queue&lt;Iterator&lt;Integer&gt;&gt; queue;
+Iterator&lt;Integer&gt; current = null;
+
+public Vector2D(List&lt;List&lt;Integer&gt;&gt; vec2d) {
+    queue = new LinkedList&lt;Iterator&lt;Integer&gt;&gt;();
+    for (int i = 0; i &lt; vec2d.size(); i++){
+        queue.add(vec2d.get(i).iterator());
+    }
+    current = queue.poll(); // first
+}
+
+public int next() {
+    if (!current.hasNext()) return -1;
+
+    return current.next();
+}
+
+public boolean hasNext() {
+    if (current == null) return false;
+
+    while (!current.hasNext()) {
+        if (!queue.isEmpty()) {
+            current = queue.poll();
+        } else return false;
+    }
+
+    return true;
+}
+</code></pre>
+
+<p>}</p></li>
+</ul>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/angelvivienne">angelvivienne</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/57984/simple-and-short-java-solution-with-iterator">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

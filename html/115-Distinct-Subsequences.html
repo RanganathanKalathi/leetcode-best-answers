@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><title>Distinct Subsequences</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cc8efd1aae285857539b" data-set="true" class="title">Distinct Subsequences</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a string <b>S</b> and a string <b>T</b>, count the number of distinct subsequences of <b>T</b> in <b>S</b>.
+</p>
+
+<p>
+A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, <code>"ACE"</code> is a subsequence of <code>"ABCDE"</code> while <code>"AEC"</code> is not).
+</p>
+
+<p>
+Here is an example:<br>
+<b>S</b> = <code>"rabbbit"</code>, <b>T</b> = <code>"rabbit"</code>
+</p>
+<p>
+Return <code>3</code>.
+</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>My solution is using O(n^2) space and running in O(n^2) time. I wonder is there a better way to do that which consumes less memory? I guess run time could not be improved though. Any thought/input would be highly appreciated, thanks!</p>
+
+<pre><code>/**
+ * Solution (DP):
+ * We keep a m*n matrix and scanning through string S, while
+ * m = T.length() + 1 and n = S.length() + 1
+ * and each cell in matrix Path[i][j] means the number of distinct subsequences of 
+ * T.substr(1...i) in S(1...j)
+ * 
+ * Path[i][j] = Path[i][j-1]            (discard S[j])
+ *              +     Path[i-1][j-1]    (S[j] == T[i] and we are going to use S[j])
+ *                 or 0                 (S[j] != T[i] so we could not use S[j])
+ * while Path[0][j] = 1 and Path[i][0] = 0.
+ */
+int numDistinct(string S, string T) {
+    int m = T.length();
+    int n = S.length();
+    if (m &gt; n) return 0;    // impossible for subsequence
+    vector&lt;vector&lt;int&gt;&gt; path(m+1, vector&lt;int&gt;(n+1, 0));
+    for (int k = 0; k &lt;= n; k++) path[0][k] = 1;    // initialization
+
+    for (int j = 1; j &lt;= n; j++) {
+        for (int i = 1; i &lt;= m; i++) {
+            path[i][j] = path[i][j-1] + (T[i-1] == S[j-1] ? path[i-1][j-1] : 0);
+        }
+    }
+
+    return path[m][n];
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dragonmigo">dragonmigo</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/2143/any-better-solution-that-takes-less-than-space-while-in-time">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The idea is the following:</p>
+
+<ul>
+<li>we will build an array <code>mem</code> where <code>mem[i+1][j+1]</code> means that <code>S[0..j]</code> contains <code>T[0..i]</code> that many times as distinct subsequences. Therefor the result will be <code>mem[T.length()][S.length()]</code>.</li>
+<li>we can build this array rows-by-rows:
+
+<ul>
+<li>the first row must be filled with 1. That's because the empty string is a subsequence of any string but only 1 time. So <code>mem[0][j] = 1</code> for every <code>j</code>. So with this we not only make our lives easier, but we also return correct value if <code>T</code> is an empty string.</li>
+<li>the first column of every rows except the first must be 0. This is because an empty string cannot contain a non-empty string as a substring -- the very first item of the array: <code>mem[0][0] = 1</code>, because an empty string contains the empty string 1 time.</li>
+</ul></li>
+</ul>
+
+<p>So the matrix looks like this:</p>
+
+<pre><code>  S 0123....j
+T +----------+
+  |1111111111|
+0 |0         |
+1 |0         |
+2 |0         |
+. |0         |
+. |0         |
+i |0         |
+</code></pre>
+
+<p>From here we can easily fill the whole grid: for each <code>(x, y)</code>, we check if <code>S[x] == T[y]</code> we add the previous item and the previous item in the previous row, otherwise we copy the previous item in the same row. The reason is simple:</p>
+
+<ul>
+<li>if the current character in S doesn't equal to current character T, then we have the same number of distinct subsequences as we had without the new character.</li>
+<li>if the current character in S equal to the current character T, then the distinct number of subsequences: the number we had before <strong>plus</strong> the distinct number of subsequences we had with less longer T and less longer S.</li>
+</ul>
+
+<p>An example:
+<code>S: [acdabefbc]</code> and <code>T: [ab]</code></p>
+
+<p>first we check with <code>a</code>:</p>
+
+<pre><code>           *  *
+      S = [acdabefbc]
+mem[1] = [0111222222]
+</code></pre>
+
+<p>then we check with <code>ab</code>:</p>
+
+<pre><code>               *  * ]
+      S = [acdabefbc]
+mem[1] = [0111222222]
+mem[2] = [0000022244]
+</code></pre>
+
+<p>And the result is 4, as the distinct subsequences are:</p>
+
+<pre><code>      S = [a   b    ]
+      S = [a      b ]
+      S = [   ab    ]
+      S = [   a   b ]
+</code></pre>
+
+<p>See the code in Java:</p>
+
+<pre><code>public int numDistinct(String S, String T) {
+    // array creation
+    int[][] mem = new int[T.length()+1][S.length()+1];
+
+    // filling the first row: with 1s
+    for(int j=0; j&lt;=S.length(); j++) {
+        mem[0][j] = 1;
+    }
+
+    // the first column is 0 by default in every other rows but the first, which we need.
+
+    for(int i=0; i&lt;T.length(); i++) {
+        for(int j=0; j&lt;S.length(); j++) {
+            if(T.charAt(i) == S.charAt(j)) {
+                mem[i+1][j+1] = mem[i][j] + mem[i+1][j];
+            } else {
+                mem[i+1][j+1] = mem[i+1][j];
+            }
+        }
+    }
+
+    return mem[T.length()][S.length()];
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/balint">balint</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/26680/easy-to-understand-dp-in-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Could someone please clarify this problem to me?</p>
+
+<blockquote>
+  <p>Given a string S and a string T, count the number of distinct
+  subsequences of T in S.</p>
+  
+  <p>A subsequence of a string is a new string which is formed from the
+  original string by deleting some (can be none) of the characters
+  without disturbing the relative positions of the remaining characters.
+  (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).</p>
+  
+  <p>Here is an example: S = "rabbbit", T = "rabbit"  count = 3</p>
+</blockquote>
+
+<p>If I understood correctly, we need to find all distinct subsequences of T and see how many, if any appear in s. How does that equal to 3 in the given example?</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/princessmaja">princessmaja</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/599/task-clarification">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

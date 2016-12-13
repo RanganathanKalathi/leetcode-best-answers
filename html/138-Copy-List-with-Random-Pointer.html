@@ -1,0 +1,275 @@
+<!DOCTYPE html><html><head><title>Copy List with Random Pointer</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cbadfd1aae2858575384" data-set="true" class="title">Copy List with Random Pointer</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+</p>
+
+<p>
+Return a deep copy of the list.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/linked-list/">Linked List</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#clone-graph"> (M) Clone Graph</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>An intuitive solution is to keep a hash table for each node in the list, via which we just need to iterate the list in 2 rounds respectively to create nodes and assign the values for their random pointers. As a result, the space complexity of this solution is <code>O(N)</code>, although with a linear time complexity. </p>
+
+<p>As an optimised solution, we could reduce the space complexity into constant. <strong><em>The idea is to associate the original node with its copy node in a single linked list. In this way, we don't need extra space to keep track of the new nodes.</em></strong></p>
+
+<p>The algorithm is composed of the follow three steps which are also 3 iteration rounds. </p>
+
+<ol>
+<li>Iterate the original list and duplicate each node. The duplicate
+of each node follows its original immediately.</li>
+<li>Iterate the new list and assign the random pointer for each
+duplicated node.</li>
+<li>Restore the original list and extract the duplicated nodes.</li>
+</ol>
+
+<p>The algorithm is implemented as follows:</p>
+
+<pre><code>public RandomListNode copyRandomList(RandomListNode head) {
+    RandomListNode iter = head, next;
+
+    // First round: make copy of each node,
+    // and link them together side-by-side in a single list.
+    while (iter != null) {
+        next = iter.next;
+
+        RandomListNode copy = new RandomListNode(iter.label);
+        iter.next = copy;
+        copy.next = next;
+
+        iter = next;
+    }
+
+    // Second round: assign random pointers for the copy nodes.
+    iter = head;
+    while (iter != null) {
+        if (iter.random != null) {
+            iter.next.random = iter.random.next;
+        }
+        iter = iter.next.next;
+    }
+
+    // Third round: restore the original list, and extract the copy list.
+    iter = head;
+    RandomListNode pseudoHead = new RandomListNode(0);
+    RandomListNode copy, copyIter = pseudoHead;
+
+    while (iter != null) {
+        next = iter.next.next;
+
+        // extract the copy
+        copy = iter.next;
+        copyIter.next = copy;
+        copyIter = copy;
+
+        // restore the original list
+        iter.next = next;
+
+        iter = next;
+    }
+
+    return pseudoHead.next;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/liaison">liaison</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/22421/solution-constant-space-complexity-linear-time-complexity">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The idea is:
+Step 1: create a new node for each existing node and join them together
+eg: A-&gt;B-&gt;C will be A-&gt;A'-&gt;B-&gt;B'-&gt;C-&gt;C'</p>
+
+<p>Step2: copy the random links: for each new node n', n'.random = n.random.next</p>
+
+<p>Step3: detach the list: basically n.next = n.next.next; n'.next = n'.next.next</p>
+
+<p>Here is the code:</p>
+
+<pre><code>/**
+ * Definition for singly-linked list with a random pointer.
+ * class RandomListNode {
+ *     int label;
+ *     RandomListNode next, random;
+ *     RandomListNode(int x) { this.label = x; }
+ * };
+ */
+public class Solution {
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if(head==null){
+            return null;
+        }
+        RandomListNode n = head;
+        while (n!=null){
+            RandomListNode n2 = new RandomListNode(n.label);
+            RandomListNode tmp = n.next;
+            n.next = n2;
+            n2.next = tmp;
+            n = tmp;
+        }
+
+        n=head;
+        while(n != null){
+            RandomListNode n2 = n.next;
+            if(n.random != null)
+                n2.random = n.random.next;
+            else
+                n2.random = null;
+            n = n.next.next;
+        }
+
+        //detach list
+        RandomListNode n2 = head.next;
+        n = head;
+        RandomListNode head2 = head.next;
+        while(n2 != null &amp;&amp; n != null){
+            n.next = n.next.next;
+            if (n2.next == null){
+                break;
+            }
+            n2.next = n2.next.next;
+
+            n2 = n2.next;
+            n = n.next;
+        }
+        return head2;
+
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/sharon2">sharon2</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/12559/my-accepted-java-code-o-n-but-need-to-iterate-the-list-3-times">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>//
+// Here's how the 1st algorithm goes.
+// Consider l1 as a node on the 1st list and l2 as the corresponding node on 2nd list.
+// Step 1:
+// Build the 2nd list by creating a new node for each node in 1st list. 
+// While doing so, insert each new node after it's corresponding node in the 1st list.
+// Step 2:
+// The new head is the 2nd node as that was the first inserted node.
+// Step 3:
+// Fix the random pointers in the 2nd list: (Remember that l1-&gt;next is actually l2)
+// l2-&gt;random will be the node in 2nd list that corresponds l1-&gt;random, 
+// which is next node of l1-&gt;random.
+// Step 4:
+// Separate the combined list into 2: Splice out nodes that are part of second list. 
+// Return the new head that we saved in step 2.
+//
+
+RandomListNode *copyRandomList(RandomListNode *head) {
+    RandomListNode *newHead, *l1, *l2;
+    if (head == NULL) return NULL;
+    for (l1 = head; l1 != NULL; l1 = l1-&gt;next-&gt;next) {
+        l2 = new RandomListNode(l1-&gt;label);
+        l2-&gt;next = l1-&gt;next;
+        l1-&gt;next = l2;
+    }
+
+    newHead = head-&gt;next;
+    for (l1 = head; l1 != NULL; l1 = l1-&gt;next-&gt;next) {
+        if (l1-&gt;random != NULL) l1-&gt;next-&gt;random = l1-&gt;random-&gt;next;
+    }
+
+    for (l1 = head; l1 != NULL; l1 = l1-&gt;next) {
+        l2 = l1-&gt;next;
+        l1-&gt;next = l2-&gt;next;
+        if (l2-&gt;next != NULL) l2-&gt;next = l2-&gt;next-&gt;next;
+    }
+
+    return newHead;
+}
+
+
+//
+// Here's how the 2nd algorithm goes.
+// Consider l1 as a node on the 1st list and l2 as the corresponding node on 2nd list.
+// Step 1:
+// Build the 2nd list by creating a new node for each node in 1st list. 
+// While doing so, set the next pointer of the new node to the random pointer 
+// of the corresponding node in the 1st list.  And set the random pointer of the 
+// 1st list's node to the newly created node.
+// Step 2:
+// The new head is the node pointed to by the random pointer of the 1st list.
+// Step 3:
+// Fix the random pointers in the 2nd list: (Remember that l1-&gt;random is l2)
+// l2-&gt;random will be the node in 2nd list that corresponds to the node in the 
+// 1st list that is pointed to by l2-&gt;next, 
+// Step 4:
+// Restore the random pointers of the 1st list and fix the next pointers of the 
+// 2nd list. random pointer of the node in 1st list is the next pointer of the 
+// corresponding node in the 2nd list.  This is what we had done in the 
+// 1st step and now we are reverting back. next pointer of the node in 
+// 2nd list is the random pointer of the node in 1st list that is pointed to 
+// by the next pointer of the corresponding node in the 1st list.
+// Return the new head that we saved in step 2.
+//
+
+RandomListNode *copyRandomList(RandomListNode *head) {
+    RandomListNode *newHead, *l1, *l2;
+    if (head == NULL) return NULL;
+
+    for (l1 = head; l1 != NULL; l1 = l1-&gt;next) {
+        l2 = new RandomListNode(l1-&gt;label);
+        l2-&gt;next = l1-&gt;random;
+        l1-&gt;random = l2;
+    }
+
+    newHead = head-&gt;random;
+    for (l1 = head; l1 != NULL; l1 = l1-&gt;next) {
+        l2 = l1-&gt;random;
+        l2-&gt;random = l2-&gt;next ? l2-&gt;next-&gt;random : NULL;
+    }
+
+    for (l1 = head; l1 != NULL; l1 = l1-&gt;next) {
+        l2 = l1-&gt;random;
+        l1-&gt;random = l2-&gt;next;
+        l2-&gt;next = l1-&gt;next ? l1-&gt;next-&gt;random : NULL;
+    }
+
+    return newHead;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/satyakam">satyakam</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/18049/algorithms-without-extra-array-table-algorithms-explained">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

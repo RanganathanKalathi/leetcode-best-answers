@@ -1,0 +1,183 @@
+<!DOCTYPE html><html><head><title>Min Stack</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cb0afd1aae2858575373" data-set="true" class="title">Min Stack</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+</p><ul>
+<li>
+push(x) -- Push element x onto stack.
+</li>
+<li>
+pop() -- Removes the element on top of the stack.
+</li>
+<li>
+top() -- Get the top element.
+</li>
+<li>
+getMin() -- Retrieve the minimum element in the stack.
+</li>
+</ul>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/amazon/">Amazon</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/uber/">Uber</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/bloomberg/">Bloomberg</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/zenefits/">Zenefits</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/stack/">Stack</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#sliding-window-maximum"> (H) Sliding Window Maximum</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The question is ask to construct One stack. So I am using one stack.</p>
+
+<p>The idea is to store the gap between the min value and the current value; </p>
+
+<p>The problem for my solution is the cast. I have no idea to avoid the cast. Since the possible gap between the current value and the min value could be Integer.MAX<em>VALUE-Integer.MIN</em>VALUE;</p>
+
+<pre><code>public class MinStack {
+    long min;
+    Stack&lt;Long&gt; stack;
+
+    public MinStack(){
+        stack=new Stack&lt;&gt;();
+    }
+
+    public void push(int x) {
+        if (stack.isEmpty()){
+            stack.push(0L);
+            min=x;
+        }else{
+            stack.push(x-min);//Could be negative if min value needs to change
+            if (x&lt;min) min=x;
+        }
+    }
+
+    public void pop() {
+        if (stack.isEmpty()) return;
+
+        long pop=stack.pop();
+
+        if (pop&lt;0)  min=min-pop;//If negative, increase the min value
+
+    }
+
+    public int top() {
+        long top=stack.peek();
+        if (top&gt;0){
+            return (int)(top+min);
+        }else{
+           return (int)(min);
+        }
+    }
+
+    public int getMin() {
+        return (int)min;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/reeclapple">reeclapple</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/15679/share-my-java-solution-with-only-one-stack">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>class MinStack {
+    int min=Integer.MAX_VALUE;
+    Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();
+    public void push(int x) {
+       // only push the old minimum value when the current 
+       // minimum value changes after pushing the new value x
+        if(x &lt;= min){          
+            stack.push(min);
+            min=x;
+        }
+        stack.push(x);
+    }
+
+    public void pop() {
+       // if pop operation could result in the changing of the current minimum value, 
+       // pop twice and change the current minimum value to the last minimum value.
+        if(stack.peek()==min) {
+            stack.pop();
+            min=stack.peek();
+            stack.pop();
+        }else{
+            stack.pop();
+        }
+        if(stack.empty()){
+            min=Integer.MAX_VALUE;
+        }
+    }
+
+    public int top() {
+        return stack.peek();
+    }
+
+    public int getMin() {
+        return min;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/sometimescrazy">sometimescrazy</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/21071/java-accepted-solution-using-one-stack">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class MinStack {
+private:
+    stack&lt;int&gt; s1;
+    stack&lt;int&gt; s2;
+public:
+    void push(int x) {
+        s1.push(x);
+        if (s2.empty() || x &lt;= getMin())  s2.push(x);       
+    }
+    void pop() {
+        if (s1.top() == getMin())  s2.pop();
+        s1.pop();
+    }
+    int top() {
+        return s1.top();
+    }
+    int getMin() {
+        return s2.top();
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/zjchenRice">zjchenRice</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/45373/c-using-two-stacks-quite-short-and-easy-to-understand">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

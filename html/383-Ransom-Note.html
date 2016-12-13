@@ -1,0 +1,119 @@
+<!DOCTYPE html><html><head><title>Ransom Note</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57abf84c9cbe5e33bb4a9da7" data-set="true" class="title">Ransom Note</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+&#8233;Given&#8233; an &#8233;arbitrary&#8233; ransom&#8233; note&#8233; string &#8233;and &#8233;another &#8233;string &#8233;containing &#8233;letters from&#8233; all &#8233;the &#8233;magazines,&#8233; write &#8233;a &#8233;function &#8233;that &#8233;will &#8233;return &#8233;true &#8233;if &#8233;the &#8233;ransom &#8233;
+note &#8233;can &#8233;be &#8233;constructed &#8233;from &#8233;the &#8233;magazines ; &#8233;otherwise, &#8233;it &#8233;will &#8233;return &#8233;false. &#8233;&#8233;
+</p>
+<p>
+Each &#8233;letter&#8233; in&#8233; the&#8233; magazine &#8233;string &#8233;can&#8233; only &#8233;be&#8233; used &#8233;once&#8233; in&#8233; your &#8233;ransom&#8233; note.
+</p>
+
+<p><b>Note:</b><br>
+You may assume that both strings contain only lowercase letters.
+</p>
+
+<pre>
+canConstruct("a", "b") -&gt; false
+canConstruct("aa", "ab") -&gt; false
+canConstruct("aa", "aab") -&gt; true
+</pre>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/apple/">Apple</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>public class Solution {
+    public boolean canConstruct(String ransomNote, String magazine) {
+        int[] arr = new int[26];
+        for (int i = 0; i &lt; magazine.length(); i++) {
+            arr[magazine.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i &lt; ransomNote.length(); i++) {
+            if(--arr[ransomNote.charAt(i)-'a'] &lt; 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/yidongwang">yidongwang</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/53864/java-o-n-solution-easy-to-understand">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>O(m+n) with m and n being the lengths of the strings.</p>
+<pre><code>def canConstruct(self, ransomNote, magazine):
+    return not collections.Counter(ransomNote) - collections.Counter(magazine)</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/stefanpochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/53902/o-m-n-one-liner-python">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>The complexity is O(N), N is the length of magazine.</p>
+<pre><code>class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        unordered_map&lt;char, int&gt; map;
+        for (int i = 0; i &lt; magazine.size(); ++i)
+            ++map[magazine[i]];
+        for (int j = 0; j &lt; ransomNote.size(); ++j)
+            if (--map[ransomNote[j]] &lt; 0)
+                return false;
+        return true;
+    }
+};
+</code></pre>
+<p>Or you can use a vector with size 26 instead of an unordered_map.</p>
+<pre><code>class Solution {
+public:
+    bool canConstruct(string ransomNote, string magazine) {
+        vector&lt;int&gt; vec(26, 0);
+        for (int i = 0; i &lt; magazine.size(); ++i)
+            ++vec[magazine[i] - 'a'];
+        for (int j = 0; j &lt; ransomNote.size(); ++j)
+            if (--vec[ransomNote[j] - 'a'] &lt; 0)
+                return false;
+        return true;
+    }
+};
+</code></pre>
+<p>I remember that there are two variations of this question, perhaps they will come in the next few days :)</p>
+<ol>
+<li>If you can only pick letters from the magazine in order.</li>
+<li>If the magazine is double sided.</li>
+</ol>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/haruhiku">haruhiku</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/53865/two-ac-c-solutions-unordered_map-vector">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

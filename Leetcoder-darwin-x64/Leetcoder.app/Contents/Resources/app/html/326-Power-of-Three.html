@@ -1,0 +1,199 @@
+<!DOCTYPE html><html><head><title>Power of Three</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c66dfd1aae28585752d9" data-set="true" class="title">Power of Three</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+    Given an integer, write a function to determine if it is a power of three.
+</p>
+<p>
+    <b>Follow up:</b><br>
+    Could you do it without using any loop / recursion?
+</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/dietpepsi">@dietpepsi</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#power-of-two"> (E) Power of Two</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Well, this problem doesn't seem to be quite interesting or worthwhile to think about at a first glance. I had the same feeling at the beginning. However, after seeing a couple of posts, I saw a couple of interesting ways. So here is a summary post and hope you learn something from others' solutions.</p>
+
+<p>Two trivial solutions first: </p>
+
+<h1>Recursive Solution</h1>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    return n&gt;0 &amp;&amp; (n==1 || (n%3==0 &amp;&amp; isPowerOfThree(n/3)));
+}
+</code></pre>
+
+<h1>Iterative Solution</h1>
+
+<p><strong>update following Stefan's answer below:</strong></p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    if(n&gt;1)
+        while(n%3==0) n /= 3;
+    return n==1;
+}
+</code></pre>
+
+<p><strong>my original code:</strong>
+    public boolean isPowerOfThree(int n) {
+        while(n&gt;1) {
+            if(n%3!=0) return false;
+            n /= 3;
+        }
+        return n&lt;=0 ? false : true;
+    }</p>
+
+<h1>It's all about MATH...</h1>
+
+<p><strong>Method 1</strong></p>
+
+<p>Find the maximum integer that is a power of 3 and check if it is a multiple of the given input. (<a rel="nofollow" href="https://leetcode.com/discuss/78500/math-solution">related post</a>)</p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    int maxPowerOfThree = (int)Math.pow(3, (int)(Math.log(0x7fffffff) / Math.log(3)));
+    return n&gt;0 &amp;&amp; maxPowerOfThree%n==0;
+}
+</code></pre>
+
+<p>Or simply hard code it since we know <code>maxPowerOfThree = 1162261467</code>:</p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    return n &gt; 0 &amp;&amp; (1162261467 % n == 0);
+}
+</code></pre>
+
+<p>It is worthwhile to mention that Method 1 works only when the base is prime. For example, we cannot use this algorithm to check if a number is a power of 4 or 6 or any other composite number.</p>
+
+<p><strong>Method 2</strong></p>
+
+<p>If <code>log10(n) / log10(3)</code> returns an int (more precisely, a double but has 0 after decimal point), then n is a power of 3. (<a rel="nofollow" href="https://leetcode.com/discuss/78495/my-one-line-java-solution">original post</a>). But <strong>be careful here</strong>, you cannot use <code>log</code> (natural log) here, because it will generate round off error for <code>n=243</code>. This is more like a coincidence. I mean when <code>n=243</code>, we have the following results:</p>
+
+<pre><code>log(243) = 5.493061443340548    log(3) = 1.0986122886681098
+   ==&gt; log(243)/log(3) = 4.999999999999999
+
+log10(243) = 2.385606273598312    log10(3) = 0.47712125471966244
+   ==&gt; log10(243)/log10(3) = 5.0
+</code></pre>
+
+<p>This happens because <code>log(3)</code> is actually slightly larger than its true value due to round off, which makes the ratio smaller. </p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    return (Math.log10(n) / Math.log10(3)) % 1 == 0;
+}
+</code></pre>
+
+<p><strong>Method 3</strong> <a rel="nofollow" href="https://leetcode.com/discuss/78481/java-one-line-solution-using-math-knowledge">related post</a></p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    return n==0 ? false : n==Math.pow(3, Math.round(Math.log(n) / Math.log(3)));
+}
+</code></pre>
+
+<p><strong>Method 4</strong> <a rel="nofollow" href="https://leetcode.com/discuss/78531/one-line-math-solution-python-code">related post</a></p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    return n&gt;0 &amp;&amp; Math.abs(Math.log10(n)/Math.log10(3)-Math.ceil(Math.log10(n)/Math.log10(3))) &lt; Double.MIN_VALUE;
+}
+</code></pre>
+
+<p><strong><code>Cheating</code> Method</strong></p>
+
+<p>This is not really a good idea in general. But for such kind of <code>power</code> questions, if we need to check many times, it might be a good idea to store the desired powers into an array first. (<a rel="nofollow" href="https://leetcode.com/discuss/78492/one-lined-python-solution-without-using-any-loop-recursion">related post</a>)</p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    int[] allPowerOfThree = new int[]{1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147, 531441, 1594323, 4782969, 14348907, 43046721, 129140163, 387420489, 1162261467};
+    return Arrays.binarySearch(allPowerOfThree, n) &gt;= 0;
+}
+</code></pre>
+
+<p>or even better with HashSet:</p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    HashSet&lt;Integer&gt; set = new HashSet&lt;&gt;(Arrays.asList(1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147, 531441, 1594323, 4782969, 14348907, 43046721, 129140163, 387420489, 1162261467));
+    return set.contains(n);
+}
+</code></pre>
+
+<h1>New Method Included at 15:30pm Jan-8th</h1>
+
+<p><strong>Radix-3</strong> <a rel="nofollow" href="https://leetcode.com/discuss/78708/ternary-number-solution">original post</a></p>
+
+<p>The idea is to convert the original number into radix-3 format and check if it is of format <code>10*</code> where <code>0*</code> means <code>k</code> zeros with <code>k&gt;=0</code>.</p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+    return Integer.toString(n, 3).matches("10*");
+}
+</code></pre>
+
+<hr>
+
+<p>Any other interesting solutions?</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/GWTW">GWTW</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/78532/summary-all-solutions-new-method-included-at-15-30pm-jan-8th">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+public bool IsPowerOfThree(int n) {
+     return n &gt; 0 &amp;&amp; (1162261467 % n == 0);
+  }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/andrei3">andrei3</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/78499/one-line-cheating">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>If <code>N</code> is a power of <code>3</code>:</p>
+
+<ul>
+<li>It follows that <code>3^X == N</code></li>
+<li>It follows that <code>log (3^X) == log N</code></li>
+<li>It follows that <code>X log 3 == log N</code></li>
+<li>It follows that <code>X == (log N) / (log 3)</code></li>
+<li>For the basis to hold, <code>X</code> must be an integer.</li>
+</ul>
+
+<p>However, due to precision issues that arise from the fact that log 3 cannot be precisely represented on a binary computer; X is considered to be an integer if it's decimal component falls within a guard range of <code>+/-0.00000000000001</code>.</p>
+
+<pre><code>public boolean isPowerOfThree(int n) {
+  double a = Math.log(n) / Math.log(3);
+  return Math.abs(a - Math.rint(a)) &lt;= 0.00000000000001;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/oluwasayo">oluwasayo</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/79542/simple-java-solution-without-recursion-iteration">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

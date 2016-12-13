@@ -1,0 +1,186 @@
+<!DOCTYPE html><html><head><title>Longest Increasing Path in a Matrix</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c65afd1aae28585752d6" data-set="true" class="title">Longest Increasing Path in a Matrix</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given an integer matrix, find the length of the longest increasing path.</p>
+
+<p>
+From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).</p>
+
+<p>
+<b>Example 1:</b>
+</p><pre>
+nums = [
+  [<font color="red">9</font>,9,4],
+  [<font color="red">6</font>,6,8],
+  [<font color="red">2</font>,<font color="red">1</font>,1]
+]
+</pre>
+
+
+<p>
+Return <code>4</code><br>
+
+The longest increasing path is <code>[1, 2, 6, 9]</code>.</p>
+
+<p>
+<b>Example 2:</b>
+</p><pre>
+nums = [
+  [<font color="red">3</font>,<font color="red">4</font>,<font color="red">5</font>],
+  [3,2,<font color="red">6</font>],
+  [2,2,1]
+]
+</pre>
+
+
+<p>
+Return <code>4</code><br>
+
+The longest increasing path is <code>[3, 4, 5, 6]</code>. Moving diagonally is not allowed.</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/dietpepsi">@dietpepsi</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/depth-first-search/">Depth-first Search</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/topological-sort/">Topological Sort</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/memoization/">Memoization</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>To get max length of increasing sequences:</p>
+
+<ol>
+<li>Do <code>DFS</code> from every cell</li>
+<li>Compare every 4 direction and skip cells that are out of boundary or smaller</li>
+<li>Get matrix <code>max</code> from every cell's <code>max</code></li>
+<li>Use <code>matrix[x][y] &lt;= matrix[i][j]</code> so we don't need a <code>visited[m][n]</code> array</li>
+<li>The key is to <code>cache</code> the distance because it's highly possible to revisit a cell</li>
+</ol>
+
+<p>Hope it helps!</p>
+
+<pre><code>public static final int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+public int longestIncreasingPath(int[][] matrix) {
+    if(matrix.length == 0) return 0;
+    int m = matrix.length, n = matrix[0].length;
+    int[][] cache = new int[m][n];
+    int max = 1;
+    for(int i = 0; i &lt; m; i++) {
+        for(int j = 0; j &lt; n; j++) {
+            int len = dfs(matrix, i, j, m, n, cache);
+            max = Math.max(max, len);
+        }
+    }   
+    return max;
+}
+
+public int dfs(int[][] matrix, int i, int j, int m, int n, int[][] cache) {
+    if(cache[i][j] != 0) return cache[i][j];
+    int max = 1;
+    for(int[] dir: dirs) {
+        int x = i + dir[0], y = j + dir[1];
+        if(x &lt; 0 || x &gt;= m || y &lt; 0 || y &gt;= n || matrix[x][y] &lt;= matrix[i][j]) continue;
+        int len = 1 + dfs(matrix, x, y, m, n, cache);
+        max = Math.max(max, len);
+    }
+    cache[i][j] = max;
+    return max;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yavinci">yavinci</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/81389/15ms-concise-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The idea is simple and intuitive:<br>
+    1. For each cell, try it's left, right, up and down for smaller number.<br>
+    2. If it's smaller, means we are on the right track and we should keep going. If larger, stop and return.<br>
+    3. Treat each cell as a start cell. Calculate and memorize the longest distance for this cell, so we don't need to calculate it again in the future.  </p>
+
+<p>Questions and advices are welcome.</p>
+
+<pre><code>public class Solution {
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+        int[][] cache = new int[matrix.length][matrix[0].length];
+        int max = 0;
+        for (int i = 0; i &lt; matrix.length; i++) {
+            for (int j = 0; j &lt; matrix[0].length; j++) {
+                int length = findSmallAround(i, j, matrix, cache, Integer.MAX_VALUE);
+                max = Math.max(length, max);
+            }
+        }
+        return max;
+    }
+    private int findSmallAround(int i, int j, int[][] matrix, int[][] cache, int pre) {
+        // if out of bond OR current cell value larger than previous cell value.
+        if (i &lt; 0 || i &gt;= matrix.length || j &lt; 0 || j &gt;= matrix[0].length || matrix[i][j] &gt;= pre) {
+            return 0;
+        }
+        // if calculated before, no need to do it again
+        if (cache[i][j] &gt; 0) {
+            return cache[i][j];
+        } else {
+            int cur = matrix[i][j];
+            int tempMax = 0;
+            tempMax = Math.max(findSmallAround(i - 1, j, matrix, cache, cur), tempMax);
+            tempMax = Math.max(findSmallAround(i + 1, j, matrix, cache, cur), tempMax);
+            tempMax = Math.max(findSmallAround(i, j - 1, matrix, cache, cur), tempMax);
+            tempMax = Math.max(findSmallAround(i, j + 1, matrix, cache, cur), tempMax);
+            cache[i][j] = ++tempMax;
+            return tempMax;
+        }
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/EdickCoding">EdickCoding</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/81877/java-14ms-relative-short-solution-with-explanation-time-space">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>We can find longest decreasing path instead, the result will be the same. Use <code>dp</code> to record previous results and choose the max <code>dp</code> value of smaller neighbors.</p>
+
+<pre><code>def longestIncreasingPath(self, matrix):
+    def dfs(i, j):
+        if not dp[i][j]:
+            val = matrix[i][j]
+            dp[i][j] = 1 + max(
+                dfs(i - 1, j) if i and val &gt; matrix[i - 1][j] else 0,
+                dfs(i + 1, j) if i &lt; M - 1 and val &gt; matrix[i + 1][j] else 0,
+                dfs(i, j - 1) if j and val &gt; matrix[i][j - 1] else 0,
+                dfs(i, j + 1) if j &lt; N - 1 and val &gt; matrix[i][j + 1] else 0)
+        return dp[i][j]
+
+    if not matrix or not matrix[0]: return 0
+    M, N = len(matrix), len(matrix[0])
+    dp = [[0] * N for i in range(M)]
+    return max(dfs(x, y) for x in range(M) for y in range(N))
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/kitt">kitt</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/81747/python-solution-memoization-dp-288ms">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html><html><head><title>Island Perimeter  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="58327f739cbe5e334ccb5789" data-set="true" class="title">Island Perimeter  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>You are given a map in form of a two-dimensional integer grid where 1 represents land and 0 represents water. Grid cells are connected horizontally/vertically (not diagonally). The grid is completely surrounded by water, and there is exactly one island (i.e., one or more connected land cells). The island doesn't have "lakes" (water inside that isn't connected to the water around the island). One cell is a square with side length 1. The grid is rectangular, width and height don't exceed 100. Determine the perimeter of the island.</p>
+
+<p><b>Example:</b>
+</p><pre>
+[[0,1,0,0],
+ [1,1,1,0],
+ [0,1,0,0],
+ [1,1,0,0]]
+
+Answer: 16
+Explanation: The perimeter is the 16 yellow stripes in the image below:
+<img src="https://leetcode.com/static/images/problemset/island.png">
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<ol>
+<li>loop over the matrix and count the number of islands;</li>
+<li>if the current dot is an island, count if it has any right neighbour or down neighbour;</li>
+<li>the result is islands * 4 - neighbours * 2</li>
+</ol>
+<pre><code>public class Solution {
+    public int islandPerimeter(int[][] grid) {
+        int islands = 0, neighbours = 0;
+
+        for (int i = 0; i &lt; grid.length; i++) {
+            for (int j = 0; j &lt; grid[i].length; j++) {
+                if (grid[i][j] == 1) {
+                    islands++; // count islands
+                    if (i &lt; grid.length - 1 &amp;&amp; grid[i + 1][j] == 1) neighbours++; // count down neighbours
+                    if (j &lt; grid[i].length - 1 &amp;&amp; grid[i][j + 1] == 1) neighbours++; // count right neighbours
+                }
+            }
+        }
+
+        return islands * 4 - neighbours * 2;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/liupangzi">liupangzi</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68786/clear-and-easy-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<ol>
+<li>find how many 1 in the map. If without the consideration of surrounding cells, the total perimeter should be the total amount of 1 times 4.</li>
+<li>find how many cell walls that connect with both lands. We need to deduct twice of those lines from total perimeter</li>
+</ol>
+<pre><code>int islandPerimeter(vector&lt;vector&lt;int&gt;&gt;&amp; grid) {
+        int count=0, repeat=0;
+        for(int i=0;i&lt;grid.size();i++)
+        {
+            for(int j=0; j&lt;grid[i].size();j++)
+                {
+                    if(grid[i][j]==1)
+                    {
+                        count ++;
+                        if(i!=0 &amp;&amp; grid[i-1][j] == 1) repeat++;
+                        if(j!=0 &amp;&amp; grid[i][j-1] == 1) repeat++;
+                    }
+                }
+        }
+        return 4*count-repeat*2;
+    }
+</code></pre>
+<p><a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/56408">@msg</a>  thanks for the edit</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/beckswu">beckswu</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68845/c-solution-with-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>public static int islandPerimeter(int[][] grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) return 0;
+        int result = 0;
+        for (int i = 0; i &lt; grid.length; i++) {
+            for (int j = 0; j &lt; grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    result += 4;
+                    if (i &gt; 0 &amp;&amp; grid[i-1][j] == 1) result -= 2;
+                    if (j &gt; 0 &amp;&amp; grid[i][j-1] == 1) result -= 2;
+                }
+            }
+        }
+        return result;
+    }
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/dreamchase">dreamchase</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/68983/java-9-line-solution-add-4-for-each-land-and-remove-2-for-each-internal-edge">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

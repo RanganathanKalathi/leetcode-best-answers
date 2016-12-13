@@ -1,0 +1,361 @@
+<!DOCTYPE html><html><head><title>Perfect Rectangle</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57c30a899cbe5e5242efe930" data-set="true" class="title">Perfect Rectangle</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given N axis-aligned rectangles where N &gt; 0, determine if they all together form an exact cover of a rectangular region.
+</p>
+
+<p>
+Each rectangle is represented as a bottom-left point and a top-right point. For example, a unit square is represented as [1,1,2,2]. (coordinate of bottom-left point is (1, 1) and top-right point is (2, 2)).
+</p>
+
+<div style="float:right"><img src="https://leetcode.com/static/images/problemset/rectangle_perfect.gif"></div>
+<p><b>Example 1:</b>
+</p><pre>
+rectangles = [
+  [1,1,3,3],
+  [3,1,4,2],
+  [3,2,4,4],
+  [1,3,2,4],
+  [2,3,3,4]
+]
+
+Return true. All 5 rectangles together form an exact cover of a rectangular region.
+</pre>
+
+
+<div style="clear:both"></div>
+
+<div style="float:right"><img src="https://leetcode.com/static/images/problemset/rectangle_separated.gif"></div>
+<p><b>Example 2:</b>
+</p><pre>
+rectangles = [
+  [1,1,2,3],
+  [1,3,2,4],
+  [3,1,4,2],
+  [3,2,4,4]
+]
+
+Return false. Because there is a gap between the two rectangular regions.
+</pre>
+
+
+<div style="clear:both"></div>
+
+<div style="float:right"><img src="https://leetcode.com/static/images/problemset/rectangle_hole.gif"></div>
+<p><b>Example 3:</b>
+</p><pre>
+rectangles = [
+  [1,1,3,3],
+  [3,1,4,2],
+  [1,3,2,4],
+  [3,2,4,4]
+]
+
+Return false. Because there is a gap in the top center.
+</pre>
+
+
+<div style="clear:both"></div>
+
+<div style="float:right"><img src="https://leetcode.com/static/images/problemset/rectangle_intersect.gif"></div>
+<p><b>Example 4:</b>
+</p><pre>
+rectangles = [
+  [1,1,3,3],
+  [3,1,4,2],
+  [1,3,2,4],
+  [2,2,4,4]
+]
+
+Return false. Because two of the rectangles overlap with each other.
+</pre>
+
+
+<div style="clear:both"></div>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>This is an expanded version of <a href="https://discuss.leetcode.com/topic/55874/o-log-n-problem-2-and-o-n-problem-3-solution/3">my earlier post</a> under the contest discussion board.<br/>
+The following code passes through not only the OJ but also various test cases others have pointed out.</p>
+<h4>Idea</h4>
+<p><img src="/uploads/files/1472399247905-perfect_rectangle.jpg" alt="0_1472399247817_perfect_rectangle.jpg" class="img-responsive img-markdown"/></p>
+<p>Consider how the corners of all rectangles appear in the large rectangle if there's a perfect rectangular cover.<br/>
+<strong>Rule 1:</strong> The local shape of the corner has to follow one of the three following patterns</p>
+<ul>
+<li>Corner of the large rectangle (blue): it occurs only once among all rectangles</li>
+<li>T-junctions (green): it occurs twice among all rectangles</li>
+<li>Cross (red): it occurs four times among all rectangles</li>
+</ul>
+<p><strong>Rule 2:</strong> A point can only be the top-left corner of at most one sub-rectangle. Similarly it can be the top-right/bottom-left/bottom-right corner of  at most one sub-rectangle. Otherwise overlaps occur.</p>
+<h4>Proof of correctness</h4>
+<p>Obviously, any perfect cover satisfies the above rules. So the main question is whether there exists an input which satisfy the above rules, yet does not compose a rectangle.</p>
+<p>First, <strong><em>any overlap is not allowed based on the above rules</em></strong> because</p>
+<ul>
+<li>aligned overlap like [[0, 0, 1, 1], [0, 0, 2, 2]] are rejected by Rule 2.</li>
+<li>unaligned overlap will generate a corner in the interior of another sub-rectangle, so it will be rejected by Rule 1.</li>
+</ul>
+<p>Second, consider the shape of boundary for the combined shape. The cross pattern does not create boundary. The corner pattern generates a straight angle on the boundary, and the T-junction generates a straight border.<br/>
+<strong><em>So the shape of the union of rectangles has to be rectangle(s).</em></strong></p>
+<p>Finally, if there are more than two non-overlapping rectangles, at least 8 corners will be found, and cannot be matched to the 4 bounding box corners (be reminded we have shown that there is no chance of overlapping).<br/>
+<strong><em>So the cover has to be a single rectangle</em></strong> if all above rules are satisfied.</p>
+<h4>Algorithm</h4>
+<ul>
+<li>
+<p><strong>Step1:</strong> Based on the above idea we maintain a mapping from (x, y)-&gt;mask by scanning the sub-rectangles from beginning to end.</p>
+<ul>
+<li>(x, y) corresponds to corners of sub-rectangles</li>
+<li>mask is a 4-bit binary mask. Each bit indicates whether there have been a sub-rectangle with a top-left/top-right/bottom-left/bottom-right corner at (x, y). If we see a conflict while updating mask, it suffice to return a false during the scan.</li>
+<li>In the meantime we obtain the bounding box of all rectangles (which potentially be the rectangle cover) by getting the upper/lower bound of x/y values.</li>
+</ul>
+</li>
+<li>
+<p><strong>Step 2:</strong> Once the scan is done, we can just browse through the unordered_map to check the whether <strong><em>the mask corresponds to a T junction / cross, or corner if it is indeed a bounding box corner</em></strong>.<br/>
+(note: my earlier implementation uses counts of bits in mask to justify corners, and this would not work with certain cases as <a class="plugin-mentions-a" href="https://discuss.leetcode.com/uid/591">@StefanPochmann</a> points out).</p>
+</li>
+</ul>
+<h4>Complexity</h4>
+<p>The scan in step 1 is O(n) because it loop through rectangles and inside the loop it updates bounding box and unordered_map in O(1) time.</p>
+<p>Step2 visits 1 corner at a time with O(1) computations for at most 4n corners (actually much less because either corner overlap or early stopping occurs). So it's also O(n).</p>
+<pre><code>// pos encoding: 1 - TL 2- TR 4- BL 8-BR
+// return false if a conflict in mask occurs (i.e. there used to be a rectangle with corner (x, y) at pos
+inline bool insert_corner(unordered_map&lt;int, unordered_map&lt;int, int&gt;&gt;&amp; corner_count, int x, int y, int pos) {
+    int&amp; m = corner_count[x][y];
+    if (m &amp; pos) return false;
+    m |= pos;
+    return true;
+}
+
+bool isRectangleCover(vector&lt;vector&lt;int&gt;&gt;&amp; rectangles) {
+    // step 1: counting
+    unordered_map&lt;int, unordered_map&lt;int, int&gt;&gt; corner_count;
+    int minx = INT_MAX, maxx=INT_MIN, miny=INT_MAX, maxy=INT_MIN;
+    for (auto&amp; rect : rectangles) {
+        minx = min(minx, rect[0]);
+        maxx = max(maxx, rect[2]);
+        miny = min(miny, rect[1]);
+        maxy = max(maxy, rect[3]);
+        if (!insert_corner(corner_count, rect[0], rect[1], 1)) return false;
+        if (!insert_corner(corner_count, rect[2], rect[1], 2)) return false;
+        if (!insert_corner(corner_count, rect[0], rect[3], 4)) return false;
+        if (!insert_corner(corner_count, rect[2], rect[3], 8)) return false;
+    }
+    
+    //step2: checking
+    bool valid_corner[16] = {false};
+    bool valid_interior[16] = {false};
+    valid_corner[1] = valid_corner[2] = valid_corner[4] = valid_corner[8] = true;
+    valid_interior[3] = valid_interior[5] = valid_interior[10] = valid_interior[12] = valid_interior[15] = true;
+    
+    for (auto itx = corner_count.begin(); itx != corner_count.end(); ++itx) {
+        int x = itx-&gt;first;
+        for (auto ity = itx-&gt;second.begin(); ity != itx-&gt;second.end(); ++ity) {
+            int y = ity-&gt;first;
+            int mask = ity-&gt;second;
+            if (((x != minx &amp;&amp; x != maxx) || (y != miny &amp;&amp; y != maxy)) &amp;&amp; !valid_interior[mask]) 
+                return false;
+        }
+    }
+    return true;
+}
+</code></pre>
+<p>The above code may be refined by changing the 2D unordered_map to 1D. But such improvements has no effect on complexity.</p>
+<pre><code>struct pairhash {//double hash function for pair key
+public:
+    template &lt;typename T, typename U&gt;
+    size_t operator()(const pair&lt;T, U&gt; &amp;rhs) const {
+        size_t l = hash&lt;T&gt;()(rhs.first);
+        size_t r = hash&lt;U&gt;()(rhs.second);
+        return l + 0x9e3779b9 + (r &lt;&lt; 6) + (r &gt;&gt; 2);
+    }
+};
+
+bool isRectangleCover(vector&lt;vector&lt;int&gt;&gt;&amp; rectangles) {
+    // step 1: counting
+    unordered_map&lt;pair&lt;int, int&gt;, int, pairhash&gt; corner_count;
+    int minx = INT_MAX, maxx=INT_MIN, miny=INT_MAX, maxy=INT_MIN;
+    for (auto&amp; rect : rectangles) {
+        minx = min(minx, rect[0]);
+        maxx = max(maxx, rect[2]);
+        miny = min(miny, rect[1]);
+        maxy = max(maxy, rect[3]);
+        
+        int&amp; m1 = corner_count[make_pair(rect[0], rect[1])]; 
+        if (m1 &amp; 1) return false; else m1 |= 1;
+        int&amp; m2 = corner_count[make_pair(rect[2], rect[1])];
+        if (m2 &amp; 2) return false; else m2 |= 2;
+        int&amp; m3 = corner_count[make_pair(rect[0], rect[3])]; 
+        if (m3 &amp; 4) return false; else m3 |= 4;
+        int&amp; m4 = corner_count[make_pair(rect[2], rect[3])]; 
+        if (m4 &amp; 8) return false; else m4 |= 8;
+    }
+    
+    //step2: checking
+    for (const auto&amp; kv: corner_count) {
+        pair&lt;int, int&gt; pos; int mask;
+        tie(pos, mask) = kv;
+        if ((pos.first != minx &amp;&amp; pos.first != maxx) || (pos.second != miny &amp;&amp; pos.second != maxy)) {
+            if (mask != 3 &amp;&amp; mask != 5 &amp;&amp; mask != 10 &amp;&amp; mask != 12 &amp;&amp; mask != 15) return false;
+        }
+    }
+    return true;
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/hxtang">hxtang</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/55923/o-n-solution-by-counting-corners-with-detailed-explaination">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>The right answer must satisfy two conditions:</p>
+<ol>
+<li>the large rectangle area should be equal to the sum of small rectangles</li>
+<li>count of all the points should be even, and that of all the four corner points should be one</li>
+</ol>
+<p>'''<br/>
+public boolean isRectangleCover(int[][] rectangles) {</p>
+<pre><code>    if (rectangles.length == 0 || rectangles[0].length == 0) return false;
+
+    int x1 = Integer.MAX_VALUE;
+    int x2 = Integer.MIN_VALUE;
+    int y1 = Integer.MAX_VALUE;
+    int y2 = Integer.MIN_VALUE;
+    
+    HashSet&lt;String&gt; set = new HashSet&lt;String&gt;();
+    int area = 0;
+    
+    for (int[] rect : rectangles) {
+        x1 = Math.min(rect[0], x1);
+        y1 = Math.min(rect[1], y1);
+        x2 = Math.max(rect[2], x2);
+        y2 = Math.max(rect[3], y2);
+        
+        area += (rect[2] - rect[0]) * (rect[3] - rect[1]);
+        
+        String s1 = rect[0] + " " + rect[1];
+        String s2 = rect[0] + " " + rect[3];
+        String s3 = rect[2] + " " + rect[3];
+        String s4 = rect[2] + " " + rect[1];
+        
+        if (set.contains(s1)) {
+            set.remove(s1);
+        } else {
+            set.add(s1);
+        }
+        if (set.contains(s2)) {
+            set.remove(s2);
+        } else {
+            set.add(s2);
+        }
+        if (set.contains(s3)) {
+            set.remove(s3);
+        } else {
+            set.add(s3);
+        }
+        if (set.contains(s4)) {
+            set.remove(s4);
+        } else {
+            set.add(s4);
+        }
+    }
+    
+    if (!set.contains(x1 + " " + y1) || !set.contains(x1 + " " + y2) || !set.contains(x2 + " " + y1) || !set.contains(x2 + " " + y2) || set.size() != 4) return false;
+    
+    return area == (x2-x1) * (y2-y1);
+}
+</code></pre>
+<p>''''</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/hu19">hu19</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/56052/really-easy-understanding-solution-o-n-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Standard sweep line solution.<br/>
+Basic idea:<br/>
+Sort by x-coordinate.<br/>
+Insert y-interval into TreeSet, and check if there are intersections.<br/>
+Delete y-interval.</p>
+<pre><code>public class Event implements Comparable&lt;Event&gt; {
+	int time;
+	int[] rect;
+
+	public Event(int time, int[] rect) {
+		this.time = time;
+		this.rect = rect;
+	}
+	
+	public int compareTo(Event that) {
+		if (this.time != that.time) return this.time - that.time;
+		else return this.rect[0] - that.rect[0];
+	}
+}
+
+public boolean isRectangleCover(int[][] rectangles) {
+	PriorityQueue&lt;Event&gt; pq = new PriorityQueue&lt;Event&gt; ();
+        // border of y-intervals
+	int[] border= {Integer.MAX_VALUE, Integer.MIN_VALUE};
+	for (int[] rect : rectangles) {
+		Event e1 = new Event(rect[0], rect);
+		Event e2 = new Event(rect[2], rect);
+		pq.add(e1);
+		pq.add(e2);
+		if (rect[1] &lt; border[0]) border[0] = rect[1];
+		if (rect[3] &gt; border[1]) border[1] = rect[3];
+	}
+	TreeSet&lt;int[]&gt; set = new TreeSet&lt;int[]&gt; (new Comparator&lt;int[]&gt; () {
+		@Override
+                // if two y-intervals intersects, return 0
+		public int compare (int[] rect1, int[] rect2) {
+			if (rect1[3] &lt;= rect2[1]) return -1;
+			else if (rect2[3] &lt;= rect1[1]) return 1;
+			else return 0;
+		}
+	});
+	int yRange = 0;
+	while (!pq.isEmpty()) {
+		int time = pq.peek().time;
+		while (!pq.isEmpty() &amp;&amp; pq.peek().time == time) {
+			Event e = pq.poll();
+			int[] rect = e.rect;
+			if (time == rect[2]) {
+				set.remove(rect);
+				yRange -= rect[3] - rect[1];
+			} else {
+				if (!set.add(rect)) return false;
+				yRange += rect[3] - rect[1];
+			}
+		}
+                // check intervals' range
+		if (!pq.isEmpty() &amp;&amp; yRange != border[1] - border[0]) {
+                        return false;
+			//if (set.isEmpty()) return false;
+			//if (yRange != border[1] - border[0]) return false;
+		}
+	}
+	return true;
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/wddd">wddd</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/55944/o-n-log-n-sweep-line-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

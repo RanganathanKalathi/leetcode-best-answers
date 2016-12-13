@@ -1,0 +1,178 @@
+<!DOCTYPE html><html><head><title>Unique Paths</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2ce76fd1aae28585753d0" data-set="true" class="title">Unique Paths</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>A robot is located at the top-left corner of a <i>m</i> x <i>n</i> grid (marked 'Start' in the diagram below).</p>
+
+<p>The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).</p>
+
+<p>How many possible unique paths are there?</p>
+
+<p>
+<img src="http://leetcode.com/wp-content/uploads/2014/12/robot_maze.png"><br>
+</p><p style="font-size: 11px">Above is a 3 x 7 grid. How many possible unique paths are there?
+</p>
+
+<p><b>Note:</b> <i>m</i> and <i>n</i> will be at most 100.</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#unique-paths-ii"> (M) Unique Paths II</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#minimum-path-sum"> (M) Minimum Path Sum</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#dungeon-game"> (H) Dungeon Game</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Binomial coefficient:</p>
+
+<pre><code>class Solution {
+    public:
+        int uniquePaths(int m, int n) {
+            int N = n + m - 2;// how much steps we need to do
+            int k = m - 1; // number of steps that need to go down
+            double res = 1;
+            // here we calculate the total possible path number 
+            // Combination(N, k) = n! / (k!(n - k)!)
+            // reduce the numerator and denominator and get
+            // C = ( (n - k + 1) * (n - k + 2) * ... * n ) / k!
+            for (int i = 1; i &lt;= k; i++)
+                res = res * (N - k + i) / i;
+            return (int)res;
+        }
+    };
+</code></pre>
+
+<p>First of all you should understand that we need to do n + m - 2 movements : m - 1 down, n - 1 right, because we start from cell (1, 1).</p>
+
+<p>Secondly, the path it is the sequence of movements( go down / go right), 
+therefore we can say that two paths are different 
+when there is  i-th (1 .. m + n - 2)  movement in path1 differ  i-th movement in path2.</p>
+
+<p>So, how we can build paths.
+Let's choose (n - 1) movements(number of steps to the right) from (m + n - 2), 
+and rest (m - 1) is (number of steps down).</p>
+
+<p>I think now it is obvious that count of different paths are all combinations (n - 1) movements from (m + n-2).</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/d40a">d40a</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/9110/my-ac-solution-using-formula">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>This is a fundamental DP problem. First of all, let's make some observations.</p>
+
+<p>Since the robot can only move right and down, when it arrives at a point, there are only two possibilities:</p>
+
+<ol>
+<li>It arrives at that point from above (moving down to that point);</li>
+<li>It arrives at that point from left (moving right to that point).</li>
+</ol>
+
+<p>Thus, we have the following state equations: suppose the number of paths to arrive at a point <code>(i, j)</code> is denoted as <code>P[i][j]</code>, it is easily concluded that <code>P[i][j] = P[i - 1][j] + P[i][j - 1]</code>.</p>
+
+<p>The boundary conditions of the above equation occur at the leftmost column (<code>P[i][j - 1]</code> does not exist) and the uppermost row (<code>P[i - 1][j]</code> does not exist). These conditions can be handled by initialization (pre-processing) --- initialize <code>P[0][j] = 1, P[i][0] = 1</code> for all valid <code>i, j</code>. Note the initial value is <code>1</code> instead of <code>0</code>!</p>
+
+<p>Now we can write down the following (unoptimized) code.</p>
+
+<pre><code>class Solution {
+    int uniquePaths(int m, int n) {
+        vector&lt;vector&lt;int&gt; &gt; path(m, vector&lt;int&gt; (n, 1));
+        for (int i = 1; i &lt; m; i++)
+            for (int j = 1; j &lt; n; j++)
+                path[i][j] = path[i - 1][j] + path[i][j - 1];
+        return path[m - 1][n - 1];
+    }
+};
+</code></pre>
+
+<p>As can be seen, the above solution runs in <code>O(n^2)</code> time and costs <code>O(m*n)</code> space. However, you may have observed that each time when we update <code>path[i][j]</code>, we only need <code>path[i - 1][j]</code> (at the same column) and <code>path[i][j - 1]</code> (at the left column). So it is enough to maintain two columns (the current column and the left column) instead of maintaining the full <code>m*n</code> matrix. Now the code can be optimized to have <code>O(min(m, n))</code> space complexity.</p>
+
+<pre><code>class Solution {
+    int uniquePaths(int m, int n) {
+        if (m &gt; n) return uniquePaths(n, m); 
+        vector&lt;int&gt; pre(m, 1);
+        vector&lt;int&gt; cur(m, 1);
+        for (int j = 1; j &lt; n; j++) {
+            for (int i = 1; i &lt; m; i++)
+                cur[i] = cur[i - 1] + pre[i];
+            swap(pre, cur);
+        }
+        return pre[m - 1];
+    }
+};
+</code></pre>
+
+<p>Further inspecting the above code, we find that keeping two columns is used to recover <code>pre[i]</code>, which is just <code>cur[i]</code> before its update. So there is even no need to use two vectors and one is just enough. Now the space is further saved and the code also gets much shorter.</p>
+
+<pre><code>class Solution {
+    int uniquePaths(int m, int n) {
+        if (m &gt; n) return uniquePaths(n, m);
+        vector&lt;int&gt; cur(m, 1);
+        for (int j = 1; j &lt; n; j++)
+            for (int i = 1; i &lt; m; i++)
+                cur[i] += cur[i - 1]; 
+        return cur[m - 1];
+    }
+}; 
+</code></pre>
+
+<p>Well, till now, I guess you may even want to optimize it to <code>O(1)</code> space complexity since the above code seems to rely on only <code>cur[i]</code> and <code>cur[i - 1]</code>. You may think that 2 variables is enough? Well, it is not. Since the whole <code>cur</code> needs to be updated for <code>n - 1</code> times, it means that all of its values need to be saved for next update and so two variables is not enough. </p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jianchao.li.fighter">jianchao.li.fighter</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/38353/0ms-5-lines-dp-solution-in-c-with-explanations">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code> public class Solution {
+    public int uniquePaths(int m, int n) {
+        Integer[][] map = new Integer[m][n];
+        for(int i = 0; i&lt;m;i++){
+            map[i][0] = 1;
+        }
+        for(int j= 0;j&lt;n;j++){
+            map[0][j]=1;
+        }
+        for(int i = 1;i&lt;m;i++){
+            for(int j = 1;j&lt;n;j++){
+                map[i][j] = map[i-1][j]+map[i][j-1];
+            }
+        }
+        return map[m-1][n-1];
+    }
+}
+</code></pre>
+
+<p>The assumptions are </p>
+
+<ol>
+<li>When (n==0||m==0) the function always returns 1 since the robot
+can't go left or up.</li>
+<li>For all other cells. The result = uniquePaths(m-1,n)+uniquePaths(m,n-1)</li>
+</ol>
+
+<p>Therefore I populated the edges with 1 first and use DP to get the full 2-D array.</p>
+
+<p>Please give any suggestions on improving the code.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yx3110">yx3110</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/17530/java-dp-solution-with-complexity-o-n-m">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

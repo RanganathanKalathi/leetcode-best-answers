@@ -1,0 +1,115 @@
+<!DOCTYPE html><html><head><title>Nim Game</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c752fd1aae28585752fb" data-set="true" class="title">Nim Game</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+You are playing the following Nim Game with your friend: There is a heap of stones on the table, each time one of you take turns to remove 1 to 3 stones. The one who removes the last stone will be the winner. You will take the first turn to remove the stones.
+</p>
+
+<p>
+Both of you are very clever and have optimal strategies for the game. Write a function to determine whether you can win the game given the number of stones in the heap.
+</p>
+
+<p>
+For example, if there are 4 stones in the heap, then you will never win the game: no matter 1, 2, or 3 stones you remove, the last stone will always be removed by your friend.
+</p>
+
+<ol id="hints">
+  <li class="hint">If there are 5 stones in the heap, could you figure out a way to remove the stones such that you will always be the winner? </li>
+</ol>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/jianchao.li.fighter">@jianchao.li.fighter</a> for adding this problem and creating all test cases.</p>
+              
+                
+              
+
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#flip-game-ii"> (M) Flip Game II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><blockquote>
+  <p>Theorem: The first one who got the number that is multiple of 4 (i.e. n % 4
+  == 0) will lost, otherwise he/she will win.</p>
+</blockquote>
+
+<p>Proof: </p>
+
+<ol>
+<li><p>the base case: when <code>n = 4</code>, as suggested by the hint from the
+problem, no matter which number that that first player, the second
+player would always be able to pick the remaining number.</p></li>
+<li><p>For <code>1* 4 &lt; n &lt; 2 * 4, (n = 5, 6, 7)</code>, the first player can reduce the
+    initial number into 4 accordingly, which will leave the death number
+    4 to the second player. i.e. The numbers 5, 6, 7 are winning numbers for any player who got it first. </p></li>
+<li><p>Now to the beginning of the next cycle, <code>n = 8</code>, no matter which
+number that the first player picks, it would always leave the
+winning numbers (5, 6, 7) to the second player. Therefore, 8 % 4 ==
+0, again is a death number.</p></li>
+<li><p>Following the second case, for numbers between (2*4 = 8) and
+(3*4=12), which are <code>9, 10, 11</code>, are winning numbers for the first
+player again, because the first player can always reduce the number
+into the death number 8.</p></li>
+</ol>
+
+<p>Following the above theorem and proof, the solution could not be simpler: </p>
+
+<pre><code>public boolean canWinNim(int n) {    
+    return n % 4 != 0 ;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/liaison">liaison</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/63725/theorem-all-4s-shall-be-false">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>suppose there are x stones left for first player (A), he can take 1,2,3 stones away, so second player B will have three cases to deal with (x -1), (x-2), (x-3). after he pick the stones, there will be 9 cases left for A.</p>
+
+<pre><code>B (x-1) -&gt; A: (x-2), (x-3), (x-4)
+B (x-2) -&gt; A: (x-3), (x-4), (x-5)
+B (x-3) -&gt; A: (x-4), (x-5), (x-6)
+</code></pre>
+
+<p>Now, if A can guarantee he win at either of three groups, then he can force B to into that one of the three states and A can end up in that particular group after B's move. </p>
+
+<pre><code>f(x) = (f(x-2)&amp;&amp;f(x-3)&amp;&amp;f(x-4)) || (f(x-3)&amp;&amp;f(x-4)&amp;&amp;f(x-5)) || (f(x-4)&amp;&amp;f(x-5)&amp;&amp;f(x-6))
+</code></pre>
+
+<p>if we examine the equation a little closer, we can find f(x - 4) is a critical point, if f(x-4) is false, then f(x) will be always false.</p>
+
+<p>we can also find out the initial conditions, f(1), f(2), f(3) will be true (A always win), and f(4) will be false. so
+based on previous equation and initial conditions f(5) = f(6) = f(7) = true, f(8) = false;
+obviously, f(1), f(2), f(3) can make all f(4n + 1), f(4n + 2), f(4n + 3) to be true, only f(4n) will be false then.
+so here we go our one line solution:</p>
+
+<p>return (n % 4 != 0);</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/kennethliaoke">kennethliaoke</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/63978/one-line-o-1-solution-and-explanation">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution(object):
+    def canWinNim(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        # strategy: the one with 4 remaining must loose
+        # A, B players
+        # if n == 4k, then at each round B can make A+B both take 4, 
+        # eventually leave 4 to A, A lose
+        # if n == 4k + i (i &lt;= 3), then A can always take i first and B will
+        # finanly lose as he faces above scenario like A
+
+        return bool(n%4!=0)
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/pennlio">pennlio</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/66985/1-liner-with-explanations">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

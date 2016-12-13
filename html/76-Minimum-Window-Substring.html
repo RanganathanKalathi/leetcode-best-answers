@@ -1,0 +1,276 @@
+<!DOCTYPE html><html><head><title>Minimum Window Substring</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cdf7fd1aae28585753c2" data-set="true" class="title">Minimum Window Substring</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+</p>
+
+<p>
+For example,<br>
+<b>S</b> = <code>"ADOBECODEBANC"</code><br>
+<b>T</b> = <code>"ABC"</code><br>
+</p>
+<p>
+Minimum window is <code>"BANC"</code>.
+</p>
+
+<p>
+<b>Note:</b><br>
+If there is no such window in S that covers all characters in T, return the empty string <code>""</code>.
+</p>
+<p>
+If there are multiple such windows, you are guaranteed that there will always be only one unique minimum window in S.
+</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/linkedin/">LinkedIn</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/facebook/">Facebook</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/two-pointers/">Two Pointers</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/string/">String</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#substring-with-concatenation-of-all-words"> (H) Substring with Concatenation of All Words</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#minimum-size-subarray-sum"> (M) Minimum Size Subarray Sum</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#sliding-window-maximum"> (H) Sliding Window Maximum</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>I will first give the solution then show you the magic template.</p>
+
+<p><strong>The code of solving this problem is below. It might be the shortest among all solutions provided in Discuss</strong>.</p>
+
+<pre><code>string minWindow(string s, string t) {
+        vector&lt;int&gt; map(128,0);
+        for(auto c: t) map[c]++;
+        int counter=t.size(), begin=0, end=0, d=INT_MAX, head=0;
+        while(end&lt;s.size()){
+            if(map[s[end++]]--&gt;0) counter--; //in t
+            while(counter==0){ //valid
+                if(end-begin&lt;d)  d=end-(head=begin);
+                if(map[s[begin++]]++==0) counter++;  //make it invalid
+            }  
+        }
+        return d==INT_MAX? "":s.substr(head, d);
+    }
+</code></pre>
+
+<p><strong>Here comes the template.</strong></p>
+
+<p>For most substring problem, we are given a string and need to find a substring of it which satisfy some restrictions. A general way is to use a hashmap assisted with two pointers. The template is given below.</p>
+
+<pre><code>int findSubstring(string s){
+        vector&lt;int&gt; map(128,0);
+        int counter; // check whether the substring is valid
+        int begin=0, end=0; //two pointers, one point to tail and one  head
+        int d; //the length of substring
+
+        for() { /* initialize the hash map here */ }
+
+        while(end&lt;s.size()){
+
+            if(map[s[end++]]-- ?){  /* modify counter here */ }
+
+            while(/* counter condition */){ 
+
+                 /* update d here if finding minimum*/
+
+                //increase begin to make it invalid/valid again
+
+                if(map[s[begin++]]++ ?){ /*modify counter here*/ }
+            }  
+
+            /* update d here if finding maximum*/
+        }
+        return d;
+  }
+</code></pre>
+
+<p><em>One thing needs to be mentioned is that when asked to find maximum substring, we should update maximum after the inner while loop to guarantee that the substring is valid. On the other hand, when asked to find minimum substring, we should update minimum inside the inner while loop.</em></p>
+
+<p>The code of solving <strong>Longest Substring with At Most Two Distinct Characters</strong> is below:</p>
+
+<pre><code>int lengthOfLongestSubstringTwoDistinct(string s) {
+        vector&lt;int&gt; map(128, 0);
+        int counter=0, begin=0, end=0, d=0; 
+        while(end&lt;s.size()){
+            if(map[s[end++]]++==0) counter++;
+            while(counter&gt;2) if(map[s[begin++]]--==1) counter--;
+            d=max(d, end-begin);
+        }
+        return d;
+    }
+</code></pre>
+
+<p>The code of solving <strong>Longest Substring Without Repeating Characters</strong> is below:</p>
+
+<p><strong>Update 01.04.2016, thanks @weiyi3 for advise.</strong></p>
+
+<pre><code>int lengthOfLongestSubstring(string s) {
+        vector&lt;int&gt; map(128,0);
+        int counter=0, begin=0, end=0, d=0; 
+        while(end&lt;s.size()){
+            if(map[s[end++]]++&gt;0) counter++; 
+            while(counter&gt;0) if(map[s[begin++]]--&gt;1) counter--;
+            d=max(d, end-begin); //while valid, update d
+        }
+        return d;
+    }
+</code></pre>
+
+<p>I think this post deserves some upvotes! : )</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/zjh08177">zjh08177</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/72701/here-10-line-template-that-can-solve-most-substring-problems">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    string minWindow(string S, string T) {
+        if (S.empty() || T.empty())
+        {
+            return "";
+        }
+        int count = T.size();
+        int require[128] = {0};
+        bool chSet[128] = {false};
+        for (int i = 0; i &lt; count; ++i)
+        {
+            require[T[i]]++;
+            chSet[T[i]] = true;
+        }
+        int i = -1;
+        int j = 0;
+        int minLen = INT_MAX;
+        int minIdx = 0;
+        while (i &lt; (int)S.size() &amp;&amp; j &lt; (int)S.size())
+        {
+            if (count)
+            {
+                i++;
+                require[S[i]]--;
+                if (chSet[S[i]] &amp;&amp; require[S[i]] &gt;= 0)
+                {
+                    count--;
+                }
+            }
+            else
+            {
+                if (minLen &gt; i - j + 1)
+                {
+                    minLen = i - j + 1;
+                    minIdx = j;
+                }
+                require[S[j]]++;
+                if (chSet[S[j]] &amp;&amp; require[S[j]] &gt; 0)
+                {
+                    count++;
+                }
+                j++;
+            }
+        }
+        if (minLen == INT_MAX)
+        {
+            return "";
+        }
+        return S.substr(minIdx, minLen);
+    }
+};
+</code></pre>
+
+<p>Implementation of <a rel="nofollow" href="https://oj.leetcode.com/discuss/5469/is-the-length-of-t-considered-constant-or-m">mike3's idea</a></p>
+
+<p>running time : 56ms.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/heleifz">heleifz</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/10337/accepted-o-n-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>string minWindow(string S, string T) {
+    string result;
+    if(S.empty() || T.empty()){
+        return result;
+    }
+    unordered_map&lt;char, int&gt; map;
+    unordered_map&lt;char, int&gt; window;
+    for(int i = 0; i &lt; T.length(); i++){
+        map[T[i]]++;
+    }
+    int minLength = INT_MAX;
+    int letterCounter = 0;
+    for(int slow = 0, fast = 0; fast &lt; S.length(); fast++){
+        char c = S[fast];
+        if(map.find(c) != map.end()){
+            window[c]++;
+            if(window[c] &lt;= map[c]){
+                letterCounter++;
+            }
+        }
+        if(letterCounter &gt;= T.length()){
+            while(map.find(S[slow]) == map.end() || window[S[slow]] &gt; map[S[slow]]){
+                window[S[slow]]--;
+                slow++;
+            }
+            if(fast - slow + 1 &lt; minLength){
+                minLength = fast - slow + 1;
+                result = S.substr(slow, minLength);
+            }
+        }
+    }
+    return result;
+}
+</code></pre>
+
+<p>There are three key variables in my solution: </p>
+
+<pre><code>unordered_map &lt;char, int&gt; map; unordered_map&lt;char, int&gt; window; int letterCounter;
+</code></pre>
+
+<p>variable "map" is used to indicate what characters and how many characters are in T.</p>
+
+<p>variable "window" is to indicate what characters and how many characters are between pointer "slow" and pointer "fast".</p>
+
+<p>Now let's start.</p>
+
+<p>The first For loop is used to construct variable "map".</p>
+
+<p>The second For loop is used to find the minimum window.</p>
+
+<p>The first thing we should do in the second For loop is to find a window which can cover T. I use "letterCounter" to be a monitor. If "letterCounter" is equal to T.length(), then we find this window. Before that, only the first If clause can be executed. However, after we find this window, the second If clause can also be executed. </p>
+
+<p>In the second If clause, we move "slow" forward in order to shrink the window size. Every time finding a smaller window, I update the result. </p>
+
+<p>At the end of program, I return result, which is the minimum window.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/zxyperfect">zxyperfect</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/18584/sharing-my-straightforward-o-n-solution-with-explanation">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

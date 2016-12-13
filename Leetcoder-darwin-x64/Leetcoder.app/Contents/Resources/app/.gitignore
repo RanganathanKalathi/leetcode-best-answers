@@ -1,0 +1,7 @@
+push_to_github.sh
+.ipynb_checkpoints
+*.py*
+chrome*
+*.ipynb
+*.txt
+util.js

@@ -1,0 +1,173 @@
+<!DOCTYPE html><html><head><title>Strobogrammatic Number III</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c87ffd1aae2858575326" data-set="true" class="title">Strobogrammatic Number III</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).</p>
+<p>Write a function to count the total strobogrammatic numbers that exist in the range of low 
+</p><p>For example,<br>
+Given low = "50", high = "100", return 3. Because 69, 88, and 96 are three strobogrammatic numbers.
+</p>
+
+<p><b>Note:</b><br>
+Because the range might be a large number, the <i>low</i> and <i>high</i> numbers are represented as string.
+</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/math/">Math</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/recursion/">Recursion</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#strobogrammatic-number"> (E) Strobogrammatic Number</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#strobogrammatic-number-ii"> (M) Strobogrammatic Number II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>The basic idea is to find generate a list of strobogrammatic number with the length between the length of lower bound and the length of upper bound. Then we pass the list and ignore the numbers with the same length of lower bound or upper bound but not in the range.</p>
+
+<p>I think it is not a a very optimized method and can any one provide a better one?</p>
+
+<pre><code>public class Solution{
+
+
+    public int strobogrammaticInRange(String low, String high){
+        int count = 0;
+        List&lt;String&gt; rst = new ArrayList&lt;String&gt;();
+        for(int n = low.length(); n &lt;= high.length(); n++){
+            rst.addAll(helper(n, n));
+        }
+        for(String num : rst){
+
+            if((num.length() == low.length()&amp;&amp;num.compareTo(low) &lt; 0 ) ||(num.length() == high.length() &amp;&amp; num.compareTo(high) &gt; 0)) continue;
+                count++;
+        }
+        return count;
+    }
+
+    private List&lt;String&gt; helper(int cur, int max){
+        if(cur == 0) return new ArrayList&lt;String&gt;(Arrays.asList(""));
+        if(cur == 1) return new ArrayList&lt;String&gt;(Arrays.asList("1", "8", "0"));
+
+        List&lt;String&gt; rst = new ArrayList&lt;String&gt;();
+        List&lt;String&gt; center = helper(cur - 2, max);
+
+        for(int i = 0; i &lt; center.size(); i++){
+            String tmp = center.get(i);
+            if(cur != max) rst.add("0" + tmp + "0");
+            rst.add("1" + tmp + "1");
+            rst.add("6" + tmp + "9");
+            rst.add("8" + tmp + "8");
+            rst.add("9" + tmp + "6");
+        }
+        return rst;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/czonzhu">czonzhu</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/55468/clear-java-ac-solution-using-strobogrammatic-number-method">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Construct char array from <code>lenLow</code> to <code>lenHigh</code> and increase <code>count</code> when <code>s</code> is between <code>low</code> and <code>high</code>. Add the stro pairs from outside to inside until <code>left &gt; right</code>.</p>
+
+<pre><code>char[][] pairs = {{'0', '0'}, {'1', '1'}, {'6', '9'}, {'8', '8'}, {'9', '6'}};
+int count = 0;
+
+public int strobogrammaticInRange(String low, String high) {
+    for(int len = low.length(); len &lt;= high.length(); len++) {
+        dfs(low, high, new char[len], 0, len - 1);
+    }
+    return count;
+}
+
+public void dfs(String low, String high, char[] c, int left, int right) {
+    if(left &gt; right) {
+        String s = new String(c);
+        if((s.length() == low.length() &amp;&amp; s.compareTo(low) &lt; 0) || 
+           (s.length() == high.length() &amp;&amp; s.compareTo(high) &gt; 0)) return;
+        count++; 
+        return;
+    }
+
+    for(char[] p : pairs) {
+        c[left] = p[0]; 
+        c[right] = p[1];
+        if(c.length != 1 &amp;&amp; c[0] == '0') continue;
+        if(left &lt; right || left == right &amp;&amp; p[0] == p[1]) dfs(low, high, c, left + 1, right - 1);
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yavinci">yavinci</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/73721/easiest-20ms-94%25-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>My clear Java solution. All comments are welcome.</p>
+
+<pre><code>    public class Solution {
+Map&lt;Character, Character&gt; map = new HashMap&lt;&gt;();
+{
+    map.put('1', '1');
+    map.put('8', '8');
+    map.put('6', '9');
+    map.put('9', '6');
+    map.put('0', '0');
+}
+String low = "", high = "";
+public int strobogrammaticInRange(String low, String high) {
+    this.low = low;
+    this.high = high;
+    int result = 0;
+    for(int n = low.length(); n &lt;= high.length(); n++){
+        int[] count = new int[1];
+        strobogrammaticInRange(new char[n], count, 0, n-1);
+        result += count[0];
+    }
+    return result;
+}
+private void strobogrammaticInRange(char[] arr, int[] count, int lo, int hi){
+    if(lo &gt; hi){
+        String s = new String(arr);
+        if((arr[0] != '0' || arr.length == 1) &amp;&amp; compare(low, s) &amp;&amp; compare(s, high)){
+            count[0]++;
+        }
+        return;
+    }
+    for(Character c: map.keySet()){
+        arr[lo] = c;
+        arr[hi] = map.get(c);
+        if((lo == hi &amp;&amp; c == map.get(c)) || lo &lt; hi)
+            strobogrammaticInRange(arr, count, lo+1, hi-1);
+    }
+}
+private boolean compare(String a, String b){
+    if(a.length() != b.length())
+        return a.length() &lt; b.length();
+    int i = 0;
+    while(i &lt; a.length() &amp;&amp;a.charAt(i) == b.charAt(i))
+        i++;
+    return i == a.length() ? true: a.charAt(i) &lt;= b.charAt(i);
+}
+</code></pre>
+
+<p>}</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/hyuna915">hyuna915</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/50624/clean-and-easy-understanding-java-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

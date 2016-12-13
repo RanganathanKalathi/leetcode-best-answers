@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head><title>Zigzag Iterator</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c7a1fd1aae2858575306" data-set="true" class="title">Zigzag Iterator</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given two 1d vectors, implement an iterator to return their elements alternately.
+</p>
+
+<p>For example, given two 1d vectors:
+</p><pre>
+v1 = [1, 2]
+v2 = [3, 4, 5, 6]
+</pre>
+
+<p>
+By calling <i>next</i> repeatedly until <i>hasNext</i> returns <code>false</code>, the order of elements returned by <i>next</i> should be: <code>[1, 3, 2, 4, 5, 6]</code>.
+</p>
+
+<p>
+<b>Follow up</b>: What if you are given <code>k</code> 1d vectors? How well can your code be extended to such cases?</p>
+
+<p>
+<b><u>Clarification for the follow up question - <font color="red">Update (2015-09-18):</font></u></b><br>
+The "Zigzag" order is not clearly defined and is ambiguous for <code>k &gt; 2</code> cases. If "Zigzag" does not look right to you, replace "Zigzag" with "Cyclic". For example, given the following input:
+</p><pre>
+[1,2,3]
+[4,5,6,7]
+[8,9]
+</pre>
+It should return <code>[1,4,8,2,5,9,3,6,7]</code>.
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-search-tree-iterator"> (M) Binary Search Tree Iterator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#flatten-2d-vector"> (M) Flatten 2D Vector</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#peeking-iterator"> (M) Peeking Iterator</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>class ZigzagIterator {
+public:
+    ZigzagIterator(vector&lt;int&gt;&amp; v1, vector&lt;int&gt;&amp; v2) {
+        if (v1.size() != 0)
+            Q.push(make_pair(v1.begin(), v1.end()));
+        if (v2.size() != 0)
+            Q.push(make_pair(v2.begin(), v2.end()));
+    }
+
+    int next() {
+        vector&lt;int&gt;::iterator it = Q.front().first;
+        vector&lt;int&gt;::iterator endIt = Q.front().second;
+        Q.pop();
+        if (it + 1 != endIt)
+            Q.push(make_pair(it+1, endIt));
+        return *it;
+    }
+
+    bool hasNext() {
+        return !Q.empty();
+    }
+private:
+    queue&lt;pair&lt;vector&lt;int&gt;::iterator, vector&lt;int&gt;::iterator&gt;&gt; Q;
+};
+</code></pre>
+
+<p>somehow similar to BFS.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/lightmark">lightmark</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/58683/c-with-queue-compatible-with-k-vectors">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Two iterators, one for each list. Switching them <em>before</em> reading the next number instead of afterwards saves a bit of code, I think.</p>
+
+<pre><code> public class ZigzagIterator {
+
+    private Iterator&lt;Integer&gt; i, j, tmp;
+
+    public ZigzagIterator(List&lt;Integer&gt; v1, List&lt;Integer&gt; v2) {
+        i = v2.iterator();
+        j = v1.iterator();
+    }
+
+    public int next() {
+        if (j.hasNext()) { tmp = j; j = i; i = tmp; }
+        return i.next();
+    }
+
+    public boolean hasNext() {
+        return i.hasNext() || j.hasNext();
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/58012/short-java-o-1-space">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Uses a linkedlist to store the iterators in different vectors. Every time we call next(), we pop an element from the list, and re-add it to the end to cycle through the lists.</p>
+
+<pre><code>public class ZigzagIterator {
+    LinkedList&lt;Iterator&gt; list;
+    public ZigzagIterator(List&lt;Integer&gt; v1, List&lt;Integer&gt; v2) {
+        list = new LinkedList&lt;Iterator&gt;();
+        if(!v1.isEmpty()) list.add(v1.iterator());
+        if(!v2.isEmpty()) list.add(v2.iterator());
+    }
+
+    public int next() {
+        Iterator poll = list.remove();
+        int result = (Integer)poll.next();
+        if(poll.hasNext()) list.add(poll);
+        return result;
+    }
+
+    public boolean hasNext() {
+        return !list.isEmpty();
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/kevinhsu">kevinhsu</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/63037/simple-java-solution-for-k-vector">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

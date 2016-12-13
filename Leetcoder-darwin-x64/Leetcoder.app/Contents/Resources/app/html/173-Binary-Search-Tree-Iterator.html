@@ -1,0 +1,258 @@
+<!DOCTYPE html><html><head><title>Binary Search Tree Iterator</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2ca77fd1aae2858575361" data-set="true" class="title">Binary Search Tree Iterator</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.</p>
+
+<p>Calling <code>next()</code> will return the next smallest number in the BST.</p>
+
+<p><b>Note: </b><code>next()</code> and <code>hasNext()</code> should run in average O(1) time and uses O(<i>h</i>) memory, where <i>h</i> is the height of the tree. </p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://oj.leetcode.com/discuss/user/ts">@ts</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/linkedin/">LinkedIn</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/facebook/">Facebook</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/tree/">Tree</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/stack/">Stack</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-tree-inorder-traversal"> (M) Binary Tree Inorder Traversal</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#flatten-2d-vector"> (M) Flatten 2D Vector</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#zigzag-iterator"> (M) Zigzag Iterator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#peeking-iterator"> (M) Peeking Iterator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#inorder-successor-in-bst"> (M) Inorder Successor in BST</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>I use Stack to store directed left children from root.
+When next() be called, I just pop one element and process its right child as new root.
+The code is pretty straightforward.</p>
+
+<p>So this can satisfy O(h) memory, hasNext() in O(1) time,
+But next() is O(h) time.</p>
+
+<p>I can't find a solution that can satisfy both next() in O(1) time, space in O(h).</p>
+
+<p>Java:</p>
+
+<pre><code>public class BSTIterator {
+    private Stack&lt;TreeNode&gt; stack = new Stack&lt;TreeNode&gt;();
+
+    public BSTIterator(TreeNode root) {
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode tmpNode = stack.pop();
+        pushAll(tmpNode.right);
+        return tmpNode.val;
+    }
+
+    private void pushAll(TreeNode node) {
+        for (; node != null; stack.push(node), node = node.left);
+    }
+}
+</code></pre>
+
+<p>C++:</p>
+
+<pre><code>class BSTIterator {
+    stack&lt;TreeNode *&gt; myStack;
+public:
+    BSTIterator(TreeNode *root) {
+        pushAll(root);
+    }
+
+    /** @return whether we have a next smallest number */
+    bool hasNext() {
+        return !myStack.empty();
+    }
+
+    /** @return the next smallest number */
+    int next() {
+        TreeNode *tmpNode = myStack.top();
+        myStack.pop();
+        pushAll(tmpNode-&gt;right);
+        return tmpNode-&gt;val;
+    }
+
+private:
+    void pushAll(TreeNode *node) {
+        for (; node != NULL; myStack.push(node), node = node-&gt;left);
+    }
+};
+</code></pre>
+
+<p>Python:</p>
+
+<pre><code>class BSTIterator:
+    # @param root, a binary search tree's root node
+    def __init__(self, root):
+        self.stack = list()
+        self.pushAll(root)
+
+    # @return a boolean, whether we have a next smallest number
+    def hasNext(self):
+        return self.stack
+
+    # @return an integer, the next smallest number
+    def next(self):
+        tmpNode = self.stack.pop()
+        self.pushAll(tmpNode.right)
+        return tmpNode.val
+
+    def pushAll(self, node):
+        while node is not None:
+            self.stack.append(node)
+            node = node.left
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/xcv58">xcv58</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/20001/my-solutions-in-3-languages-with-stack">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>My idea comes from this: My first thought was to use inorder traversal to put every node into an array, and then make an index pointer for the next() and hasNext(). That meets the O(1) run time but not the O(h) memory. O(h) is really much more less than O(n) when the tree is huge.</p>
+
+<p>This means I cannot use a lot of memory, which suggests that I need to make use of the tree structure itself. And also, one thing to notice is the "average O(1) run time". It's weird to say average O(1), because there's nothing below O(1) in run time, which suggests in most cases, I solve it in O(1), while in some cases, I need to solve it in O(n) or O(h). These two limitations are big hints.</p>
+
+<p>Before I come up with this solution, I really draw a lot binary trees and try inorder traversal on them. We all know that, once you get to a TreeNode, in order to get the smallest, you need to go all the way down its left branch. So our first step is to point to pointer to the left most TreeNode. The problem is how to do back trace. Since the TreeNode doesn't have father pointer, we cannot get a TreeNode's father node in O(1) without store it beforehand. Back to the first step, when we are traversal to the left most TreeNode, we store each TreeNode we met ( They are all father nodes for back trace). </p>
+
+<p>After that, I try an example, for next(), I directly return where the pointer pointing at, which should be the left most TreeNode I previously found. What to do next? After returning the smallest TreeNode, I need to point the pointer to the next smallest TreeNode. When the current TreeNode has a right branch (It cannot have left branch, remember we traversal to the left most), we need to jump to its right child first and then traversal to its right child's left most TreeNode. When the current TreeNode doesn't have a right branch, it means there cannot be a node with value smaller than itself father node, point the pointer at its father node.</p>
+
+<p>The overall thinking leads to the structure Stack, which fits my requirement so well.</p>
+
+<pre><code>/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+public class BSTIterator {
+
+    private Stack&lt;TreeNode&gt; stack;
+    public BSTIterator(TreeNode root) {
+        stack = new Stack&lt;&gt;();
+        TreeNode cur = root;
+        while(cur != null){
+            stack.push(cur);
+            if(cur.left != null)
+                cur = cur.left;
+            else
+                break;
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode node = stack.pop();
+        TreeNode cur = node;
+        // traversal right branch
+        if(cur.right != null){
+            cur = cur.right;
+            while(cur != null){
+                stack.push(cur);
+                if(cur.left != null)
+                    cur = cur.left;
+                else
+                    break;
+            }
+        }
+        return node.val;
+    }
+}
+
+/**
+ * Your BSTIterator will be called like this:
+ * BSTIterator i = new BSTIterator(root);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/siyang2">siyang2</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/20101/ideal-solution-using-stack-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>the idea is same as using stack to do Binary Tree Inorder Traversal    </p>
+
+<pre><code>public class BSTIterator {
+
+        Stack&lt;TreeNode&gt; stack =  null ;            
+        TreeNode current = null ;
+
+        public BSTIterator(TreeNode root) {
+              current = root;        
+              stack = new Stack&lt;&gt; ();
+        }
+
+        /** @return whether we have a next smallest number */
+        public boolean hasNext() {        
+              return !stack.isEmpty() || current != null;  
+        }
+
+            /** @return the next smallest number */
+        public int next() {
+            while (current != null) {
+                stack.push(current);
+                current = current.left ;
+            }       
+            TreeNode t = stack.pop() ;      
+            current = t.right ;     
+            return t.val ;
+        }
+    }
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/scott">scott</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/22137/my-java-accepted-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

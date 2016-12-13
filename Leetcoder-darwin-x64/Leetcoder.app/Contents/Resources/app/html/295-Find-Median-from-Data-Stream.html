@@ -1,0 +1,262 @@
+<!DOCTYPE html><html><head><title>Find Median from Data Stream</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c73dfd1aae28585752f8" data-set="true" class="title">Find Median from Data Stream</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value. So the median is the mean of the two middle value.</p>
+Examples: <br>
+<p><code>[2,3,4]</code> , the median is <code>3</code></p>
+<p><code>[2,3]</code>, the median is <code>(2 + 3) / 2 = 2.5</code> </p>
+
+<p>
+Design a data structure that supports the following two operations:
+</p>
+<ul>
+<li>void addNum(int num) - Add a integer number from the data stream to the data structure.</li>
+<li>double findMedian() - Return the median of all elements so far.</li>
+</ul>
+
+<p>
+For example:</p>
+<pre>
+add(1)
+add(2)
+findMedian() -&gt; 1.5
+add(3) 
+findMedian() -&gt; 2
+</pre>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/Louis1992">@Louis1992</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/heap/">Heap</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/design/">Design</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>I keep two heaps (or priority queues):</p>
+
+<ul>
+<li>Max-heap <code>small</code> has the smaller half of the numbers.</li>
+<li>Min-heap <code>large</code> has the larger half of the numbers.</li>
+</ul>
+
+<p>This gives me direct access to the one or two middle values (they're the tops of the heaps), so getting the median takes O(1) time. And adding a number takes O(log n) time.</p>
+
+<p>Supporting both min- and max-heap is more or less cumbersome, depending on the language, so I simply negate the numbers in the heap in which I want the reverse of the default order. To prevent this from causing a bug with -2<sup>31</sup> (which negated is itself, when using 32-bit ints), I use integer types larger than 32 bits.</p>
+
+<p>Using larger integer types also prevents an overflow error when taking the mean of the two middle numbers. I think almost all solutions posted previously have that bug.</p>
+
+<p><strong>Update:</strong> These are pretty short already, but by now I wrote <a rel="nofollow" href="https://leetcode.com/discuss/64910/very-short-o-log-n-o-1">even shorter ones</a>.</p>
+
+<hr>
+
+<p><strong>Java</strong></p>
+
+<pre><code>class MedianFinder {
+
+    private Queue&lt;Long&gt; small = new PriorityQueue(),
+                        large = new PriorityQueue();
+
+    public void addNum(int num) {
+        large.add((long) num);
+        small.add(-large.poll());
+        if (large.size() &lt; small.size())
+            large.add(-small.poll());
+    }
+
+    public double findMedian() {
+        return large.size() &gt; small.size()
+               ? large.peek()
+               : (large.peek() - small.peek()) / 2.0;
+    }
+};
+</code></pre>
+
+<p>Props to <a rel="nofollow" href="https://leetcode.com/discuss/64842/32ms-easy-to-understand-java-solution">larrywang2014's solution</a> for making me aware that I can use Queue in the declaration instead of PriorityQueue (that's all I got from him, though (just saying because I just saw he changed his previously longer addNum and it's now equivalent to mine)).</p>
+
+<hr>
+
+<p><strong>C++</strong></p>
+
+<pre><code>class MedianFinder {
+    priority_queue&lt;long&gt; small, large;
+public:
+
+    void addNum(int num) {
+        small.push(num);
+        large.push(-small.top());
+        small.pop();
+        if (small.size() &lt; large.size()) {
+            small.push(-large.top());
+            large.pop();
+        }
+    }
+
+    double findMedian() {
+        return small.size() &gt; large.size()
+               ? small.top()
+               : (small.top() - large.top()) / 2.0;
+    }
+};
+</code></pre>
+
+<p>Big thanks to jianchao.li.fighter for telling me that C++'s priority_queue is a max-queue (see comments below).</p>
+
+<hr>
+
+<p><strong>Python</strong></p>
+
+<pre><code>from heapq import *
+
+class MedianFinder:
+
+    def __init__(self):
+        self.heaps = [], []
+
+    def addNum(self, num):
+        small, large = self.heaps
+        heappush(small, -heappushpop(large, num))
+        if len(large) &lt; len(small):
+            heappush(large, -heappop(small))
+
+    def findMedian(self):
+        small, large = self.heaps
+        if len(large) &gt; len(small):
+            return float(large[0])
+        return (large[0] - small[0]) / 2.0
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/64850/short-simple-java-c-python-o-log-n-o-1">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Not sure why it is marked as hard, i think this is one of the easiest questions on leetcode.</p>
+
+<pre><code>class MedianFinder {
+    // max queue is always larger or equal to min queue
+    PriorityQueue&lt;Integer&gt; min = new PriorityQueue();
+    PriorityQueue&lt;Integer&gt; max = new PriorityQueue(1000, Collections.reverseOrder());
+    // Adds a number into the data structure.
+    public void addNum(int num) {
+        max.offer(num);
+        min.offer(max.poll());
+        if (max.size() &lt; min.size()){
+            max.offer(min.poll());
+        }
+    }
+
+    // Returns the median of current data stream
+    public double findMedian() {
+        if (max.size() == min.size()) return (max.peek() + min.peek()) /  2.0;
+        else return max.peek();
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/kennethliaoke">kennethliaoke</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/65107/share-my-java-solution-logn-to-insert-o-1-to-query">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Same idea <a rel="nofollow" href="https://leetcode.com/discuss/64850/short-simple-java-c-python-o-log-n-o-1">as before</a>, but really exploiting the symmetry of the two heaps by switching them whenever a number is added. Still O(log n) for adding and O(1) for median. Partially inspired by <a rel="nofollow" href="https://leetcode.com/discuss/64852/ac-python-two-heap-solution-o-log-n-add-o-1-find-388-ms">peisi's updated solution</a>.</p>
+
+<p><strong>Update:</strong> Added a new Java version (the first one).</p>
+
+<hr>
+
+<p><strong>Java</strong></p>
+
+<pre><code>class MedianFinder {
+
+    Queue&lt;Integer&gt; q = new PriorityQueue(), z = q, t,
+                   Q = new PriorityQueue(Collections.reverseOrder()); 
+
+    public void addNum(int num) {
+        (t=Q).add(num);
+        (Q=q).add((q=t).poll());
+    }
+
+    public double findMedian() {
+        return (Q.peek() + z.peek()) / 2.;
+    }
+};
+</code></pre>
+
+<p>Or:</p>
+
+<pre><code>class MedianFinder {
+
+    Queue[] q = {new PriorityQueue(), new PriorityQueue(Collections.reverseOrder())};
+    int i = 0;
+
+    public void addNum(int num) {
+        q[i].add(num);
+        q[i^=1].add(q[i^1].poll());
+    }
+
+    public double findMedian() {
+        return ((int)(q[1].peek()) + (int)(q[i].peek())) / 2.0;
+    }
+};
+</code></pre>
+
+<hr>
+
+<p><strong>Python</strong></p>
+
+<pre><code>from heapq import *
+
+class MedianFinder:
+
+    def __init__(self):
+        self.heaps = None, [], []
+        self.i = 1
+
+    def addNum(self, num):
+        heappush(self.heaps[-self.i], -heappushpop(self.heaps[self.i], num * self.i))
+        self.i *= -1
+
+    def findMedian(self):
+        return (self.heaps[self.i][0] * self.i - self.heaps[-1][0]) / 2.0
+</code></pre>
+
+<p>Or:</p>
+
+<pre><code>from heapq import *
+
+class MedianFinder:
+
+    def __init__(self):
+        self.data = 1, [], []
+
+    def addNum(self, num):
+        sign, h1, h2 = self.data
+        heappush(h2, -heappushpop(h1, num * sign))
+        self.data = -sign, h2, h1
+
+    def findMedian(self):
+        sign, h1, h2 = d = self.data
+        return (h1[0] * sign - d[-sign][0]) / 2.0
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/64910/very-short-o-log-n-o-1">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html><html><head><title>Unique Substrings in Wraparound String  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="5844f46d9cbe5e402a894599" data-set="true" class="title">Unique Substrings in Wraparound String  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Consider the string <code>s</code> to be the infinite wraparound string of "abcdefghijklmnopqrstuvwxyz", so <code>s</code> will look like this: "...zabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcd....".</p>
+
+<p>Now we have another string <code>p</code>. Your job is to find out how many unique non-empty substrings of <code>p</code> are present in <code>s</code>. In particular, your input is the string <code>p</code> and you need to output the number of different non-empty substrings of <code>p</code> in the string <code>s</code>.</p>
+
+<p><b>Note:</b> <code>p</code> consists of only lowercase English letters and the size of p might be over 10000.</p>
+
+<p><b>Example 1:</b><br>
+</p><pre>
+<b>Input:</b> "a"
+<b>Output:</b> 1
+
+<b>Explanation:</b> Only the substring "a" of string "a" is in the string s.
+</pre>
+
+
+<p><b>Example 2:</b><br>
+</p><pre>
+<b>Input:</b> "cac"
+<b>Output:</b> 2
+<b>Explanation:</b> There are two substrings "a", "c" of string "cac" in the string s.
+</pre>
+
+
+<p><b>Example 3:</b><br>
+</p><pre>
+<b>Input:</b> "zab"
+<b>Output:</b> 6
+<b>Explanation:</b> There are six substrings "z", "a", "b", "za", "ab", "zab" of string "zab" in the string s.
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/maq-software/">MAQ Software</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/dynamic-programming/">Dynamic Programming</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>After failed with pure math solution and time out with DFS solution, I finally realized that this is a DP problem...<br/>
+The idea is, if we know the max number of unique substrings in <code>p</code> ends with <code>'a', 'b', ..., 'z'</code>, then the summary of them is the answer. Why is that?</p>
+<ol>
+<li>The max number of unique substring ends with a letter equals to the length of max contiguous substring ends with that letter. Example <code>"abcd"</code>, the max number of unique substring ends with <code>'d'</code> is 4, apparently they are <code>"abcd", "bcd", "cd" and "d"</code>.</li>
+<li>If there are overlapping, we only need to consider the longest one because it covers all the possible substrings. Example: <code>"abcdbcd"</code>, the max number of unique substring ends with <code>'d'</code> is 4 and all substrings formed by the 2nd <code>"bcd"</code> part are covered in the 4 substrings already.</li>
+<li>No matter how long is a contiguous substring in <code>p</code>, it is in <code>s</code> since <code>s</code> has infinite length.</li>
+<li>Now we know the max number of unique substrings in <code>p</code> ends with <code>'a', 'b', ..., 'z'</code> and those substrings are all in <code>s</code>. Summary is the answer, according to the question.</li>
+</ol>
+<p>Hope I made myself clear...</p>
+<pre><code>public class Solution {
+    public int findSubstringInWraproundString(String p) {
+        // count[i] is the maximum unique substring end with ith letter.
+        // 0 - 'a', 1 - 'b', ..., 25 - 'z'.
+        int[] count = new int[26];
+        
+        // store longest contiguous substring ends at current position.
+        int maxLengthCur = 0; 
+
+        for (int i = 0; i &lt; p.length(); i++) {
+            if (i &gt; 0 &amp;&amp; (p.charAt(i) - p.charAt(i - 1) == 1 || (p.charAt(i - 1) - p.charAt(i) == 25))) {
+                maxLengthCur++;
+            }
+            else {
+                maxLengthCur = 1;
+            }
+            
+            int index = p.charAt(i) - 'a';
+            count[index] = Math.max(count[index], maxLengthCur);
+        }
+        
+        // Sum to get result
+        int sum = 0;
+        for (int i = 0; i &lt; 26; i++) {
+            sum += count[i];
+        }
+        return sum;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/shawngao">shawngao</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/70658/concise-java-solution-using-dp">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>int findSubstringInWraproundString(string p) {
+        vector&lt;int&gt; letters(26, 0);
+        int res = 0, len = 0;
+        for (int i = 0; i &lt; p.size(); i++) {
+            int cur = p[i] - 'a';
+            if (i &gt; 0 &amp;&amp; p[i - 1] != (cur + 26 - 1) % 26 + 'a') len = 0;
+            if (++len &gt; letters[cur]) {
+                res += len - letters[cur];
+                letters[cur] = len;
+            }
+        }
+        return res;
+    }
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/zyoppy008">zyoppy008</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/70654/c-concise-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Hi there! I am sharing two different solutions with explanations.</p>
+<p>Well, the first solution idea is  Optimized brute force. The 'naivest' way is for each substring of p in alphabetic order (with rotation %26) brute force all substrings and add to some set. Then at last just return size of the set. That method works but it has two problems, they are:</p>
+<ul>
+<li>Memory limit</li>
+<li>Time limit</li>
+</ul>
+<p>Because it works for O(n^3) time and O(n^2) space.<br/>
+How can we optimize memory?  Because we are considering only strings in alphabetic order, it is sufficient to remember the first character index, last character index and the length for each found substring. This way we replace set of strings to 3D boolean array.<br/>
+Well, how can we optimize time complexity? We can increase performance of counting unique substrings for already found substring, which size is greater than 26. The evidence mentioned above helps us again, because we just need to consider combinations of first 26 character and the last 26 characters for different length, by incrementing length by 26. Such a way we get algorithm that runs for O(26*n) time and O((26^2)*n) space complexities.</p>
+<pre><code>public class Solution {
+    public int findSubstringInWraproundString(String p) {
+        if(p == null || p.isEmpty()) return 0;
+        boolean [][][] set = new boolean[26][26][p.length()+1];
+        int i = 0;
+        int count = 0;
+        boolean [] visited = new boolean[26];
+        StringBuilder build = new StringBuilder();
+        char [] s = p.toCharArray();
+        int n = s.length;
+        while(i&lt;n){
+            char prev = s[i];
+            build.append(prev);
+            i++;
+            while(i&lt;p.length() &amp;&amp; s[i]-'a' == (prev-'a'+1)%26){
+                prev = s[i];
+                build.append(prev);
+                i++;
+            }
+            
+            String next = build.toString();
+            int l = next.charAt(0)-'a';
+            int r = next.charAt(next.length()-1)-'a';
+            if(!set[l][r][next.length()]){
+                count++;
+                set[l][r][next.length()] = true;
+                count+= countUniqueSubstr(next, set);
+            }
+            build.setLength(0);
+        }
+        return count;
+    }
+    
+   
+    public int countUniqueSubstr(String str, boolean [][][] set){
+        int count = 0;
+        if(str.length()&gt;26){
+            int n = str.length();
+            for(int i = 0;i&lt;26;i++){
+                int l = str.charAt(i)-'a';
+                for(int j = n-1;j&gt;=n-26;j--){
+                    int r = str.charAt(j)-'a';
+                    int limit = j-i+1;
+                    int start = r-l+1;
+                    if(r&lt;l){
+                        start = 27-l+r;
+                    }
+                    for(int size = start;size&lt;=limit;size+=26){
+                        if(!set[l][r][size]){
+                            count++;
+                            set[l][r][size] = true;
+                        }
+                    }
+                }
+            }
+            
+        } else {
+            for(int size = 1;size&lt;str.length();size++){
+                for(int i = 0;i&lt;=str.length()-size;i++){
+                    String s = str.substring(i, i+size);
+                    int l = s.charAt(0)-'a';
+                    int r = s.charAt(s.length()-1)-'a';
+                    if(!set[l][r][s.length()]){
+                        count++;
+                        set[l][r][s.length()] = true;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+}
+</code></pre>
+<p>The second solution is simple, just keep track of maximum length of alphabetic substrings ending at certain character then sum them up.</p>
+<pre><code>public class Solution {
+    public int findSubstringInWraproundString(String p) {
+        if(p == null || p.isEmpty()) return 0;
+        int dp[] = new int[26];
+        int i = 0;
+        int n = p.length();
+        char [] s = p.toCharArray();
+        int len = 1;
+        while(i&lt;n){
+            char prev = s[i];
+            i++;
+            dp[prev - 'a'] = Math.max(dp[prev-'a'], len);
+            while(i&lt;p.length() &amp;&amp; s[i]-'a' == (prev-'a'+1)%26){
+                prev = s[i];
+                len++;
+                i++;
+                dp[prev - 'a'] = Math.max(dp[prev-'a'], len);
+            }
+            dp[prev - 'a'] = Math.max(dp[prev-'a'], len);
+            len = 1;
+        }
+        int count = 0;
+        for(int j = 0;j&lt;26;j++) count+=dp[j];
+        return count;
+    }
+}
+</code></pre>
+<p>P.S: Sorry for poor and dirty code. I hope it will be understandable anyway</p>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/zhassanb">ZhassanB</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/70705/java-two-different-solutions-with-explanation">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

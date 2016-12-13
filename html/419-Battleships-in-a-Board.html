@@ -1,0 +1,108 @@
+<!DOCTYPE html><html><head><title>Battleships in a Board  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="582cf1099cbe5e72ab71369f" data-set="true" class="title">Battleships in a Board  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p>Given an 2D board, count how many different battleships are in it. The battleships are represented with <code>'X'</code>s, empty slots are represented with <code>'.'</code>s. You may assume the following rules:
+
+</p><ul>
+<li>You receive a valid board, made of only battleships or empty slots.</li>
+<li>Battleships can only be placed horizontally or vertically. In other words, they can only be made of the shape <code>1xN</code> (1 row, N columns) or <code>Nx1</code> (N rows, 1 column), where N can be of any size.</li>
+<li>At least one horizontal or vertical cell separates between two battleships - there are no adjacent battleships.</li>
+</ul>
+
+<p><b>Example:</b><br>
+</p><pre>X..X
+...X
+...X
+</pre>
+In the above board there are 2 battleships.
+
+<p><b>Invalid Example:</b><br>
+</p><pre>...X
+XXXX
+...X
+</pre>
+This is an invalid board that you will not receive - as battleships will always have a cell separating between them.
+<p></p>
+<p><b>Follow up:</b><br>Could you do it in <b>one-pass</b>, using only <b>O(1) extra memory</b> and <b>without modifying</b> the value of the board?</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Going over all cells, we can count only those that are the "first" cell of the battleship. First cell will be defined as the most top-left cell. We can check for first cells by only counting cells that do not have an 'X' to the left <em>and</em> do not have an 'X' above them.</p>
+<pre><code>
+    public int countBattleships(char[][] board) {
+        int m = board.length;
+        if (m==0) return 0;
+        int n = board[0].length;
+        
+        int count=0;
+        
+        for (int i=0; i&lt;m; i++) {
+            for (int j=0; j&lt;n; j++) {
+                if (board[i][j] == '.') continue;
+                if (i &gt; 0 &amp;&amp; board[i-1][j] == 'X') continue;
+                if (j &gt; 0 &amp;&amp; board[i][j-1] == 'X') continue;
+                count++;
+            }
+        }
+        
+        return count;
+    }
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/ben65">ben65</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/62970/simple-java-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>No need to modify the input matrix.</p>
+<pre><code>public int countBattleships(char[][] board) {
+    int count = 0;
+    for(int i=0;i&lt;board.length;i++)
+        for(int j=0;j&lt;board[0].length;j++)
+            if(board[i][j]=='X' &amp;&amp; (i==0 || board[i-1][j]!='X') &amp;&amp; (j==0 || board[i][j-1]!='X')) count++;
+        return count;
+    }
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/yutingliu">YuTingLiu</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/64027/share-my-7-line-code-1-line-core-code-3ms-super-easy">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<pre><code>public class Solution {
+    public int countBattleships(char[][] board) {
+        int count = 0;
+        for (int i = 0; i &lt; board.length; i++) {
+            for (int j = 0; j &lt; board[0].length; j++) {
+                if (board[i][j] == 'X' &amp;&amp; (i == 0 || board[i-1][j] == '.') &amp;&amp; (j == 0 || board[i][j-1] == '.')) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/mostafa3">mostafa3</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/65418/o-n-2-time-and-o-1-space-without-modifying-the-board">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

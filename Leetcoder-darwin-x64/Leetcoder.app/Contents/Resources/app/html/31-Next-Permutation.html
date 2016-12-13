@@ -1,0 +1,179 @@
+<!DOCTYPE html><html><head><title>Next Permutation</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cf8ffd1aae28585753ef" data-set="true" class="title">Next Permutation</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Implement next permutation, which rearranges numbers into the lexicographically next greater permutation of numbers.
+</p>
+<p>
+If such arrangement is not possible, it must rearrange it as the lowest possible order (ie, sorted in ascending order).
+</p>
+<p>
+The replacement must be in-place, do not allocate extra memory.
+</p>
+<p>
+Here are some examples. Inputs are in the left-hand column and its corresponding outputs are in the right-hand column.<br>
+<code>1,2,3</code> &#8594; <code>1,3,2</code><br>
+<code>3,2,1</code> &#8594; <code>1,2,3</code><br>
+<code>1,1,5</code> &#8594; <code>1,5,1</code><br>
+</p>
+              
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/array/">Array</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#permutations"> (M) Permutations</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#permutations-ii"> (M) Permutations II</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#permutation-sequence"> (M) Permutation Sequence</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#palindrome-permutation-ii"> (M) Palindrome Permutation II</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>My idea is for an array:</p>
+
+<ol>
+<li>Start from its last element, traverse backward to find the first one with index i that satisfy  num[i-1] &lt; num[i]. So, elements from num[i] to num[n-1] is reversely sorted. </li>
+<li>To find the next permutation, we have to swap some numbers at different positions, to minimize the increased amount, we have to make the highest changed position as high as possible. Notice that index larger than or equal to i is not possible as num[i,n-1] is reversely sorted. So, we want to increase the number at index i-1, clearly, swap it with the smallest number between num[i,n-1] that is larger than num[i-1]. For example, original number is 121543321, we want to swap the '1' at position 2 with '2' at position 7. </li>
+<li>The last step is to make the remaining higher position part as small as possible, we just have to reversely sort the num[i,n-1]</li>
+</ol>
+
+<p>The following is my code:</p>
+
+<pre><code>public void nextPermutation(int[] num) {
+    int n=num.length;
+    if(n&lt;2)
+        return;
+    int index=n-1;        
+    while(index&gt;0){
+        if(num[index-1]&lt;num[index])
+            break;
+        index--;
+    }
+    if(index==0){
+        reverseSort(num,0,n-1);
+        return;
+    }
+    else{
+        int val=num[index-1];
+        int j=n-1;
+        while(j&gt;=index){
+            if(num[j]&gt;val)
+                break;
+            j--;
+        }
+        swap(num,j,index-1);
+        reverseSort(num,index,n-1);
+        return;
+    }
+}
+
+public void swap(int[] num, int i, int j){
+    int temp=0;
+    temp=num[i];
+    num[i]=num[j];
+    num[j]=temp;
+}
+
+public void reverseSort(int[] num, int start, int end){   
+    if(start&gt;end)
+        return;
+    for(int i=start;i&lt;=(end+start)/2;i++)
+        swap(num,i,start+end-i);
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/yuyibestman">yuyibestman</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/8472/share-my-o-n-time-solution">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Well, in fact the problem of next permutation has been studied long ago. From the <a rel="nofollow" href="http://en.wikipedia.org/wiki/Permutation">Wikipedia page</a>, in the 14th century, a man named Narayana Pandita gives the following classic and yet quite simple algorithm (with minor modifications in notations to fit the problem statement):</p>
+
+<ol>
+<li>Find the largest index <code>k</code> such that <code>nums[k] &lt; nums[k + 1]</code>. If no such index exists, the permutation is sorted in descending order, just reverse it  to ascending order and we are done. For example, the next permutation of <code>[3, 2, 1]</code> is <code>[1, 2, 3]</code>.</li>
+<li>Find the largest index <code>l</code> greater than <code>k</code> such that <code>nums[k] &lt; nums[l]</code>.</li>
+<li>Swap the value of <code>nums[k]</code> with that of <code>nums[l]</code>.</li>
+<li>Reverse the sequence from <code>nums[k + 1]</code> up to and including the final element <code>nums[nums.size() - 1]</code>.</li>
+</ol>
+
+<p>Quite simple, yeah? Now comes the following code, which is barely a translation.</p>
+
+<p>Well, a final note here, the above algorithm is indeed powerful --- <strong>it can handle the cases of duplicates</strong>! If you have tried the problems <a rel="nofollow" href="https://leetcode.com/problems/permutations/">Permutations</a> and <a rel="nofollow" href="https://leetcode.com/problems/permutations-ii/">Permutations II</a>, then the following function is also useful. Both of <a rel="nofollow" href="https://leetcode.com/problems/permutations/">Permutations</a> and <a rel="nofollow" href="https://leetcode.com/problems/permutations-ii/">Permutations II</a> can be solved easily using this function. Hints: sort <code>nums</code> in ascending order, add it to the result of all permutations and then repeatedly generate the next permutation and add it ... until we get back to the original sorted condition. If you want to learn more, please visit <a rel="nofollow" href="https://leetcode.com/discuss/38255/solution-nextpermutation-permutations-without-modification">this solution</a> and <a rel="nofollow" href="https://leetcode.com/discuss/38260/easy-solution-using-code-in-nextpermutation">that solution</a>.</p>
+
+<pre><code>class Solution {
+    void nextPermutation(vector&lt;int&gt;&amp; nums) {
+        int k = -1;
+        for (int i = nums.size() - 2; i &gt;= 0; i--) {
+            if (nums[i] &lt; nums[i + 1]) {
+                k = i;
+                break;
+            }
+        } 
+        if (k == -1) {
+            reverse(nums.begin(), nums.end());
+            return;
+        }
+        int l = -1;
+        for (int i = nums.size() - 1; i &gt; k; i--) {
+            if (nums[i] &gt; nums[k]) {
+                l = i;
+                break;
+            } 
+        } 
+        swap(nums[k], nums[l]);
+        reverse(nums.begin() + k + 1, nums.end()); 
+    }
+}; 
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jianchao.li.fighter">jianchao.li.fighter</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/38247/algorithm-wikipedia-implementation-permutations-permutations">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>class Solution {
+public:
+    void nextPermutation(vector&lt;int&gt; &amp;num) 
+    {
+        if (num.empty()) return;
+
+        // in reverse order, find the first number which is in increasing trend (we call it violated number here)
+        int i;
+        for (i = num.size()-2; i &gt;= 0; --i)
+        {
+            if (num[i] &lt; num[i+1]) break;
+        }
+
+        // reverse all the numbers after violated number
+        reverse(begin(num)+i+1, end(num));
+        // if violated number not found, because we have reversed the whole array, then we are done!
+        if (i == -1) return;
+        // else binary search find the first number larger than the violated number
+        auto itr = upper_bound(begin(num)+i+1, end(num), num[i]);
+        // swap them, done!
+        swap(num[i], *itr);
+    }
+};
+</code></pre>
+
+<p>You might need to think for a while why this would work.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/AsherBaby">AsherBaby</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/24515/9-lines-of-c-code-with-comments">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

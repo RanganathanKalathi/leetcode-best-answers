@@ -1,0 +1,366 @@
+<!DOCTYPE html><html><head><title>Word Search II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c9aafd1aae285857534a" data-set="true" class="title">Word Search II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+Given a 2D board and a list of words from the dictionary, find all words in the board.
+</p>
+<p>
+Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.
+</p>
+
+<p>
+For example,<br>
+Given <b>words</b> = <code>["oath","pea","eat","rain"]</code> and <b>board</b> = 
+</p><pre>
+[
+  ['<span style="color:#d70">o</span>','<span style="color:#d70">a</span>','a','n'],
+  ['e','<span style="color:#d30">t</span>','<span style="color:#d00">a</span>','<span style="color:#d00">e</span>'],
+  ['i','<span style="color:#d70">h</span>','k','r'],
+  ['i','f','l','v']
+]
+</pre>
+
+Return <code>["eat","oath"]</code>.
+
+
+<p>
+<b>Note:</b><br>
+You may assume that all inputs are consist of lowercase letters <code>a-z</code>.
+</p>
+
+<p class="showspoilers"><a href="#" onclick="showSpoilers(this); return false;">click to show hint.</a></p>
+
+<div class="spoilers"><p>You would need to optimize your backtracking to pass the larger test. Could you stop backtracking earlier?</p>
+
+<p>If the current candidate does not exist in all words' prefix, you could stop backtracking immediately. What kind of data structure could answer such query efficiently? Does a hash table work? Why or why not? How about a Trie? If you would like to learn how to implement a basic trie, please work on this problem: <a href="https://leetcode.com/problems/implement-trie-prefix-tree/">Implement Trie (Prefix Tree)</a> first.</p>
+</div>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/airbnb/">Airbnb</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/backtracking/">Backtracking</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/trie/">Trie</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#word-search"> (M) Word Search</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>Compared with <a rel="nofollow" href="https://leetcode.com/problems/word-search/">Word Search</a>, I make my DFS with a tire but a word. The Trie is formed by all the words in given <em>words</em>. Then during the DFS, for each current formed word, I check if it is in the Trie.</p>
+
+<pre><code>public class Solution {
+    Set&lt;String&gt; res = new HashSet&lt;String&gt;();
+
+    public List&lt;String&gt; findWords(char[][] board, String[] words) {
+        Trie trie = new Trie();
+        for (String word : words) {
+            trie.insert(word);
+        }
+
+        int m = board.length;
+        int n = board[0].length;
+        boolean[][] visited = new boolean[m][n];
+        for (int i = 0; i &lt; m; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                dfs(board, visited, "", i, j, trie);
+            }
+        }
+
+        return new ArrayList&lt;String&gt;(res);
+    }
+
+    public void dfs(char[][] board, boolean[][] visited, String str, int x, int y, Trie trie) {
+        if (x &lt; 0 || x &gt;= board.length || y &lt; 0 || y &gt;= board[0].length) return;
+        if (visited[x][y]) return;
+
+        str += board[x][y];
+        if (!trie.startsWith(str)) return;
+
+        if (trie.search(str)) {
+            res.add(str);
+        }
+
+        visited[x][y] = true;
+        dfs(board, visited, str, x - 1, y, trie);
+        dfs(board, visited, str, x + 1, y, trie);
+        dfs(board, visited, str, x, y - 1, trie);
+        dfs(board, visited, str, x, y + 1, trie);
+        visited[x][y] = false;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/Lnic">Lnic</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/36337/my-simple-and-clean-java-code-using-dfs-and-trie">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>The idea is to use a Trie to build a prefix tree for words to simplify the search and do DFS to search all the possible strings. 
+For Trie, 26 pointers to point the sub-strings and a bool leaf to indicate whether the current node is a leaf (i.e. a string in words) and also idx is used to save the index of words for the current node.
+For DFS, just check if the current position is visited before (board[i][j]=='X'), if so, return, check if there is a string with such prefix (nullptr == root-&gt;children[words[idx][pos]-'a']), if not, return; otherwise, check if the current searched string is a leaf of the trie (a string in words), if so, save it to res and set leaf of the trie node to false to indicate such string is already found. At last, move to its neighbors to continue the search. Remember to recover the char [i][j] at the end.    </p>
+
+<pre><code>    class Solution {
+        class Trie{
+        public:
+            Trie *children[26]; // pointers to its substrings starting with 'a' to 'z'
+            bool leaf; // if the node is a leaf, or if there is a word stopping at here
+            int idx; // if it is a leaf, the string index of the array words
+            Trie()
+            {
+                this-&gt;leaf = false;
+                this-&gt;idx = 0;
+                fill_n(this-&gt;children, 26, nullptr);            
+            }
+        };
+
+    public:
+        void insertWords(Trie *root, vector&lt;string&gt;&amp; words, int idx)
+        {
+            int pos = 0, len = words[idx].size();
+            while(pos&lt;len)
+            {
+                if(nullptr == root-&gt;children[words[idx][pos]-'a']) root-&gt;children[words[idx][pos]-'a'] = new Trie();
+                root = root-&gt;children[words[idx][pos++]-'a'];
+            }
+            root-&gt;leaf = true;
+            root-&gt;idx = idx;
+        }
+
+        Trie *buildTrie(vector&lt;string&gt;&amp; words)
+        {
+            Trie *root = new Trie(); 
+            int i;
+            for(i=0; i&lt;words.size();i++) insertWords(root, words, i);
+            return root;
+        }
+
+        void checkWords(vector&lt;vector&lt;char&gt;&gt;&amp; board, int i, int j, int row, int col, Trie *root, vector&lt;string&gt; &amp;res, vector&lt;string&gt;&amp; words)
+        {
+            char temp;
+            if(board[i][j]=='X') return; // visited before;
+            if(nullptr == root-&gt;children[board[i][j]-'a']) return ; // no string with such prefix
+            else
+            {
+                temp = board[i][j];
+                if(root-&gt;children[temp-'a']-&gt;leaf)  // if it is a leaf
+                {
+                    res.push_back(words[root-&gt;children[temp-'a']-&gt;idx]);
+                    root-&gt;children[temp-'a']-&gt;leaf = false; // set to false to indicate that we found it already
+                }
+                board[i][j]='X'; //mark the current position as visited
+// check all the possible neighbors
+                if(i&gt;0) checkWords(board, i-1, j, row, col, root-&gt;children[temp-'a'], res, words);
+                if((i+1)&lt;row) checkWords(board, i+1, j, row, col,  root-&gt;children[temp-'a'], res, words);
+                if(j&gt;0) checkWords(board, i, j-1,  row, col, root-&gt;children[temp-'a'], res, words);
+                if((j+1)&lt;col)  checkWords(board, i, j+1,  row, col, root-&gt;children[temp-'a'], res, words);
+                board[i][j] = temp; // recover the current position
+            }
+        }
+
+        vector&lt;string&gt; findWords(vector&lt;vector&lt;char&gt;&gt;&amp; board, vector&lt;string&gt;&amp; words) {
+           vector&lt;string&gt; res;
+           int row = board.size();
+           if(0==row) return res;
+           int col = board[0].size();
+           if(0==col) return res;
+           int wordCount = words.size();
+           if(0==wordCount) return res;
+
+           Trie *root = buildTrie(words);
+
+           int i,j;
+           for(i =0 ; i&lt;row; i++)
+           {
+               for(j=0; j&lt;col &amp;&amp; wordCount &gt; res.size(); j++)
+               {
+                   checkWords(board, i, j, row, col, root, res, words);
+               }
+           }
+           return res;
+        }
+ };
+</code></pre>
+
+<p>Based on the comments received. I created another version with Trie node counter (thanks,   zhiqing_xiao and gxyeecspku). However, for the current test set, it doesn't help too much. Anyway, my version with Trie node counter.</p>
+
+<pre><code>class Solution {
+private:
+class Trie
+{
+public:    
+    Trie * children[26];
+    bool isLeaf;
+    int  wordIdx;
+    int prefixCount;
+
+    Trie()
+    {
+        isLeaf = false;
+        wordIdx = 0;
+        prefixCount = 0;
+        fill_n(children, 26, nullptr);
+    }
+
+    ~Trie()
+    {
+        for(auto i=0; i&lt;26; ++i) delete children[i];
+    }
+};
+    void insertWord(Trie *root,  const vector&lt;string&gt;&amp; words, int idx)
+    {
+        int i, childID, len = words[idx].size();
+        for(i=0, root-&gt;prefixCount++ ; i&lt;len; ++i)
+        {
+            childID = words[idx][i]-'a';
+            if(!root-&gt;children[childID]) root-&gt;children[childID] = new Trie();
+            root = root-&gt;children[childID];
+            ++root-&gt;prefixCount;
+        }
+        root-&gt;isLeaf = true; 
+        root-&gt;wordIdx = idx;
+    }
+
+    Trie *buildTrie(const vector&lt;string&gt; &amp;words)
+    {
+        Trie *root = new Trie();
+        for(int i=0; i &lt; words.size(); ++i) insertWord(root, words, i);
+        return root;
+    }
+
+    int dfs_Trie(vector&lt;string&gt; &amp;res, Trie *root, vector&lt;vector&lt;char&gt;&gt;&amp; board, vector&lt;string&gt;&amp; words, int row, int col)
+    {
+        int detected = 0;
+
+        if(root-&gt;isLeaf)
+        {
+            ++detected;
+            root-&gt;isLeaf = false;
+            res.push_back(words[root-&gt;wordIdx]);
+        }
+
+        if( row&lt;0 || row&gt;=board.size() || col&lt;0 || col&gt;=board[0].size() || board[row][col]=='*' || !root-&gt;children[ board[row][col]-'a'] || root-&gt;children[ board[row][col]-'a']-&gt;prefixCount &lt;= 0 ) return detected;
+        int curC = board[row][col] - 'a';
+        board[row][col] = '*';
+        detected += dfs_Trie(res, root-&gt;children[curC], board, words, row-1, col) + 
+               dfs_Trie(res, root-&gt;children[curC], board, words, row+1, col) +    
+               dfs_Trie(res, root-&gt;children[curC], board, words, row, col - 1) +    
+               dfs_Trie(res, root-&gt;children[curC], board, words, row, col + 1) ;
+        root-&gt;prefixCount -=detected;
+        board[row][col] = curC+'a';
+        return detected;
+    }
+
+public:
+    vector&lt;string&gt; findWords(vector&lt;vector&lt;char&gt;&gt;&amp; board, vector&lt;string&gt;&amp; words) {
+        int M, N, wordNum = words.size();
+        vector&lt;string&gt; res;
+        if( !(M = board.size()) || !(N = board[0].size()) || !wordNum) return res;
+        Trie *root = buildTrie(words);
+        for(auto i=0; i&lt;M &amp;&amp; root-&gt;prefixCount; ++i)
+            for(auto j=0; j&lt;N; ++j)
+                dfs_Trie(res, root, board, words, i, j);
+        delete root;
+        return res;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/dong.wang.1694">dong.wang.1694</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/36404/my-c-trie-backtrace-based-solution-48-ms">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>public class Solution {
+    public class TrieNode{
+        public boolean isWord = false;
+        public TrieNode[] child = new TrieNode[26];
+        public TrieNode(){
+
+        }
+    }
+
+    TrieNode root = new TrieNode();
+    boolean[][] flag;
+    public List&lt;String&gt; findWords(char[][] board, String[] words) {
+        Set&lt;String&gt; result = new HashSet&lt;&gt;();
+        flag = new boolean[board.length][board[0].length];
+
+        addToTrie(words);
+
+        for(int i = 0; i &lt; board.length; i++){
+            for(int j = 0; j &lt; board[0].length; j++){
+                if(root.child[board[i][j] - 'a'] != null){
+                    search(board, i, j, root, "", result);
+                }
+            }
+        }
+
+        return new LinkedList&lt;&gt;(result);
+    }
+
+    private void addToTrie(String[] words){
+        for(String word: words){
+            TrieNode node = root;
+            for(int i = 0; i &lt; word.length(); i++){
+                char ch = word.charAt(i);
+                if(node.child[ch - 'a'] == null){
+                    node.child[ch - 'a'] = new TrieNode();
+                }
+                node = node.child[ch - 'a'];
+            }
+            node.isWord = true;
+        }
+    }
+
+    private void search(char[][] board, int i, int j, TrieNode node, String word, Set&lt;String&gt; result){
+        if(i &gt;= board.length || i &lt; 0 || j &gt;= board[i].length || j &lt; 0 || flag[i][j]){
+            return;
+        }
+
+        if(node.child[board[i][j] - 'a'] == null){
+            return;
+        }
+
+        flag[i][j] = true;
+        node = node.child[board[i][j] - 'a'];
+        if(node.isWord){
+            result.add(word + board[i][j]);
+        }
+
+        search(board, i-1, j, node, word + board[i][j], result);
+        search(board, i+1, j, node, word + board[i][j], result);
+        search(board, i, j-1, node, word + board[i][j], result);
+        search(board, i, j+1, node, word + board[i][j], result);
+
+        flag[i][j] = false;
+    }
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/harish-v">harish-v</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/51505/my-java-solution-using-trie">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

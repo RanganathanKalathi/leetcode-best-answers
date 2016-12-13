@@ -1,0 +1,289 @@
+<!DOCTYPE html><html><head><title>Binary Tree Inorder Traversal</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2cd51fd1aae28585753b0" data-set="true" class="title">Binary Tree Inorder Traversal</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given a binary tree, return the <i>inorder</i> traversal of its nodes' values.</p>
+
+<p>
+For example:<br>
+Given binary tree <code>{1,#,2,3}</code>,<br>
+</p><pre>
+   1
+    \
+     2
+    /
+   3
+</pre>
+
+<p>
+return <code>[1,3,2]</code>.
+</p>
+
+<p><b>Note:</b> Recursive solution is trivial, could you do it iteratively?</p>
+
+<p class="showspoilers">confused what <code>"{1,#,2,3}"</code> means? <a href="#" onclick="showSpoilers(this); return false;">&gt; read more on how binary tree is serialized on OJ.</a></p>
+
+<div class="spoilers"><br><b>OJ's Binary Tree Serialization:</b>
+<p>
+The serialization of a binary tree follows a level order traversal, where '#' signifies a path terminator where no node exists below.
+</p>
+<p>
+Here's an example:<br>
+</p><pre>
+   1
+  / \
+ 2   3
+    /
+   4
+    \
+     5
+</pre>
+The above binary tree is serialized as <code>"{1,2,3,#,#,4,#,#,5}"</code>. 
+
+</div>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/microsoft/">Microsoft</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/tree/">Tree</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/hash-table/">Hash Table</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/stack/">Stack</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#validate-binary-search-tree"> (M) Validate Binary Search Tree</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-tree-preorder-traversal"> (M) Binary Tree Preorder Traversal</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-tree-postorder-traversal"> (H) Binary Tree Postorder Traversal</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#binary-search-tree-iterator"> (M) Binary Search Tree Iterator</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#kth-smallest-element-in-a-bst"> (M) Kth Smallest Element in a BST</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#closest-binary-search-tree-value-ii"> (H) Closest Binary Search Tree Value II</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#inorder-successor-in-bst"> (M) Inorder Successor in BST</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><pre><code>public List&lt;Integer&gt; inorderTraversal(TreeNode root) {
+    List&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+
+    Stack&lt;TreeNode&gt; stack = new Stack&lt;TreeNode&gt;();
+    TreeNode cur = root;
+
+    while(cur!=null || !stack.empty()){
+        while(cur!=null){
+            stack.add(cur);
+            cur = cur.left;
+        }
+        cur = stack.pop();
+        list.add(cur.val);
+        cur = cur.right;
+    }
+
+    return list;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/lvlolitte">lvlolitte</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/19765/iterative-solution-in-java-simple-and-readable">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><p>Method 1: Using one stack and the binary tree node will be changed. Easy ,not Practical</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; inorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; vector;
+        if(!root)
+        return vector;
+        stack&lt;TreeNode *&gt; stack;
+        stack.push(root);
+        while(!stack.empty())
+        {
+            TreeNode *pNode = stack.top();
+            if(pNode-&gt;left)
+            {
+                stack.push(pNode-&gt;left);
+                pNode-&gt;left = NULL;
+            }
+            else
+            {
+                vector.push_back(pNode-&gt;val);
+                stack.pop();
+                if(pNode-&gt;right)
+                stack.push(pNode-&gt;right);
+            }
+        }
+        return vector;
+    }
+};
+</code></pre>
+
+<p>Method 2: Using one stack and one unordered_map, this will not changed the node. Better</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; inorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; vector;
+        if(!root)
+        return vector;
+        unordered_map&lt;TreeNode *, bool&gt; map;//left child has been visited:true.
+        stack&lt;TreeNode *&gt; stack;
+        stack.push(root);
+        while(!stack.empty())
+        {
+            TreeNode *pNode = stack.top();
+            if(pNode-&gt;left &amp;&amp; !map[pNode])
+            {
+                stack.push(pNode-&gt;left);
+                map[pNode] = true;
+            }
+            else
+            {
+                vector.push_back(pNode-&gt;val);
+                stack.pop();
+                if(pNode-&gt;right)
+                stack.push(pNode-&gt;right);
+            }
+        }
+        return vector;
+    }
+};
+</code></pre>
+
+<p>Method 3: Using one stack  and will not changed the node. Best(at least in this three solutions)</p>
+
+<pre><code>class Solution {
+public:
+    vector&lt;int&gt; inorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; vector;
+        stack&lt;TreeNode *&gt; stack;
+        TreeNode *pCurrent = root;
+
+        while(!stack.empty() || pCurrent)
+        {
+            if(pCurrent)
+            {
+                stack.push(pCurrent);
+                pCurrent = pCurrent-&gt;left;
+            }
+            else
+            {
+                TreeNode *pNode = stack.top();
+                vector.push_back(pNode-&gt;val);
+                stack.pop();
+                pCurrent = pNode-&gt;right;
+            }
+        }
+        return vector;
+    }
+};
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/KaiChen">KaiChen</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/10927/three-methods-to-solve-c">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><p>Hi, this is a fundamental and yet classic problem. I share my three solutions here:</p>
+
+<ol>
+<li>Iterative solution using stack --- <code>O(n)</code> time and <code>O(n)</code> space;</li>
+<li>Recursive solution --- <code>O(n)</code> time and <code>O(n)</code> space (considering the spaces of function call stack);</li>
+<li><strong>Morris traversal --- <code>O(n)</code> time and <code>O(1)</code> space!!!</strong></li>
+</ol>
+
+<p>Iterative solution using stack:</p>
+
+<pre><code>vector&lt;int&gt; inorderTraversal(TreeNode* root) {
+    vector&lt;int&gt; nodes;
+    stack&lt;TreeNode*&gt; toVisit;
+    TreeNode* curNode = root;
+    while (curNode || !toVisit.empty()) {
+        if (curNode) {
+            toVisit.push(curNode);
+            curNode = curNode -&gt; left;
+        }
+        else {
+            curNode = toVisit.top();
+            toVisit.pop();
+            nodes.push_back(curNode -&gt; val);
+            curNode = curNode -&gt; right;
+        }
+    }
+    return nodes;
+}
+</code></pre>
+
+<p>Recursive solution:</p>
+
+<pre><code>void inorder(TreeNode* root, vector&lt;int&gt;&amp; nodes) {
+    if (!root) return;
+    inorder(root -&gt; left, nodes);
+    nodes.push_back(root -&gt; val);
+    inorder(root -&gt; right, nodes);
+}
+vector&lt;int&gt; inorderTraversal(TreeNode* root) {
+    vector&lt;int&gt; nodes;
+    inorder(root, nodes);
+    return nodes;
+} 
+</code></pre>
+
+<p>Morris traversal:</p>
+
+<pre><code>vector&lt;int&gt; inorderTraversal(TreeNode* root) {
+    TreeNode* curNode = root;
+    vector&lt;int&gt; nodes;
+    while (curNode) {
+        if (curNode -&gt; left) {
+            TreeNode* predecessor = curNode -&gt; left;
+            while (predecessor -&gt; right &amp;&amp; predecessor -&gt; right != curNode)
+                predecessor = predecessor -&gt; right;
+            if (!(predecessor -&gt; right)) {
+                predecessor -&gt; right = curNode;
+                curNode = curNode -&gt; left;
+            }
+            else {
+                predecessor -&gt; right = NULL;
+                nodes.push_back(curNode -&gt; val);
+                curNode = curNode -&gt; right;
+            }
+        }
+        else {
+            nodes.push_back(curNode -&gt; val);
+            curNode = curNode -&gt; right;
+        }
+    }
+    return nodes;
+}
+</code></pre>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/jianchao.li.fighter">jianchao.li.fighter</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/36713/solutions-iterative-recursive-traversal-different-solutions">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html><html><head><title>Wiggle Sort II</title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="56a2c676fd1aae28585752db" data-set="true" class="title">Wiggle Sort II</h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>
+    Given an unsorted array <code>nums</code>, reorder it such that
+    <code>nums[0]  nums[2] .
+</code></p>
+
+<p>
+    <b>Example:</b><br>
+    (1) Given <code>nums = [1, 5, 1, 1, 6, 4]</code>, one possible answer is <code>[1, 4, 1, 5, 1, 6]</code>. <br>
+    (2) Given <code>nums = [1, 3, 2, 2, 3, 1]</code>, one possible answer is <code>[2, 3, 1, 3, 1, 2]</code>.
+</p>
+
+<p>
+    <b>Note:</b><br>
+    You may assume all input has valid answer.
+</p>
+
+<p>
+    <b>Follow Up:</b><br>
+    Can you do it in O(n) time and/or in-place with O(1) extra space?
+</p>
+
+<p><b>Credits:</b><br>Special thanks to <a href="https://leetcode.com/discuss/user/dietpepsi">@dietpepsi</a> for adding this problem and creating all test cases.</p>
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/google/">Google</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/sort/">Sort</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+                <div>
+                  <div id="similar" class="btn btn-xs btn-warning">Show Similar Problems</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="#sort-colors"> (M) Sort Colors</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#kth-largest-element-in-an-array"> (M) Kth Largest Element in an Array</a>
+                    
+                    <a class="btn btn-xs btn-primary" href="#wiggle-sort"> (M) Wiggle Sort</a>
+                    
+                  </span>
+                </div>
+              
+
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="entry-content"><p>This post is mainly about what I call "virtual indexing" technique (I'm sure I'm not the first who came up with this, but I couldn't find anything about it, so I made up a name as well. If you know better, let me know).</p>
+
+<hr>
+
+<h2>Solution</h2>
+
+<pre><code>void wiggleSort(vector&lt;int&gt;&amp; nums) {
+    int n = nums.size();
+
+    // Find a median.
+    auto midptr = nums.begin() + n / 2;
+    nth_element(nums.begin(), midptr, nums.end());
+    int mid = *midptr;
+
+    // Index-rewiring.
+    #define A(i) nums[(1+2*(i)) % (n|1)]
+
+    // 3-way-partition-to-wiggly in O(n) time with O(1) space.
+    int i = 0, j = 0, k = n - 1;
+    while (j &lt;= k) {
+        if (A(j) &gt; mid)
+            swap(A(i++), A(j++));
+        else if (A(j) &lt; mid)
+            swap(A(j), A(k--));
+        else
+            j++;
+    }
+}
+</code></pre>
+
+<hr>
+
+<h2>Explanation</h2>
+
+<p>First I find a median using <code>nth_element</code>. That only guarantees O(n) <strong>average</strong> time complexity and I don't know about space complexity. I might write this myself using O(n) time and O(1) space, but that's not what I want to show here.</p>
+
+<p>This post is about what comes <strong>after</strong> that. We can use <a rel="nofollow" href="https://en.wikipedia.org/wiki/Dutch_national_flag_problem#Pseudocode">three-way partitioning</a> to arrange the numbers so that those <em>larger than</em> the median come first, then those <em>equal to</em> the median come next, and then those <em>smaller than</em> the median come last.</p>
+
+<p>Ordinarily, you'd then use one more phase to bring the numbers to their final positions to reach the overall wiggle-property. But I don't know a nice O(1) space way for this. Instead, I embed this right into the partitioning algorithm. That algorithm simply works with indexes 0 to n-1 as usual, but sneaky as I am, I rewire those indexes where I want the numbers to actually end up. The partitioning-algorithm doesn't even know that I'm doing that, it just works like normal (it just uses <code>A(x)</code> instead of <code>nums[x]</code>).</p>
+
+<p>Let's say <code>nums</code> is <code>[10,11,...,19]</code>. Then after nth_element and ordinary partitioning, we might have this (15 is my median):</p>
+
+<pre><code>index:     0  1  2  3   4   5  6  7  8  9
+number:   18 17 19 16  15  11 14 10 13 12
+</code></pre>
+
+<p>I rewire it so that the first spot has index 5, the second spot has index 0, etc, so that I might get this instead:</p>
+
+<pre><code>index:     5  0  6  1  7  2  8  3  9  4
+number:   11 18 14 17 10 19 13 16 12 15
+</code></pre>
+
+<p>And 11 18 14 17 10 19 13 16 12 15 is perfectly wiggly. And the whole partitioning-to-wiggly-arrangement (everything after finding the median) only takes O(n) time and O(1) space.</p>
+
+<hr>
+
+<p>If the above description is unclear, maybe this explicit listing helps:</p>
+
+<p>Accessing <code>A(0)</code> actually accesses <code>nums[1]</code>.<br>
+Accessing <code>A(1)</code> actually accesses <code>nums[3]</code>.<br>
+Accessing <code>A(2)</code> actually accesses <code>nums[5]</code>.<br>
+Accessing <code>A(3)</code> actually accesses <code>nums[7]</code>.<br>
+Accessing <code>A(4)</code> actually accesses <code>nums[9]</code>.<br>
+Accessing <code>A(5)</code> actually accesses <code>nums[0]</code>.<br>
+Accessing <code>A(6)</code> actually accesses <code>nums[2]</code>.<br>
+Accessing <code>A(7)</code> actually accesses <code>nums[4]</code>.<br>
+Accessing <code>A(8)</code> actually accesses <code>nums[6]</code>.<br>
+Accessing <code>A(9)</code> actually accesses <code>nums[8]</code>.</p>
+
+<hr>
+
+<p>Props to <a rel="nofollow" href="https://leetcode.com/discuss/77053/time-and-cheating-space-solution-will-there-be-real-solution?show=77054#a77054">apolloydy's solution</a>, I knew the partitioning algorithm already but I didn't know the name. And apolloydy's idea to partition to reverse order happened to make the index rewiring simpler.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/77133/o-n-o-1-after-median-virtual-indexing">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="entry-content"><h2>Solution</h2>
+
+<p>Roughly speaking I put the smaller half of the numbers on the even indexes and the larger half on the odd indexes.</p>
+
+<pre><code>def wiggleSort(self, nums):
+    nums.sort()
+    half = len(nums[::2])
+    nums[::2], nums[1::2] = nums[:half][::-1], nums[half:][::-1]
+</code></pre>
+
+<p>Alternative, maybe nicer, maybe not:</p>
+
+<pre><code>def wiggleSort(self, nums):
+    nums.sort()
+    half = len(nums[::2]) - 1
+    nums[::2], nums[1::2] = nums[half::-1], nums[:half:-1]
+</code></pre>
+
+<hr>
+
+<h2><strong>Explanation / Proof</strong></h2>
+
+<p>I put the smaller half of the numbers on the even indexes and the larger half on the odd indexes, both from right to left:</p>
+
+<pre><code>Example nums = [1,2,...,7]      Example nums = [1,2,...,8] 
+
+Small half:  4 . 3 . 2 . 1      Small half:  4 . 3 . 2 . 1 .
+Large half:  . 7 . 6 . 5 .      Large half:  . 8 . 7 . 6 . 5
+--------------------------      --------------------------
+Together:    4 7 3 6 2 5 1      Together:    4 8 3 7 2 6 1 5
+</code></pre>
+
+<p>I want:</p>
+
+<ul>
+<li>Odd-index numbers are larger than their neighbors.</li>
+</ul>
+
+<p>Since I put the larger numbers on the odd indexes, clearly I already have:</p>
+
+<ul>
+<li>Odd-index numbers are larger than <strong>or equal to</strong> their neighbors.</li>
+</ul>
+
+<p>Could they be "equal to"? That would require some number M to appear both in the smaller and the larger half. It would be the largest in the smaller half and the smallest in the larger half. Examples again, where S means some number smaller than M and L means some number larger than M.</p>
+
+<pre><code>Small half:  M . S . S . S      Small half:  M . S . S . S .
+Large half:  . L . L . M .      Large half:  . L . L . L . M
+--------------------------      --------------------------
+Together:    M L S L S M S      Together:    M L S L S L S M
+</code></pre>
+
+<p>You can see the two M are quite far apart. Of course M could appear more than just twice, for example:</p>
+
+<pre><code>Small half:  M . M . S . S      Small half:  M . S . S . S .
+Large half:  . L . L . M .      Large half:  . L . M . M . M
+--------------------------      --------------------------
+Together:    M L M L S M S      Together:    M L S M S M S M
+</code></pre>
+
+<p>You can see that with seven numbers, three M are no problem. And with eight numbers, four M are no problem. Should be easy to see that in general, with n numbers, floor(n/2) times M is no problem. Now, if there were more M than that, then my method would fail. But... it would also be impossible:</p>
+
+<ul>
+<li>If n is even, then having more than n/2 times the same number clearly is unsolvable, because you'd have to put two of them next to each other, no matter how you arrange them.</li>
+<li>If n is odd, then the only way to successfully arrange a number appearing more than floor(n/2) times is if it appears exactly floor(n/2)+1 times and you put them on all the even indexes. And to have the wiggle-property, all the other numbers would have to be larger. But then we wouldn't have an M in both the smaller and the larger half.</li>
+</ul>
+
+<p>So if the input has a valid answer at all, then my code will find one.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/76965/3-lines-python-with-explanation-proof">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="entry-content"><pre><code>void wiggleSort(vector&lt;int&gt;&amp; nums) {
+    vector&lt;int&gt; sorted(nums);
+    sort(sorted.begin(), sorted.end());
+    for (int i=nums.size()-1, j=0, k=i/2+1; i&gt;=0; i--)
+        nums[i] = sorted[i&amp;1 ? k++ : j++];
+}
+</code></pre>
+
+<p>Sort and then write the smaller half of the numbers on the even indexes and the larger half of the numbers on the odd indexes, both from the back. Example:</p>
+
+<pre><code>Small half:    4 . 3 . 2 . 1 . 0 .
+Large half:    . 9 . 8 . 7 . 6 . 5
+----------------------------------
+Together:      4 9 3 8 2 7 1 6 0 5
+</code></pre>
+
+<p>So write <code>nums</code> from the back, interweaving <code>sorted[0..4]</code> (indexed by <code>j</code>) and <code>sorted[5..9]</code> (indexed by <code>k</code>).</p>
+
+<p>For more explanation/proof, see <a rel="nofollow" href="https://leetcode.com/discuss/76965/3-lines-python-with-explanation-proof">my equivalent Python solution</a>.</p>
+</div>
+												</div><div class="author"><span>written by&nbsp;</span><a href="https://leetcode.com/discuss/user/StefanPochmann">StefanPochmann</a><span>&nbsp;original link&nbsp;</span><a href="https://leetcode.com/discuss/77022/short-simple-c">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>

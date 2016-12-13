@@ -1,0 +1,206 @@
+<!DOCTYPE html><html><head><title>Split Array Largest Sum  </title><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="keywords" content="geeksforgeeks, algorithms, iOS"><meta name="apple-itunes-app" content="app-id=991254978"><link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css"><link rel="stylesheet" href="../assets/stylesheets/main.css"><link rel="stylesheet" href="../assets/stylesheets/styles/github.css"><script src="../assets/javascripts/jquery-1.11.2.js"></script><script src="../assets/bootstrap/js/bootstrap.min.js"></script><script src="../assets/javascripts/highlight.pack.js"></script><script src="../assets/javascripts/geekreader.js"></script><script>hljs.initHighlightingOnLoad();</script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-67142392-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head><body><div class="container post"><div style="page-break-before:always;" class="post"><div class="post-header"><h1 data-id="57f14cc29cbe5e7288575316" data-set="true" class="title">Split Array Largest Sum  </h1></div><article class="post-content"><div class="question card-content"><div class="question-content">
+              <p></p><p>Given an array which consists of non-negative integers and an integer <i>m</i>, you can split the array into <i>m</i> non-empty continuous subarrays. Write an algorithm to minimize the largest sum among these <i>m</i> subarrays.
+</p>
+
+<p><b>Note:</b><br>
+Given <i>m</i> satisfies the following constraint: 1 &#8804; m &#8804;  length(nums) &#8804; 14,000.
+</p>
+
+<p><b>Examples: </b>
+</p><pre>
+Input:
+<b>nums</b> = [1,2,3,4,5]
+<b>m</b> = 2
+
+Output:
+9
+
+Explanation:
+There are four ways to split <b>nums</b> into two subarrays.
+The best way is to split it into <b>[1,2,3]</b> and <b>[4,5]</b>,
+where the largest sum among the two subarrays is only 9.
+</pre>
+
+              
+                
+                  <div>
+                    <div id="company_tags" class="btn btn-xs btn-warning">Show Company Tags</div>
+                    <span class="hidebutton">
+                      
+                        <a class="btn btn-xs btn-primary" href="https://leetcode.com/company/baidu/">Baidu</a>
+                      
+                    </span>
+                  </div>
+                
+              
+
+              
+                <div>
+                  <div id="tags" class="btn btn-xs btn-warning">Show Tags</div>
+                  <span class="hidebutton">
+                    
+                    <a class="btn btn-xs btn-primary" href="https://leetcode.com/tag/binary-search/">Binary Search</a>
+                    
+                  </span>
+                </div>
+              
+
+              
+            </div>
+          </div><div style="page-break-before:always;" class="answers"></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 1</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<ol>
+<li>The answer is between maximum value of input array numbers and sum of those numbers.</li>
+<li>Use binary search to approach the correct answer. We have <code>l = max number of array; r = sum of all numbers in the array;</code>Every time we do <code>mid = (l + r) / 2;</code></li>
+<li>Use greedy to narrow down left and right boundaries in binary search.<br/>
+3.1 Cut the array from left.<br/>
+3.2 Try our best to make sure that the sum of numbers between each two cuts (inclusive) is large enough but still less than <code>mid</code>.<br/>
+3.3 We'll end up with two results: either we can divide the array into more than m subarrays or we cannot.<br/>
+<strong>If we can</strong>, it means that the <code>mid</code> value we pick is too small because we've already tried our best to make sure each part holds as many non-negative numbers as we can but we still have numbers left. So, it is impossible to cut the array into m parts and make sure each parts is no larger than <code>mid</code>. We should increase m. This leads to <code>l = mid + 1;</code><br/>
+<strong>If we can't</strong>, it is either we successfully divide the array into m parts and the sum of each part is less than <code>mid</code>, or we used up all numbers before we reach m. Both of them mean that we should lower <code>mid</code> because we need to find the minimum one. This leads to <code>r = mid - 1;</code></li>
+</ol>
+<pre><code>public class Solution {
+    public int splitArray(int[] nums, int m) {
+        int max = 0; long sum = 0;
+        for (int num : nums) {
+            max = Math.max(num, max);
+            sum += num;
+        }
+        if (m == 1) return (int)sum;
+        //binary search
+        long l = max; long r = sum;
+        while (l &lt;= r) {
+            long mid = (l + r)/ 2;
+            if (valid(mid, nums, m)) {
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+        return (int)l;
+    }
+    public boolean valid(long target, int[] nums, int m) {
+        int count = 1;
+        long total = 0;
+        for(int num : nums) {
+            total += num;
+            if (total &gt; target) {
+                total = num;
+                count++;
+                if (count &gt; m) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+</code></pre>
+<ul>
+<li>list item</li>
+</ul>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/dax1ng">dax1ng</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/61324/clear-explanation-8ms-binary-search-java">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 2</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<ol>
+<li>Given a result, it is easy to test whether it is valid or not.</li>
+<li>The max of the result is the sum of the input nums.</li>
+<li>The min of the result is the max num of the input nums.<br/>
+Given the 3 conditions above we can do a binary search. (need to deal with overflow)</li>
+</ol>
+<pre><code>public class Solution {
+    public int splitArray(int[] nums, int m) {
+        long sum = 0;
+        int max = 0;
+        for(int num: nums){
+            max = Math.max(max, num);
+            sum += num;
+        }
+        return (int)binary(nums, m, sum, max);
+    }
+    
+    private long binary(int[] nums, int m, long high, long low){
+        long mid = 0;
+        while(low &lt; high){
+            mid = (high + low)/2;
+            if(valid(nums, m, mid)){
+                //System.out.println(mid);
+                high = mid;
+            }else{
+                low = mid + 1;
+            }
+        }
+        return high;
+    }
+    
+    private boolean valid(int[] nums, int m, long max){
+        int cur = 0;
+        int count = 1;
+        for(int num: nums){
+            cur += num;
+            if(cur &gt; max){
+                cur = num;
+                count++;
+                if(count &gt; m){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/zrythpzhl">zrythpzhl</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/61315/java-easy-binary-search-solution-8ms">here</a></div></div><div style="page-break-before:always;" class="card"><h2 class="card-title">Solution 3</h2><div class="answer card-content"><div class="content" component="post/content" itemprop="text">
+			<p>Obviously, the final result is in the interval [left, right] (where left is the maximal number in the array, right is sum of all numbers).<br/>
+So, what we need to do is to find out the first element in [left, right], which exactly we cannot split the array into m subarrays whose sum is no greater than that element. Then its previous one is the final result. The progress is much similar to lower_bound in C++.</p>
+<pre><code>class Solution {
+public:
+    using ll = long long;
+
+    bool canSplit(vector&lt;int&gt;&amp; nums, int m, ll sum) {
+        int c = 1;
+        ll s = 0;
+        for (auto&amp; num : nums) {
+            s += num;
+            if (s &gt; sum) {
+                s = num;
+                ++c;
+            }
+        }
+        return c &lt;= m;
+    }
+
+    int splitArray(vector&lt;int&gt;&amp; nums, int m) {
+        ll left = 0, right = 0;
+        for (auto&amp; num : nums) {
+            left = max(left, (ll)num);
+            right += num;
+        }
+        while (left &lt;= right) {
+            ll mid = left + (right-left)/2;
+            if (canSplit(nums, m, mid))
+                right = mid-1;
+            else
+                left = mid+1;
+        }
+        return left;
+    }
+};
+</code></pre>
+
+		</div>
+
+		</div><div class="author"><span>written by&nbsp;</span><a href="https://discuss.leetcode.com/user/vesion">vesion</a><span>&nbsp;original link&nbsp;</span><a href="https://discuss.leetcode.com/topic/61314/binary-search-c-solution">here</a></div></div></article></div></div><footer class="footer"><div class="container"><span>From <a href="https://itunes.apple.com/ca/app/leetcoder/id1069760709?mt=8" target='_blank'>Leetcoder</a>.</span></div></footer></body></html>
