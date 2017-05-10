@@ -8,7 +8,7 @@
 
 ![App](./screenshots/app.png)
 
-- Everything works offline
+- Works offline
 
 ![Problem](./screenshots/problem.png)
 
@@ -39,9 +39,9 @@
 
 There is a Mac app in `Leetcoder-darwin-x64`.
 
-There is an iOS app with similar features too! [Leetcoder](https://itunes.apple.com/us/app/leetcoder/id1069760709?mt=8).
+There is an iOS app with similar features: [Leetcoder](https://itunes.apple.com/us/app/leetcoder/id1069760709?mt=8).
 
-While you are at it, check out [GeeksforGeeks Reader](https://itunes.apple.com/us/app/geeksforgeeks-reader-read/id991254978?mt=8) as well :)
+There are generated pdf files in forum folder :)
 
 ## Feedback
 
