@@ -1,6 +1,10 @@
 # Leetcode Best Answers
 
-**Note**: WIP
+Top voted answers from leetcode discussion forum for your reference in case you get stuck solving a problem or just curious about different solutions to a problem.
+
+The Mac app (in the folder Leetcoder-darwin-x64) is a work in progress.
+
+There is an iOS app as well, feel free to check it out [here](https://itunes.apple.com/us/app/leetcoder/id1069760709?mt=8). The features described below are of the Mac app.
 
 ## Features
 
@@ -23,6 +27,8 @@
 
 ## Run
 
+Run Leetcoder.app or build it yourself:
+
 - `yarn install`
 - `yarn start`
 
@@ -34,14 +40,6 @@
   - filter by level
   - random problem set
 - package app for different platforms
-
-## App
-
-There is a Mac app in `Leetcoder-darwin-x64`.
-
-There is an iOS app with similar features: [Leetcoder](https://itunes.apple.com/us/app/leetcoder/id1069760709?mt=8).
-
-There are generated pdf files in forum folder :)
 
 ## Feedback
 
