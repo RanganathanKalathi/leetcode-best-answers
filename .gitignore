@@ -1,3 +1,5 @@
 .DS_Store
 util.js
 node_modules
+package.json
+yarn.lock
